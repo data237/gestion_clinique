@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jersey+10&display=swap');
+:root{
+  --secondaire-applat: rgba(254, 255, 239, 1);
+  --primaire-applat: rgba(239, 239, 255, 1);
+  --Neutre-6: rgba(153, 153, 153, 1);
+  --Neutre-4: rgba(102, 102, 102, 1);
+  --primaire-accentuation: rgba(65, 65, 255, 1);
+
+}
+.img_cli_acc{
+  height: 99.6vh;
+  width: 60%;
+}
+.accueil{
+  display: flex;
+  width: 100%;
+  font-family: "Inter", sans-serif;
+}
+.formulaire{
+  width: 40%;
+  background-color: var(--secondaire-applat);
+  height: 99.6vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15%;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+           
+}
+.text{
+  font-size: 1.3em;
+  font-weight: bold;
+  color: var(--Neutre-6);
+}
+.text span{
+  font-size: 2em;
+  font-weight: bold;
+  color: var(--Neutre-4);
+}
+.form-group {
+            margin-bottom: 15px;
+            position: relative;
+        }
+.login-label{
+            display: block;
+            padding: 5px;
+            font-weight: bold;
+            color: var(--Neutre-4);
+            position: absolute;
+            top: -15px;
+            left: 10px;
+            font-size: 16px;
+            background-color: var(--secondaire-applat);
+        }
+ 
+.login-input{
+                width: 100%;
+                padding: 18px;
+                border: 1px solid var(--Neutre-6);
+                border-radius: 4px;
+                font-size: 14px;
+                background-color: var(--secondaire-applat);
+            }
+.button1{
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--Neutre-6);
+      border-radius: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #fff;
+      background-color: var(--primaire-accentuation);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+}
+.icon{
+  height: 3%;
+  width: 3%;
+}
