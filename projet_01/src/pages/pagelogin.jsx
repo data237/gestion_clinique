@@ -20,10 +20,13 @@ function PageLogin() {
         password,
       });
 
-      const { token, authorities } = response.data;
+      const { id, token, username, photoUrl, authorities } = response.data;
       console.log(token)
       // Stocker le token dans localStorage ou context
       localStorage.setItem('token', token);
+      localStorage.setItem('id', id);
+      localStorage.setItem('username', username);
+      localStorage.setItem('photoUrl', photoUrl);
       localStorage.setItem('user', JSON.stringify(authorities[0].authority));
 
       // Redirection conditionnelle
@@ -31,7 +34,9 @@ function PageLogin() {
         navigate('/admin/utilisateur');
       } else if (authorities[0].authority === 'ROLE_MEDECIN') {
         navigate('/medecin');
-      } else {
+      } else if (authorities[0].authority === 'ROLE_SECRETAIRE') {
+        navigate('/secretaire');
+      } else{
         navigate('/');
       }
 

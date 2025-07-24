@@ -1,12 +1,12 @@
-import './tableau.css'
+import '../../composants/tableau.css'
 import Styled from 'styled-components'
 import axios from 'axios';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import Barrehorizontal1 from '../composants/barrehorizontal1';
-import imgprofil from '../assets/photoDoc.png'
-import iconrecherche from '../assets/iconrecherche.png'
-import iconburger from '../assets/iconburger.png'
+import Barrehorizontal1 from '../../composants/barrehorizontal1';
+import imgprofil from '../../assets/photoDoc.png'
+import iconrecherche from '../../assets/iconrecherche.png'
+import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
 
 const SousDiv1Style = Styled.div`
@@ -229,33 +229,34 @@ const Overlay = Styled.div`
   background-color: rgba(0,0,0,0.5);
   z-index: 998;
 `
-function Utilisateur(){
+function RendezvousMedecin(){
     //const [isVisible, setisVisible] = useState(0)
     const nomprofil = localStorage.getItem('username');
 
     // fonction du tableau
     const [Popupsupprime, setPopupsupprime] = useState(false)
-    const [utilisateurASupprimer, setUtilisateurASupprimer] = useState(null);
+    const [rendezvousASupprimer, setrendezvousASupprimer] = useState(null);
     const [statutAmodifier, setstatutAmodifier] = useState(null);
     const [Popupstatut, setPopupstatut] = useState(false)
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [isloading, setisloading] = useState(true);
-    const [utilisateurs, setutilisateurs] = useState([]);
-    const [utilisateursFiltres, setUtilisateursFiltres] = useState([]);
+    const [rendezvous, setrendezvous] = useState([]);
+    const [rendezvousFiltres, setrendezvousFiltres] = useState([]);
+  
     const [erreur, setErreur] = useState(null);
 
 
-    const utilisateursPerPage = 8;
+    const rendezvousPerPage = 8;
 
     
-
     useEffect(()=>{
          
-         const fetchUtilisateurs = async () => {
+         const fetchrendezvous = async () => {
             const token = localStorage.getItem('token');
+            const id = localStorage.getItem('id');
             try {
-                const response = await axios.get('http://localhost:8081/Api/V1/clinique/utilisateurs',
+                const response = await axios.get(`http://localhost:8081/Api/V1/clinique/utilisateurs/${id}/confirmed/all`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -263,46 +264,46 @@ function Utilisateur(){
                     }},);
                 console.log(token);
               if (response && response.data) {
-                setutilisateurs(response.data);
-               setUtilisateursFiltres(response.data);
-                } else {
+                setrendezvous(response.data);
+               setrendezvousFiltres(response.data);
+                } /*else {
                 setErreur('Données introuvables');
-                }
+                }*/
             } catch (error) {
-                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                console.error('Erreur lors de la récupération des rendezvous:', error);
                 setErreur('Erreur lors du chargement');
             } finally {
                 setisloading(false);
             }
     
         };
-            fetchUtilisateurs();
+            fetchrendezvous();
         },[]);
         
     useEffect(() => {
             if (!valeurrecherche.trim()) {
-                setUtilisateursFiltres(utilisateurs); // Si rien à chercher, on affiche tout
+                setrendezvousFiltres(rendezvous); // Si rien à chercher, on affiche tout
                 return;
             }
 
             const recherche = valeurrecherche.toLowerCase();
 
-            const resultats = utilisateurs.filter((u) =>
-                u.nom.toLowerCase().includes(recherche) ||
-                u.prenom.toLowerCase().includes(recherche) ||
-                u.email.toLowerCase().includes(recherche) ||
-                u.role.roleType.toLowerCase().includes(recherche)
+            const resultats = rendezvous.filter((u) =>
+                u.jour.toLowerCase().includes(recherche) ||
+                u.patientNomComplet.toLowerCase().includes(recherche) ||
+                u.medecinNomComplet.toLowerCase().includes(recherche) ||
+                u.statut.toLowerCase().includes(recherche)
             );
 
-            setUtilisateursFiltres(resultats);
-    }, [valeurrecherche, utilisateurs]);
+            setrendezvousFiltres(resultats);
+    }, [valeurrecherche, rendezvous]);
 
 
 
 
 
     const [pagesToShow, setpagesToShow] = useState([]);
-    const totalPages = Math.ceil(utilisateurs.length / utilisateursPerPage);
+    const totalPages = Math.ceil(rendezvous.length / rendezvousPerPage);
 
     useEffect(() => {
             if (totalPages >= 6) {
@@ -311,7 +312,7 @@ function Utilisateur(){
             const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
             setpagesToShow(fullList);
             }
-            }, [utilisateurs.length, totalPages]);
+            }, [rendezvous.length, totalPages]);
 
             //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
 
@@ -331,7 +332,7 @@ function Utilisateur(){
            const toggle = async () => {
                 const token2 = localStorage.getItem('token');
                 try {
-                    const response = await axios.patch(`http://localhost:8081/Api/V1/clinique/utilisateurs/${statutAmodifier[0]}/status/${!statutAmodifier[1]}`,{utilisateurs}, {
+                    const response = await axios.patch(`http://localhost:8081/Api/V1/clinique/rendezvous/${statutAmodifier[0]}/status/${!statutAmodifier[1]}`,{rendezvous}, {
                     headers: {
                         accept: 'application/json',
                         Authorization: `Bearer ${token2}`,
@@ -339,7 +340,7 @@ function Utilisateur(){
                     },
                     });
                     const user = response.data
-                     setutilisateurs((prevData) =>
+                     setrendezvous((prevData) =>
                         prevData.map((item) =>
                         item.id === statutAmodifier[0] ?  user : item
                         )
@@ -353,33 +354,11 @@ function Utilisateur(){
                 }
                 };
                 toggle()
-                //console.log(`http://localhost:8081/Api/V1/clinique/utilisateurs/${id}/status/${!status}`)
+                //console.log(`http://localhost:8081/Api/V1/clinique/rendezvous/${id}/status/${!status}`)
         }
                     
     
-    /*
-    const supprimerUtilisateur = async (id) => {
-        const token2 = localStorage.getItem('token');
-        try {
-            await axios.delete(`http://localhost:8081/Api/V1/clinique/utilisateurs/${id}`, {
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token2}`,
-                'Content-Type': 'application/json',
-            },
-            });
-
-            // Supprime l'utilisateur localement du tableau
-            setutilisateurs((prevData) =>
-                prevData.filter((item) => item.id !== id)
-            );
-
-            console.log(`Utilisateur ${id} supprimé`);
-        } catch (error) {
-            console.error('Erreur lors de la suppression :', error);
-        }
-        };
-      */      
+         
     
 
 
@@ -405,32 +384,32 @@ function Utilisateur(){
     setpagesToShow(nouvelleListe)
     }
 
-    const indexOfLastutilisateur = currentPage * utilisateursPerPage;
-    const indexOfFirstutilisateur = indexOfLastutilisateur - utilisateursPerPage;
-    //const currentutilisateurs = utilisateurs.slice(indexOfFirstutilisateur, indexOfLastutilisateur);
-    const currentutilisateurs = utilisateursFiltres.slice(indexOfFirstutilisateur, indexOfLastutilisateur);
+    const indexOfLastrendezvous = currentPage * rendezvousPerPage;
+    const indexOfFirstrendezvous = indexOfLastrendezvous - rendezvousPerPage;
+    //const currentrendezvous = rendezvous.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
+    const currentrendezvous = rendezvousFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
     
 
     //
 
-    //aficher les détails d'un utilisateur
+    //aficher les détails d'un rendezvous
         //const [user, setuser] = useState({})
         
     //
      const navigate = useNavigate();
 
-  const handleRowClick = (utilisateur) => {
-    navigate(`/admin/utilisateur/viewuser/${utilisateur.id}`);
+  const handleRowClick = (rendezvous) => {
+    navigate(`/secretaire/rendezvous/viewrendezvous/${rendezvous.id}`);
   };
 
 
 
-  const supprimerUtilisateur = async () => {
-        if (!utilisateurASupprimer) return;
+  const supprimerrendezvous = async () => {
+        if (!rendezvousASupprimer) return;
 
         const token = localStorage.getItem('token');
         try {
-            await axios.delete(`http://localhost:8081/Api/V1/clinique/utilisateurs/${utilisateurASupprimer}`, {
+            await axios.delete(`http://localhost:8081/Api/V1/clinique/rendezvous/${rendezvousASupprimer}`, {
             headers: {
                 accept: 'application/json',
                 Authorization: `Bearer ${token}`,
@@ -438,13 +417,13 @@ function Utilisateur(){
             },
             });
 
-            setutilisateurs((prevUtilisateurs) =>
-            prevUtilisateurs.filter((u) => u.id !== utilisateurASupprimer)
+            setrendezvous((prevrendezvous) =>
+            prevrendezvous.filter((u) => u.id !== rendezvousASupprimer)
             );
 
             setPopupsupprime(false);
-            setUtilisateurASupprimer(null);
-            console.log(`Utilisateur ${utilisateurASupprimer} supprimé`);
+            setrendezvousASupprimer(null);
+            console.log(`rendezvous ${rendezvousASupprimer} supprimé`);
         } catch (error) {
             console.error('Erreur lors de la suppression :', error);
         }
@@ -458,15 +437,15 @@ function Utilisateur(){
     return(<>
             <Overlay onClick={() => setPopupsupprime(false)} $Overlaydisplay = {Popupsupprime || Popupstatut ? 'block' : 'none'}/>
                 <Popupsuppr $Popupsupprdisplay = {Popupsupprime ? 'flex' : 'none'}>
-                    <p>voulez-vous supprimer cet utilisateur ?</p>
+                    <p>voulez-vous supprimer cet rendezvous ?</p>
                     <Containbouttonpopup>
-                        <Bouttonpopup onClick={supprimerUtilisateur}> oui </Bouttonpopup>
+                        <Bouttonpopup onClick={supprimerrendezvous}> oui </Bouttonpopup>
                         <Bouttonpopup onClick={()=> setPopupsupprime(false)}> non </Bouttonpopup>
                     </Containbouttonpopup>
                                     
                 </Popupsuppr>
                 <Popupstat $Popupstatutdisplay = {Popupstatut ? 'flex' : 'none'}>
-                    <p>voulez-vous changez le statut de cet utilisateurs ?</p>
+                    <p>voulez-vous changez le statut de cet rendezvous ?</p>
                     <Containbouttonpopup>
                         <Bouttonpopup onClick={toggleStatus}> oui </Bouttonpopup>
                         <Bouttonpopup onClick={()=> setPopupstatut(false)}> non </Bouttonpopup>
@@ -474,8 +453,8 @@ function Utilisateur(){
                                     
                 </Popupstat>
             <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Gestion des utilisateurs" imgprofil1={imgprofil} nomprofil={nomprofil}> 
-                    <Span1>Liste des utilisateurs</Span1>
+                <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil={nomprofil}> 
+                    <Span1>Liste des rendez vous</Span1>
                 </Barrehorizontal1>
             </SousDiv1Style>
             
@@ -487,19 +466,14 @@ function Utilisateur(){
                             <InputStyle type="text" id="text1" placeholder='Hinted search text'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></InputStyle>
                             <IconrechercheStyle src={iconrecherche} ></IconrechercheStyle>
                         </RechercheStyle>
-                        <Link to="/admin/utilisateur/add"><BouttonStyle>Ajouter un utilisateur</BouttonStyle></Link>
+                        {/*<Link to="/secretaire/rendezvous/add"><BouttonStyle>Ajouter un rendez vous</BouttonStyle></Link>*/}
                 </Affichebarh2>
                 
-                
-                
-                {/*<Affichebarh2 >
-                  <Barrehorizontal2><Link to="/admin/utilisateur/add"> <Boutton nomboutton="Ajouter un utilisateur" /> </Link></Barrehorizontal2>  
-                </Affichebarh2>*/}
                 
                 <ZonedaffichageStyle >
                     <NumeroStyle style={{ marginTop: '10px' }}>
                             <div>
-                                <NomtableStyle> Utilisateurs </NomtableStyle>
+                                <NomtableStyle> Rendez vous </NomtableStyle>
                             </div>
                             <DivbuttonStyle >
                                 <ButtonPSStyle onClick={() => {setCurrentPage(currentPage - 1)
@@ -531,92 +505,41 @@ function Utilisateur(){
                             <BarreStyle></BarreStyle>
                         </div>
                 <AfficheTableauStyle>
-                    {/*<table className='tableau-1'>
-                        <thead>
-                            <tr>
-                                <th className='check'>
-                                    <input
-                                    type="checkbox"
-                                />
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                currentutilisateurs.map((utilisateur) => (
-                            <tr key={utilisateur.id}>
-    
-                            <td><input
-                                    type="checkbox"
-                                    checked={selectedutilisateurs.includes(utilisateur.id)}
-                                    onChange={() => handleCheckboxChange(utilisateur.id)}
-                                />
-                            </td></tr>))
-                            }
-                        </tbody>
-                    </table>  */}
+                   
                     <table className='tableau-2'>
                         <thead>
                         <tr>
-                           
-                            <th className='th'>Nom</th>
-                            <th className='th'>Prénom</th>
-                            <th className='th'>Email</th>
-                            <th className='th'>Rôle</th>
+                            
+                            <th className='th'>Jour</th>
+                            <th className='th'>Heure</th>
+                            <th className='th'>Service medical</th>
+                            <th className='th'>Nom du patient</th>
+                            <th className='th'>Nom du medecin</th>
+                            <th className='th'>Nom de la salle</th>
                             <th className='th'>Statut</th>
-                            <th className='action th'>Action</th>
+                           
+                           
                         </tr>
                         </thead>
                         <tbody>
-                        {currentutilisateurs.map((utilisateur) => (
-                           <tr key={utilisateur.id} className='tr'>
+                        {currentrendezvous.map((rendezvous) => (
+                           <tr key={rendezvous.id} className='tr'>
     
                             
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.nom}</td>
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.prenom}</td>
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.email}</td>
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.role.roleType}</td>
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.actif ? "actif" : "inactif"}</td>
-                            <td className='bouttons'>
-                                <button
-                                    onClick={() => {setstatutAmodifier([utilisateur.id,utilisateur.actif]);
-                                        setPopupstatut(true)
-                                    }}
-                                    className={`toggle-button ${utilisateur.actif ? "" : "on"}`}
-                                    >
-                                <div className={ `circle  ${utilisateur.actif  ? "" : "active"}`} ></div></button>
-                                <button onClick={()=> {setUtilisateurASupprimer(utilisateur.id);
-                                                        setPopupsupprime(true);}}>🗑️</button>
-                                
-                                
-                            </td>
+                            
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.jour}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.heure}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.serviceMedical}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.nomSalle}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.statut ? "actif" : "inactif"}</td>
+                            
                             </tr>
                         ))}
                         </tbody>
                     </table>
-                    {/*<table className='tableau-3'>
-                        <thead>
-                            <tr>
-                                <th className='action'>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                currentutilisateurs.map((utilisateur) => (
-                            <tr key={utilisateur.id}>
-    
-                            <td className='bouttons'>
-                                <button
-                                    onClick={() => toggleStatus(utilisateur.id)}
-                                    className={`toggle-button ${utilisateur.isActive ? "on" : ""}`}
-                                    >
-                                <div className={ `circle  ${utilisateur.isActive  ? "active" : ""}`} ></div></button>
-                                <button>🗑️</button>
-                                
-                            </td></tr>))
-                            }
-                        </tbody>
-                    </table>*/}
+                   
                     </AfficheTableauStyle>
                 </ZonedaffichageStyle>
 
@@ -625,4 +548,4 @@ function Utilisateur(){
             </SousDiv2Style>
     </>)   
 }
-export default Utilisateur
+export default RendezvousMedecin

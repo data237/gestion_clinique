@@ -15,6 +15,7 @@ import ProtectedRoute from './composants/protectedroute'
 import RoleBasedRoute from './composants/rolebasedroute'
 import Medecinroute from './pages/medecinrouter'
 import Calendrier from './composants/calendar'
+import Secretaireroute from './pages/secretaireroute'
 
 
 
@@ -38,6 +39,10 @@ function App() {
             <Route element={<RoleBasedRoute allowedRoles={['ROLE_MEDECIN']} />}>
               {/*<Route path='/admin/*' element={<Adminroute/>}/>*/}
               {Medecinroute()}
+            </Route>
+            <Route element={<RoleBasedRoute allowedRoles={['ROLE_SECRETAIRE']} />}>
+              {/*<Route path='/admin/*' element={<Adminroute/>}/>*/}
+              {Secretaireroute()}
             </Route>
       </Route>
       </Routes>

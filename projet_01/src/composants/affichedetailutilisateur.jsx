@@ -193,7 +193,7 @@ const DetailsUtilisateur = () => {
 
 
        
-  const nomprofil = ' Dr Atagana A. T.'
+  const nomprofil = localStorage.getItem('username');
   
   let navigate = useNavigate();
   const handleClick = () => {

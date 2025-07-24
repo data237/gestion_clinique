@@ -1,13 +1,13 @@
-import './tableau.css'
+import '../../composants/tableau.css'
 import Styled from 'styled-components'
 import { useState, useEffect} from 'react';
 import axios from 'axios';
-import Barrehorizontal1 from '../composants/barrehorizontal1';
-import Barrehorizontal2 from "../composants/barrehorizontal2";
-import Boutton from '../composants/boutton'
-import imgmedecin from '../assets/imagemedecin.jpg'
-import iconrecherche from '../assets/iconrecherche.png'
-import iconburger from '../assets/iconburger.png'
+import Barrehorizontal1 from '../../composants/barrehorizontal1';
+import Barrehorizontal2 from "../../composants/barrehorizontal2";
+import Boutton from '../../composants/boutton'
+import imgmedecin from '../../assets/imagemedecin.jpg'
+import iconrecherche from '../../assets/iconrecherche.png'
+import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
 
 
@@ -206,7 +206,7 @@ const Overlay = Styled.div`
   background-color: rgba(0,0,0,0.5);
   z-index: 998;
 `
-function Patient(){
+function PatientSecretaire(){
         
         const [Popupsupprime, setPopupsupprime] = useState(false)
         const [patientASupprimer, setpatientASupprimer] = useState(null);
@@ -428,36 +428,11 @@ function Patient(){
                             <BarreStyle></BarreStyle>
                         </div>
                     <AfficheTableauStyle>
-                    {/*<table className='tableau-1'>
-                        <thead>
-                            <tr>
-                                <th className='check'>
-                                    <input
-                                    type="checkbox"
-                                />
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                currentPatients.map((patient) => (
-                            <tr>
-    
-                            <td className='check-box'><input
-                                    type="checkbox"
-                                    checked={selectedPatients.includes(patient.id)}
-                                    onChange={() => handleCheckboxChange(patient.id)}
-                                />
-                            </td></tr>))
-                            }
-                        </tbody>
-                    </table> */} 
-                    {/*<div className='conteneur-tableau-2'>*/}
+                    
                         <table className='tableau-2'>
                             <thead>
                             <tr>
-                                
-                                
+                                   
                                 <th className='th'>Nom</th>
                                 <th className='th'>Prénom</th>
                                 <th className='th'>Email</th>
@@ -481,7 +456,7 @@ function Patient(){
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.dateNaissance}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.adresse}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.genre}</td>
-                                <td className='bouttons'>
+                                <td className='bouttons td'>
                                 {/*<button
                                     onClick={() => toggleStatus(patient.id)}
                                     className={`toggle-button ${patient.isActive ? "on" : ""}`}
@@ -496,30 +471,7 @@ function Patient(){
                             ))}
                             </tbody>
                         </table>
-                    {/*</div'>*/}
-                    {/*<table className='tableau-3'>
-                        <thead>
-                            <tr>
-                                <th className='action'>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                currentPatients.map((patient) => (
-                            <tr>
-    
-                            <td className='bouttons'>
-                                <button
-                                    onClick={() => toggleStatus(patient.id)}
-                                    className={`toggle-button ${patient.isActive ? "on" : ""}`}
-                                    >
-                                <div className={ `circle  ${patient.isActive  ? "active" : ""}`} ></div></button>
-                                <button>🗑️</button>
-                                
-                            </td></tr>))
-                            }
-                        </tbody>
-                    </table>*/}
+                    
                     </AfficheTableauStyle>
                 </ZonedaffichageStyle>
                 
@@ -527,4 +479,4 @@ function Patient(){
             </SousDiv2Style>
     </>)   
 }
-export default Patient
+export default PatientSecretaire

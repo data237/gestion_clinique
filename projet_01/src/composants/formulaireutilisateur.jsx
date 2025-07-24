@@ -5,7 +5,7 @@ import Styled from 'styled-components';
 import fondImage from '../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../composants/barrehorizontal1';
 import imgprofil from '../assets/photoDoc.png'
-const nomprofil = ' Dr Atagana A. T.'
+
 
 const SousDiv1Style = Styled.div`
  width: 99%;
@@ -145,6 +145,8 @@ const Button = Styled.button`
 `;
 
 const FormulaireUtilisateur = () => {
+
+  const nomprofil = localStorage.getItem('username');
   const [formData, setFormData] = useState({
    
   nom: "",

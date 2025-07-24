@@ -15,12 +15,13 @@ const PageStyle = Styled.div`
     display: flex;
 `
 const DivStyle = Styled.div`
-  width: 100%;
- display: flex;
- flex-direction: column;
- gap: 15px;
- padding-left: 1%;
- padding-top: 2%;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-left: 1%;
+    padding-top: 2%;
 `
 
 function PageAdmin(){

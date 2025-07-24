@@ -171,7 +171,7 @@ const Button = Styled.button`
     color: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'rgba(159, 159, 255, 1)'};
   }
 `;
-const nomprofil = ' Dr Atagana A. T.'
+const nomprofil = localStorage.getItem('username');
 const ModifierPatient = () => {
   
   const [formData, setFormData] = useState(null);

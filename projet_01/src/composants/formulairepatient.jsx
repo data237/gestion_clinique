@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Barrehorizontal1 from '../composants/barrehorizontal1';
 import imgprofil from '../assets/photoDoc.png'
 
-const nomprofil = ' Dr Atagana A. T.'
+
 
 const FormContainer = Styled.div`
   position: relative;
@@ -151,6 +151,7 @@ const Button = Styled.button`
 `;
 
 const FormulairePatient = () => {
+  const nomprofil = localStorage.getItem('username');
   const [formData, setFormData] = useState({
   nom: "",
   prenom: "",
