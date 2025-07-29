@@ -1,21 +1,30 @@
-import '../../composants/tableau.css'
+import '../../styles/tableau.css'
+import '../../styles/Zonedaffichage.css'
+import '../../styles/Barrehorizontal2.css'
 import Styled from 'styled-components'
 import axios from 'axios';
 import React from 'react';
 import { useEffect, useState } from 'react';
+import { API_BASE } from '../../composants/config/apiconfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import iconrecherche from '../../assets/iconrecherche.png'
+import iconsupprime from '../../assets/Iconsupprime.svg'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
 
 const SousDiv1Style = Styled.div`
- width: 99%;
- padding-left: 1%;
+width: 100%;
+ padding-left: 32px;
+ padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
-  width: 99%;
- padding-left: 1%;
+  width: 100%;
+  padding-left: 32px;
+  padding-right: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 `
 const ZonedaffichageStyle = Styled.div`
     height: 70vh;
@@ -255,7 +264,7 @@ function Rendezvous(){
          const fetchrendezvous = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await axios.get('http://localhost:8081/Api/V1/clinique/rendezvous',
+                const response = await axios.get(`${API_BASE}/rendezvous`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -331,7 +340,7 @@ function Rendezvous(){
            const toggle = async () => {
                 const token2 = localStorage.getItem('token');
                 try {
-                    const response = await axios.patch(`http://localhost:8081/Api/V1/clinique/rendezvous/${statutAmodifier[0]}/status/${!statutAmodifier[1]}`,{rendezvous}, {
+                    const response = await axios.patch(`${API_BASE}/rendezvous/${statutAmodifier[0]}/status/${!statutAmodifier[1]}`,{rendezvous}, {
                     headers: {
                         accept: 'application/json',
                         Authorization: `Bearer ${token2}`,
@@ -353,7 +362,7 @@ function Rendezvous(){
                 }
                 };
                 toggle()
-                //console.log(`http://localhost:8081/Api/V1/clinique/rendezvous/${id}/status/${!status}`)
+                //console.log(`${API_BASE}/rendezvous/${id}/status/${!status}`)
         }
                     
     
@@ -408,7 +417,7 @@ function Rendezvous(){
 
         const token = localStorage.getItem('token');
         try {
-            await axios.delete(`http://localhost:8081/Api/V1/clinique/rendezvous/${rendezvousASupprimer}`, {
+            await axios.delete(`${API_BASE}/rendezvous/${rendezvousASupprimer}`, {
             headers: {
                 accept: 'application/json',
                 Authorization: `Bearer ${token}`,
@@ -458,27 +467,24 @@ function Rendezvous(){
             </SousDiv1Style>
             
             <SousDiv2Style >
+                <div className='affichebarh2'>
+                    <div className='recherche'>
+                        <img className='iconburger' src={iconburger}></img>
+                        <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
+                        <img className='iconrecherche' src={iconrecherche}></img>
+                    </div>
+                    <Link to="/secretaire/rendezvous/add"><button className='boutton'>Ajouter un rendez vous</button></Link>
+                </div>
+                  
                 
-                  <Affichebarh2 >
-                        <RechercheStyle>
-                            <IconburgerStyle src={iconburger}></IconburgerStyle>
-                            <InputStyle type="text" id="text1" placeholder='Hinted search text'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></InputStyle>
-                            <IconrechercheStyle src={iconrecherche} ></IconrechercheStyle>
-                        </RechercheStyle>
-                        <Link to="/secretaire/rendezvous/add"><BouttonStyle>Ajouter un rendez vous</BouttonStyle></Link>
-                </Affichebarh2>
                 
-                
-                <ZonedaffichageStyle >
-                    <NumeroStyle style={{ marginTop: '10px' }}>
+                <div className='zonedaffichage'>
+                    <div className='numero'>
                             <div>
-                                <NomtableStyle> Rendez vous </NomtableStyle>
+                                <h2 className='nomtable'> Utilisateurs </h2>
                             </div>
-                            <DivbuttonStyle >
-                                <ButtonPSStyle onClick={() => {setCurrentPage(currentPage - 1)
-                                    modification(currentPage - 1 )
-                                }}
-                                        disabled={currentPage === 1}>Précédent</ButtonPSStyle>
+                            <div className='divbutton'>
+                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
                                 <div>
                                         {pagesToShow.map((page, idx) => (
                                             <ButtonStyle
@@ -493,17 +499,15 @@ function Rendezvous(){
                                         ))}
                                 </div>
                                 
-                                <ButtonPSStyle onClick={() => {setCurrentPage(currentPage + 1 )
-                                    modification(currentPage + 1 )
-                                }}
-                                disabled={currentPage === totalPages}>Suivant</ButtonPSStyle>
-                            </DivbuttonStyle >
+                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
+                                disabled={currentPage === totalPages}>Suivant</button>
+                            </div>
                             
-                        </NumeroStyle>
-                        <div style={{ margin: '20px 20px' }}>
-                            <BarreStyle></BarreStyle>
+                    </div>
+                        <div className='conteneurbarre'>
+                            <div className='barre'></div>
                         </div>
-                <AfficheTableauStyle>
+                <div className='affichetableau'>
                    
                     <table className='tableau-2'>
                         <thead>
@@ -541,16 +545,15 @@ function Rendezvous(){
                                     className={`toggle-button ${rendezvous.actif ? "" : "on"}`}
                                     >
                                 <div className={ `circle  ${rendezvous.actif  ? "" : "active"}`} ></div></button>
-                                <button onClick={()=> {setrendezvousASupprimer(rendezvous.id);
-                                                        setPopupsupprime(true);}}>🗑️</button>  
+                                <button onClick={()=> {setrendezvousASupprimer(rendezvous.id);setPopupsupprime(true);}}><img src={iconsupprime} className='iconsupprime'></img></button>  
                             </td>
                             </tr>
                         ))}
                         </tbody>
                     </table>
                    
-                    </AfficheTableauStyle>
-                </ZonedaffichageStyle>
+                    </div>
+                </div>
 
                
                 

@@ -1,0 +1,107 @@
+.zonedaffichage{
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    background-color: rgba(238, 238, 238, 1);
+    border-radius: 10px;
+}
+.zonedaffichage-dashboad{
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    background-color: rgba(238, 238, 238, 1);
+    border-radius: 10px;
+}
+.affichetableau{
+    display: flex;
+    justify-content: center;
+}
+.numero{
+    display: flex;
+    justify-content: space-between;
+    padding: 32px 32px 0px 32px;
+    margin-top:  0px;
+}
+.nomtable{
+    font-family: "Roboto", sans-serif;
+    font-weight: 400;
+    font-size: 1.5em;
+    color: rgba(51, 51, 51, 1);
+}
+.divbutton{
+    display: flex;
+    gap: 15px;
+}
+.buttonPS{
+    /*padding: 5px 5px;*/
+    font-family: 'Roboto', sans-serif;
+    font-weight: 300;
+    font-size: 1em;
+}
+.buttonPS:hover{
+    cursor: pointer;
+}
+.conteneurbarre{
+    margin: 0px 32px;
+}
+.barre{
+    width: 100%;
+    height: 5px;
+    border-radius: 2.5px;
+    background-color: rgba(159, 159, 255, 1);
+}
+
+/* Tableau de board*/
+.tableau-board{
+    padding: 0px 32px 0px 32px;
+    height: 65vh;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.conteneur-1{
+    display: flex;
+     gap: 16px;
+     justify-content: space-between;
+}
+.sconteneur-01{
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.sconteneur-001{
+    display: flex;
+    gap: 16px;
+}
+.conteneur-0001{
+    border-radius: 15px;
+    background-color: rgba(159, 159, 255, 1);
+    width: 40vw;
+    height: 25vh;
+}
+.conteneur-0011{
+    border-radius: 15px;
+    background-color: rgba(159, 159, 255, 1);
+    width: 14.1vw; 
+    height: 25vh;  
+}
+.conteneur-011{
+    border-radius: 15px;
+    background-color: rgba(159, 159, 255, 1);
+    width: 55vw;
+    height: 33.5vh;                
+}
+.conteneur-11{
+    border-radius: 15px;
+    background-color: rgba(159, 159, 255, 1);
+    width: 15vw;
+    height: 60vh;
+}
+.conteneur-2{
+    border-radius: 15px;
+    background-color: rgba(159, 159, 255, 1);
+    width: 100%;
+    height: 5vh;
+}

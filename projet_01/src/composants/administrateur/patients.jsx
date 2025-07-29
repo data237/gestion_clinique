@@ -1,23 +1,31 @@
-import './tableau.css'
+import '../../styles/tableau.css'
+import '../../styles/Zonedaffichage.css'
+import '../../styles/Barrehorizontal2.css'
 import Styled from 'styled-components'
 import { useState, useEffect} from 'react';
+import { API_BASE } from '../../composants/config/apiconfig'
 import axios from 'axios';
-import Barrehorizontal1 from '../composants/barrehorizontal1';
-import Barrehorizontal2 from "../composants/barrehorizontal2";
-import Boutton from '../composants/boutton'
-import imgmedecin from '../assets/imagemedecin.jpg'
-import iconrecherche from '../assets/iconrecherche.png'
-import iconburger from '../assets/iconburger.png'
+import Barrehorizontal1 from '../../composants/barrehorizontal1';
+//import Barrehorizontal2 from "../barrehorizontal2";
+//import Boutton from '../boutton'
+import imgmedecin from '../../assets/imagemedecin.jpg'
+import iconrecherche from '../../assets/iconrecherche.png'
+import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
 
 
 const SousDiv1Style = Styled.div`
- width: 99%;
- padding-left: 1%;
+ width: 100%;
+ padding-left: 32px;
+ padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
-  width: 99%;
- padding-left: 1%;
+  width: 100%;
+  padding-left: 32px;
+  padding-right: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 `
 const ZonedaffichageStyle = Styled.div`
     height: 65vh;
@@ -227,7 +235,7 @@ function Patient(){
          const fetchPatients = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await axios.get('http://localhost:8081/Api/V1/clinique/patients',
+                const response = await axios.get(`${API_BASE}/patients`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -294,7 +302,7 @@ function Patient(){
 
         const token2 = localStorage.getItem('token');
         try {
-            await axios.delete(`http://localhost:8081/Api/V1/clinique/patients/${patientASupprimer}`, {
+            await axios.delete(`${API_BASE}/patients/${patientASupprimer}`, {
             headers: {
                 accept: 'application/json',
                 Authorization: `Bearer ${token2}`,
@@ -380,29 +388,22 @@ function Patient(){
             
             <SousDiv2Style >
                
-                <Affichebarh2 >
-                    <RechercheStyle>
-                        <IconburgerStyle src={iconburger}></IconburgerStyle>
-                        <InputStyle type="text" id="text1" placeholder='Hinted search text' value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></InputStyle>
-                        <IconrechercheStyle src={iconrecherche}></IconrechercheStyle>
-                    </RechercheStyle>
-                    <Link to="/admin/patient/add"><BouttonStyle>Ajouter un patient</BouttonStyle></Link>
-                </Affichebarh2>
-               
-                {/*<Affichebarh2 >
-                  <Barrehorizontal2><Link to="/admin/patient/add"><Boutton nomboutton="Ajouter un patient"/></Link></Barrehorizontal2>  
-                </Affichebarh2>*/}
+               <div className='affichebarh2'>
+                    <div className='recherche'>
+                        <img className='iconburger' src={iconburger}></img>
+                        <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
+                        <img className='iconrecherche' src={iconrecherche}></img>
+                    </div>
+                    <Link to="/admin/patient/add"><button className='boutton'>Ajouter un patient</button></Link>
+                </div>
                 
-                <ZonedaffichageStyle>
-                    <NumeroStyle style={{ marginTop: '10px' }}>
+                <div className='zonedaffichage'>
+                     <div className='numero'>
                             <div>
-                                <NomtableStyle> Patients </NomtableStyle>
+                                <h2 className='nomtable'> Utilisateurs </h2>
                             </div>
-                            <DivbuttonStyle >
-                                <ButtonPSStyle onClick={() => {setCurrentPage(currentPage - 1)
-                                    modification(currentPage - 1 )
-                                }}
-                                        disabled={currentPage === 1}>Précédent</ButtonPSStyle>
+                            <div className='divbutton'>
+                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
                                 <div>
                                         {pagesToShow.map((page, idx) => (
                                             <ButtonStyle
@@ -417,42 +418,16 @@ function Patient(){
                                         ))}
                                 </div>
                                 
-                                <ButtonPSStyle onClick={() => {setCurrentPage(currentPage + 1 )
-                                    modification(currentPage + 1 )
-                                }}
-                                disabled={currentPage === totalPages}>Suivant</ButtonPSStyle>
-                            </DivbuttonStyle >
+                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
+                                disabled={currentPage === totalPages}>Suivant</button>
+                            </div>
                             
-                        </NumeroStyle>
-                        <div style={{ margin: '20px 20px' }}>
-                            <BarreStyle></BarreStyle>
+                    </div>
+                        <div className='conteneurbarre'>
+                            <div className='barre'></div>
                         </div>
-                    <AfficheTableauStyle>
-                    {/*<table className='tableau-1'>
-                        <thead>
-                            <tr>
-                                <th className='check'>
-                                    <input
-                                    type="checkbox"
-                                />
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                currentPatients.map((patient) => (
-                            <tr>
-    
-                            <td className='check-box'><input
-                                    type="checkbox"
-                                    checked={selectedPatients.includes(patient.id)}
-                                    onChange={() => handleCheckboxChange(patient.id)}
-                                />
-                            </td></tr>))
-                            }
-                        </tbody>
-                    </table> */} 
-                    {/*<div className='conteneur-tableau-2'>*/}
+                    <div className='affichetableau'>
+                    
                         <table className='tableau-2'>
                             <thead>
                             <tr>
@@ -489,39 +464,14 @@ function Patient(){
                                 <div className={ `circle  ${patient.isActive  ? "active" : ""}`} ></div></button>*/}
                                 <button onClick={()=> {setpatientASupprimer(patient.id);
                                                         setPopupsupprime(true);}}>🗑️</button>
-                               
-                                
                             </td>
                                 </tr>
                             ))}
                             </tbody>
                         </table>
-                    {/*</div'>*/}
-                    {/*<table className='tableau-3'>
-                        <thead>
-                            <tr>
-                                <th className='action'>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                currentPatients.map((patient) => (
-                            <tr>
-    
-                            <td className='bouttons'>
-                                <button
-                                    onClick={() => toggleStatus(patient.id)}
-                                    className={`toggle-button ${patient.isActive ? "on" : ""}`}
-                                    >
-                                <div className={ `circle  ${patient.isActive  ? "active" : ""}`} ></div></button>
-                                <button>🗑️</button>
-                                
-                            </td></tr>))
-                            }
-                        </tbody>
-                    </table>*/}
-                    </AfficheTableauStyle>
-                </ZonedaffichageStyle>
+                    
+                    </div>
+                </div>
                 
               
             </SousDiv2Style>

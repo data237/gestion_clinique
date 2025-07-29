@@ -15,10 +15,12 @@ table{
 
 .tableau-2{
     border: 1px solid #ccc;
-    border-radius: 10px 10px 0 0;
+    border-radius: 10px 10px 10px 10px ;
     border-collapse: collapse;
     width: 100%;
-    margin: 10px 20px;
+    margin: 10px 32px;
+    font-family: "Inter", sans-serif;
+    
 }
 
 /* En-têtes fixes */
@@ -31,9 +33,10 @@ thead{
 }
 .th{
     height: 55px;
-    text-align: center;
+    text-align: left;
     background-color: rgba(159, 159, 255, 1);
-
+    padding-left: 15px;
+    border-left: 1px solid #fff;
 }
 .td{
     
@@ -41,15 +44,17 @@ thead{
     white-space: nowrap; /* évite le retour à la ligne */
     height: 55px;
     /*padding: 16px;*/
-    text-align: center;
+    text-align: left;
     font-size: 1.2em;
+    padding-left: 15px;
 }
 .tr{
     background-color:rgba(255, 255, 255, 1);
     border-bottom: 1px solid #ccc;
+    
 }
 .tr:hover{
-    background-color:#F9FF9F;
+    background-color:rgba(254, 255, 239, 1);
 }
 .off{
     color:rgba(204, 204, 204, 1);
@@ -65,8 +70,13 @@ thead{
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 10px;
 }
-
+.iconsupprime{
+    height: 20px;
+    filter: invert(0%) sepia(100%) saturate(50%) hue-rotate(180deg);
+    fill: blue;
+}
 .toggle-button {
   width: 14px;
   height: 20px;

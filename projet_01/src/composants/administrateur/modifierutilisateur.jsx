@@ -1,10 +1,11 @@
 import React, { useState,useEffect } from 'react';
+import { API_BASE } from '../../composants/config/apiconfig'
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Styled from 'styled-components';
-import fondImage from '../assets/backgroundimageuserform.jpg';
-import Barrehorizontal1 from '../composants/barrehorizontal1';
-import imgprofil from '../assets/photoDoc.png'
+import fondImage from '../../assets/backgroundimageuserform.jpg';
+import Barrehorizontal1 from '../../composants/barrehorizontal1';
+import imgprofil from '../../assets/photoDoc.png'
 
 
 const SousDiv1Style = Styled.div`
@@ -192,7 +193,7 @@ const ModifierUtilisateur = () => {
          const fetchUtilisateurs = async () => {
            const token = localStorage.getItem('token');
             try {
-                const response = await axios.get(`http://localhost:8081/Api/V1/clinique/utilisateurs/${id}`,
+                const response = await axios.get(`${API_BASE}/utilisateurs/${id}`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -249,7 +250,7 @@ const ModifierUtilisateur = () => {
     e.preventDefault();
     try {
       if(formData.role.roleType != "MEDECIN"){
-        const response = await axios.post(`http://localhost:8081/Api/V1/clinique/utilisateurs/${id}`, formData2,
+        const response = await axios.post(`${API_BASE}/utilisateurs/${id}`, formData2,
       {
         headers: {
           accept: 'application/json',
@@ -260,7 +261,7 @@ const ModifierUtilisateur = () => {
     );
     console.log(response.data);
       }else{
-        const response = await axios.post(`http://localhost:8081/Api/V1/clinique/utilisateurs/${id}`, formData,
+        const response = await axios.post(`${API_BASE}/utilisateurs/${id}`, formData,
       {
         headers: {
           accept: 'application/json',

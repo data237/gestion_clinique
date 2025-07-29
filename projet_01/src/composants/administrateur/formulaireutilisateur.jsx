@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { API_BASE } from '../../composants/config/apiconfig'
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Styled from 'styled-components';
-import fondImage from '../assets/backgroundimageuserform.jpg';
-import Barrehorizontal1 from '../composants/barrehorizontal1';
-import imgprofil from '../assets/photoDoc.png'
+import fondImage from '../../assets/backgroundimageuserform.jpg';
+import Barrehorizontal1 from '../../composants/barrehorizontal1';
+import imgprofil from '../../assets/photoDoc.png'
 
 
 const SousDiv1Style = Styled.div`
@@ -193,7 +194,7 @@ const FormulaireUtilisateur = () => {
     e.preventDefault();
     try {
       if(formData.role != "medecin"){
-        const response = await axios.post('http://localhost:8081/Api/V1/clinique/utilisateurs', formData2,
+        const response = await axios.post(`${API_BASE}/utilisateurs`, formData2,
       {
         headers: {
           accept: 'application/json',
@@ -204,7 +205,7 @@ const FormulaireUtilisateur = () => {
     );
     console.log(response.data);
       }else{
-        const response = await axios.post('http://localhost:8081/Api/V1/clinique/utilisateurs', formData,
+        const response = await axios.post(`${API_BASE}/utilisateurs`, formData,
       {
         headers: {
           accept: 'application/json',

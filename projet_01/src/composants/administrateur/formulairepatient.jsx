@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { API_BASE } from '../../composants/config/apiconfig'
 import axios from 'axios';
 import Styled from 'styled-components';
-import fondImage from '../assets/backgroundimageuserform.jpg';
+import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useNavigate } from 'react-router-dom';
-import Barrehorizontal1 from '../composants/barrehorizontal1';
-import imgprofil from '../assets/photoDoc.png'
+import Barrehorizontal1 from '../../composants/barrehorizontal1';
+import imgprofil from '../../assets/photoDoc.png'
 
 
 
@@ -198,7 +199,7 @@ const handleChange = e => {
     console.log(formData)
     e.preventDefault();
     try {
-          const response = await axios.post('http://localhost:8081/Api/V1/clinique/patients', formData,
+          const response = await axios.post(`${API_BASE}/patients`, formData,
           {
             headers: {
               accept: 'application/json',

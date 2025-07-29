@@ -1,10 +1,8 @@
-import './pageadmin.css'
+import '../styles/pageadmin.css'
 import Styled from 'styled-components'
 import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import Barrelatteral from '../composants/barrelatteral';
-import Utilisateur from '../composants/utilisateurs';
-import Patient from '../composants/patients';
 import Eltmenu from '../composants/eltmenu'
 //import mail from '../assets/mail.png'
 import imgrendezvous from '../assets/IconRendezvous.png'
@@ -46,9 +44,9 @@ function PageMedecin(){
             {/*<button className={contenuActif === 'patient' ? 'eltmenu' : ''} onClick={() => changerContenu('patient')}> <Eltmenu nommenu='Patients' img={imgpatient}/> </button>*/}
             {/*<button className={contenuActif === 'messagerie' ? 'eltmenu' : ''} onClick={() => changerContenu('messagerie')}> <Eltmenu nommenu='Messagerie' img={mail}/> </button>*/}
         </Barrelatteral>
-        <DivStyle>
+         <div className='divstyle'>
             <Outlet/>   
-        </DivStyle>
+        </div>
         
     </PageStyle>
         

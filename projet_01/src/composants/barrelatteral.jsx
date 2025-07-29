@@ -6,14 +6,18 @@ const MenuStyle = Styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
-    
     gap: 15px;
-    padding-top: 35px;
-    
+    padding-top: 0px;
+`
+const Image = Styled.img`
+    width: 70%
 `
 const BarrelatteralStyle = Styled.div`
     background-color: rgba(254, 255, 239, 1);
-    width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20vw;
     height: 100vh;
     gap: 41px;
     padding-top: 32px;
@@ -21,14 +25,14 @@ const BarrelatteralStyle = Styled.div`
 `
 function Barrelatteral({children}){
     return(<>
-    <BarrelatteralStyle>
-        <img src={logo}></img>
-        <MenuStyle>
-            {children}
-            
-        </MenuStyle>
-        
-    </BarrelatteralStyle>
+            <BarrelatteralStyle>
+                <Image src={logo}></Image>
+                <MenuStyle>
+                    {children}
+                    
+                </MenuStyle>
+                
+            </BarrelatteralStyle>
     </>)
 }
 

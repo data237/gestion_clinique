@@ -8,8 +8,6 @@ import {
 import PageLogin from "./pages/pagelogin"
 import PageAdmin from "./pages/pageadmin"
 import PageMedecin from "./pages/pagemedecin"
-import Userform from './composants/formulaireutilisateur'
-import FormulaireUtilisateur from './composants/formulaireutilisateur'
 import Adminroute from './pages/adminrouter'
 import ProtectedRoute from './composants/protectedroute'
 import RoleBasedRoute from './composants/rolebasedroute'

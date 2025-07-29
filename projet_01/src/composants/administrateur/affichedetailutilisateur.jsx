@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE } from '../../composants/config/apiconfig';
 import axios from 'axios';
 import Styled from 'styled-components';
-import fondImage from '../assets/backgroundimageuserform.jpg';
+import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import Barrehorizontal1 from '../composants/barrehorizontal1';
-import imgprofil from '../assets/photoDoc.png'
+import Barrehorizontal1 from '../../composants/barrehorizontal1';
+import imgprofil from '../../assets/photoDoc.png'
 
 const SousDiv1Style = Styled.div`
  width: 99%;
@@ -167,7 +168,7 @@ const DetailsUtilisateur = () => {
          const fetchUtilisateurs = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await axios.get(`http://localhost:8081/Api/V1/clinique/utilisateurs/${id}`,
+                const response = await axios.get(`${API_BASE}/utilisateurs/${id}`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,

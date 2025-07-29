@@ -1,21 +1,30 @@
-import './tableau.css'
+import '../../styles/tableau.css'
+import '../../styles/Zonedaffichage.css'
+import '../../styles/Barrehorizontal2.css'
 import Styled from 'styled-components'
 import axios from 'axios';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import Barrehorizontal1 from '../composants/barrehorizontal1';
-import imgprofil from '../assets/photoDoc.png'
-import iconrecherche from '../assets/iconrecherche.png'
-import iconburger from '../assets/iconburger.png'
+import { API_BASE } from '../../composants/config/apiconfig'
+import Barrehorizontal1 from '../../composants/barrehorizontal1';
+import imgprofil from '../../assets/photoDoc.png'
+import iconrecherche from '../../assets/iconrecherche.png'
+import iconsupprime from '../../assets/Iconsupprime.svg'
+import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
 
 const SousDiv1Style = Styled.div`
- width: 99%;
- padding-left: 1%;
+ width: 100%;
+ padding-left: 32px;
+ padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
-  width: 99%;
- padding-left: 1%;
+   width: 100%;
+  padding-left: 32px;
+  padding-right: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 `
 const ZonedaffichageStyle = Styled.div`
     height: 70vh;
@@ -30,13 +39,13 @@ const Affichebarh2 = Styled.div`
     display: flex;
     width: 100%;
     height: 89px;
-    justify-content: space-between;
+    gap: 64px
 `
-
+//justify-content: space-between;
 // affichage bar de recherche et boutton
 
 const RechercheStyle = Styled.div`
-   width: 75%;
+   width: 100%;
    height: 56px;
    border-radius: 28px;
    background-color: rgba(239, 239, 255, 1);
@@ -70,7 +79,7 @@ const InputStyle = Styled.input`
 `
 
 const BouttonStyle = Styled.button`
-
+width: 15vw;
 height: 56px;
 border-radius: 28px;
 padding-top: 12px;
@@ -114,10 +123,12 @@ const DivbuttonStyle = Styled.div`
     gap: 15px;
 `
 const ButtonStyle = Styled.button`
-    padding: 5px 5px;
+    width: 25px;
+    height: 25px;
+    
     font-family: Roboto;
     font-weight: 300;
-    font-size: 1em;
+    font-size: 0.8em;
     background-color: ${props => props.$buttonbackgroundColor};
     color: ${props => props.$buttonColor};
     border-radius: 5px;
@@ -255,7 +266,7 @@ function Utilisateur(){
          const fetchUtilisateurs = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await axios.get('http://localhost:8081/Api/V1/clinique/utilisateurs',
+                const response = await axios.get(`${API_BASE}/utilisateurs`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -331,7 +342,7 @@ function Utilisateur(){
            const toggle = async () => {
                 const token2 = localStorage.getItem('token');
                 try {
-                    const response = await axios.patch(`http://localhost:8081/Api/V1/clinique/utilisateurs/${statutAmodifier[0]}/status/${!statutAmodifier[1]}`,{utilisateurs}, {
+                    const response = await axios.patch(`${API_BASE}/utilisateurs/${statutAmodifier[0]}/status/${!statutAmodifier[1]}`,{utilisateurs}, {
                     headers: {
                         accept: 'application/json',
                         Authorization: `Bearer ${token2}`,
@@ -426,14 +437,15 @@ function Utilisateur(){
 
 
   const supprimerUtilisateur = async () => {
+    console.log('mabou')
         if (!utilisateurASupprimer) return;
 
-        const token = localStorage.getItem('token');
+        const token2 = localStorage.getItem('token');
         try {
-            await axios.delete(`http://localhost:8081/Api/V1/clinique/utilisateurs/${utilisateurASupprimer}`, {
+            await axios.delete(`${API_BASE}/utilisateurs/${utilisateurASupprimer}`, {
             headers: {
                 accept: 'application/json',
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token2}`,
                 'Content-Type': 'application/json',
             },
             });
@@ -480,32 +492,23 @@ function Utilisateur(){
             </SousDiv1Style>
             
             <SousDiv2Style >
-                
-                  <Affichebarh2 >
-                        <RechercheStyle>
-                            <IconburgerStyle src={iconburger}></IconburgerStyle>
-                            <InputStyle type="text" id="text1" placeholder='Hinted search text'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></InputStyle>
-                            <IconrechercheStyle src={iconrecherche} ></IconrechercheStyle>
-                        </RechercheStyle>
-                        <Link to="/admin/utilisateur/add"><BouttonStyle>Ajouter un utilisateur</BouttonStyle></Link>
-                </Affichebarh2>
-                
+               <div className='affichebarh2'>
+                    <div className='recherche'>
+                        <img className='iconburger' src={iconburger}></img>
+                        <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
+                        <img className='iconrecherche' src={iconrecherche}></img>
+                    </div>
+                    <Link to="/admin/utilisateur/add"><button className='boutton'>Ajouter un utilisateur</button></Link>
+               </div>
                 
                 
-                {/*<Affichebarh2 >
-                  <Barrehorizontal2><Link to="/admin/utilisateur/add"> <Boutton nomboutton="Ajouter un utilisateur" /> </Link></Barrehorizontal2>  
-                </Affichebarh2>*/}
-                
-                <ZonedaffichageStyle >
-                    <NumeroStyle style={{ marginTop: '10px' }}>
+                <div className='zonedaffichage'>
+                    <div className='numero'>
                             <div>
-                                <NomtableStyle> Utilisateurs </NomtableStyle>
+                                <h2 className='nomtable'> Utilisateurs </h2>
                             </div>
-                            <DivbuttonStyle >
-                                <ButtonPSStyle onClick={() => {setCurrentPage(currentPage - 1)
-                                    modification(currentPage - 1 )
-                                }}
-                                        disabled={currentPage === 1}>Précédent</ButtonPSStyle>
+                            <div className='divbutton'>
+                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
                                 <div>
                                         {pagesToShow.map((page, idx) => (
                                             <ButtonStyle
@@ -520,105 +523,48 @@ function Utilisateur(){
                                         ))}
                                 </div>
                                 
-                                <ButtonPSStyle onClick={() => {setCurrentPage(currentPage + 1 )
-                                    modification(currentPage + 1 )
-                                }}
-                                disabled={currentPage === totalPages}>Suivant</ButtonPSStyle>
-                            </DivbuttonStyle >
+                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
+                                disabled={currentPage === totalPages}>Suivant</button>
+                            </div>
                             
-                        </NumeroStyle>
-                        <div style={{ margin: '20px 20px' }}>
-                            <BarreStyle></BarreStyle>
+                    </div>
+                        <div className='conteneurbarre'>
+                            <div className='barre'></div>
                         </div>
-                <AfficheTableauStyle>
-                    {/*<table className='tableau-1'>
-                        <thead>
-                            <tr>
-                                <th className='check'>
-                                    <input
-                                    type="checkbox"
-                                />
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                currentutilisateurs.map((utilisateur) => (
-                            <tr key={utilisateur.id}>
-    
-                            <td><input
-                                    type="checkbox"
-                                    checked={selectedutilisateurs.includes(utilisateur.id)}
-                                    onChange={() => handleCheckboxChange(utilisateur.id)}
-                                />
-                            </td></tr>))
-                            }
-                        </tbody>
-                    </table>  */}
+                <div className='affichetableau'>
+                    
                     <table className='tableau-2'>
                         <thead>
-                        <tr>
-                           
-                            <th className='th'>Nom</th>
-                            <th className='th'>Prénom</th>
-                            <th className='th'>Email</th>
-                            <th className='th'>Rôle</th>
-                            <th className='th'>Statut</th>
-                            <th className='action th'>Action</th>
-                        </tr>
+                            <tr>
+                                <th className='th'>Nom</th>
+                                <th className='th'>Prénom</th>
+                                <th className='th'>Email</th>
+                                <th className='th'>Rôle</th>
+                                <th className='th'>Statut</th>
+                                <th className='action th'>Action</th>
+                            </tr>
                         </thead>
                         <tbody>
                         {currentutilisateurs.map((utilisateur) => (
                            <tr key={utilisateur.id} className='tr'>
-    
-                            
                             <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.nom}</td>
                             <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.prenom}</td>
                             <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.email}</td>
                             <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.role.roleType}</td>
                             <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.actif ? "actif" : "inactif"}</td>
-                            <td className='bouttons'>
-                                <button
-                                    onClick={() => {setstatutAmodifier([utilisateur.id,utilisateur.actif]);
-                                        setPopupstatut(true)
-                                    }}
-                                    className={`toggle-button ${utilisateur.actif ? "" : "on"}`}
-                                    >
-                                <div className={ `circle  ${utilisateur.actif  ? "" : "active"}`} ></div></button>
-                                <button onClick={()=> {setUtilisateurASupprimer(utilisateur.id);
-                                                        setPopupsupprime(true);}}>🗑️</button>
-                                
-                                
+                            <td className='td bouttons'>
+                                <button onClick={() => {setstatutAmodifier([utilisateur.id,utilisateur.actif]);setPopupstatut(true)}} className={`toggle-button ${utilisateur.actif ? "" : "on"}`}>
+                                    <div className={ `circle  ${utilisateur.actif  ? "" : "active"}`} ></div>
+                                </button>
+                                <button onClick={()=> {setUtilisateurASupprimer(utilisateur.id); setPopupsupprime(true)}}><img src={iconsupprime} className='iconsupprime'></img></button>    
                             </td>
                             </tr>
                         ))}
                         </tbody>
                     </table>
-                    {/*<table className='tableau-3'>
-                        <thead>
-                            <tr>
-                                <th className='action'>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                currentutilisateurs.map((utilisateur) => (
-                            <tr key={utilisateur.id}>
-    
-                            <td className='bouttons'>
-                                <button
-                                    onClick={() => toggleStatus(utilisateur.id)}
-                                    className={`toggle-button ${utilisateur.isActive ? "on" : ""}`}
-                                    >
-                                <div className={ `circle  ${utilisateur.isActive  ? "active" : ""}`} ></div></button>
-                                <button>🗑️</button>
-                                
-                            </td></tr>))
-                            }
-                        </tbody>
-                    </table>*/}
-                    </AfficheTableauStyle>
-                </ZonedaffichageStyle>
+                    
+                    </div>
+                </div>
 
                
                 
