@@ -16,12 +16,10 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const SousDiv1Style = Styled.div`
  width: 100%;
- padding-left: 32px;
  padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
   width: 100%;
-  padding-left: 32px;
   padding-right: 32px;
   display: flex;
   flex-direction: column;
@@ -216,6 +214,33 @@ const Overlay = Styled.div`
 `
 function Patient(){
         
+const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil]= useState('')
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);
+
         const [Popupsupprime, setPopupsupprime] = useState(false)
         const [patientASupprimer, setpatientASupprimer] = useState(null);
         const [valeurrecherche, setvaleurrecherche] = useState('');
@@ -225,7 +250,7 @@ function Patient(){
         const [erreur, setErreur] = useState(null);
         const [isloading, setisloading] = useState(true);
 
-    const nomprofil = localStorage.getItem('username');
+    
 
       const patientsPerPage = 7;
     
@@ -400,7 +425,7 @@ function Patient(){
                 <div className='zonedaffichage'>
                      <div className='numero'>
                             <div>
-                                <h2 className='nomtable'> Utilisateurs </h2>
+                                <h2 className='nomtable'> Patients </h2>
                             </div>
                             <div className='divbutton'>
                                 <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>

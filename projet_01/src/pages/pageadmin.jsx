@@ -22,7 +22,7 @@ const DivStyle = Styled.div`
 `
 
 function PageAdmin(){
-    const [contenuActif, setContenuActif] = useState('dashbord');
+    const [contenuActif, setContenuActif] = useState('dashboard');
     
    
 

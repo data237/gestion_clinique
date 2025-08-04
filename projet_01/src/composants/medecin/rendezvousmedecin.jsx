@@ -14,12 +14,12 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const SousDiv1Style = Styled.div`
   width: 100%;
- padding-left: 32px;
+
  padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
   width: 100%;
-  padding-left: 32px;
+ 
   padding-right: 32px;
   display: flex;
   flex-direction: column;
@@ -214,18 +214,21 @@ const Popupstat= Styled.div`
 const Containbouttonpopup = Styled.div`
 
     display: flex;
+    padding: 32px;
     
+    border-radius: 16px;
     gap: 30px;
-    background-color: rgba(159, 159, 255, 1);
+    background-color: white;
 `
 const Bouttonpopup =Styled.button`
-    font-family: "Inter", sans-serif;
+    font-family: "Roboto", sans-serif;
     font-weight: 400;
     font-size: 1em;
-    width: 80px;
-    height: 30px;
-    border-radius: 10px;
-    background-color: white;
+    min-width: 150px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(159, 159, 255, 1);
+    color: rgba(159, 159, 255, 1);
 `
 const Overlay = Styled.div`
   display: ${props => props.$Overlaydisplay};
@@ -239,13 +242,38 @@ const Overlay = Styled.div`
 `
 function RendezvousMedecin(){
     //const [isVisible, setisVisible] = useState(0)
-    const nomprofil = localStorage.getItem('username');
+     // const idUser = localStorage.getItem('id');
+    //const [nomprofil, setnomprofil]= useState('')
+
+    /*useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);*/
 
     // fonction du tableau
-    const [Popupsupprime, setPopupsupprime] = useState(false)
-    const [rendezvousASupprimer, setrendezvousASupprimer] = useState(null);
-    const [statutAmodifier, setstatutAmodifier] = useState(null);
-    const [Popupstatut, setPopupstatut] = useState(false)
+    const [Popup, setPopup] = useState(false)
+   
+    
+    const [rdvaouvrir, setrdvaouvrir] = useState(null)
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [isloading, setisloading] = useState(true);
@@ -264,7 +292,7 @@ function RendezvousMedecin(){
             const token = localStorage.getItem('token');
             const id = localStorage.getItem('id');
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${id}/confirmed/all`,
+                const response = await axios.get(`${API_BASE}/utilisateurs/${id}/confirmed/today`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -335,35 +363,7 @@ function RendezvousMedecin(){
     //toggle boutton
     
     
-    const toggleStatus = () => {
-        if(!statutAmodifier) return;
-           const toggle = async () => {
-                const token2 = localStorage.getItem('token');
-                try {
-                    const response = await axios.patch(`${API_BASE}/rendezvous/${statutAmodifier[0]}/status/${!statutAmodifier[1]}`,{rendezvous}, {
-                    headers: {
-                        accept: 'application/json',
-                        Authorization: `Bearer ${token2}`,
-                        'Content-Type': 'application/json',
-                    },
-                    });
-                    const user = response.data
-                     setrendezvous((prevData) =>
-                        prevData.map((item) =>
-                        item.id === statutAmodifier[0] ?  user : item
-                        )
-                    )
-                    
-                    setPopupstatut(false)
-                    setstatutAmodifier(null)
-                    console.log(response.data) ;
-                } catch (error) {
-                    console.log(error)
-                }
-                };
-                toggle()
-                //console.log(`${API_BASE}/rendezvous/${id}/status/${!status}`)
-        }
+   
                     
     
          
@@ -404,64 +404,46 @@ function RendezvousMedecin(){
         //const [user, setuser] = useState({})
         
     //
-     const navigate = useNavigate();
+    
+    const navigate = useNavigate();
 
-  const handleRowClick = (rendezvous) => {
-    navigate(`/secretaire/rendezvous/viewrendezvous/${rendezvous.id}`);
-  };
+  
+    const consultations = (rdv)=>{
+            if(!rdv) return;
+            setPopup(false)
+            navigate(`/medecin/rendezvous/consultation/${rdv.id}`)
+        };
 
+  const dossierMedical = (rdv)=>{
+    if(!rdv) return;
+    setPopup(false)
+    navigate(`/medecin/rendezvous/dossiermedical/${rdv.id}`)
+  }
 
-
-  const supprimerrendezvous = async () => {
-        if (!rendezvousASupprimer) return;
-
-        const token = localStorage.getItem('token');
-        try {
-            await axios.delete(`${API_BASE}/rendezvous/${rendezvousASupprimer}`, {
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-            });
-
-            setrendezvous((prevrendezvous) =>
-            prevrendezvous.filter((u) => u.id !== rendezvousASupprimer)
-            );
-
-            setPopupsupprime(false);
-            setrendezvousASupprimer(null);
-            console.log(`rendezvous ${rendezvousASupprimer} supprimé`);
-        } catch (error) {
-            console.error('Erreur lors de la suppression :', error);
-        }
-    };
-
+  const handleRowClick = (rdv)=>{
+        console.log(rdv)
+        setPopup(true)
+        setrdvaouvrir(rdv)
+  }
 
 
   if (isloading) return <p>Chargement...</p>;
 
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
     return(<>
-            <Overlay onClick={() => setPopupsupprime(false)} $Overlaydisplay = {Popupsupprime || Popupstatut ? 'block' : 'none'}/>
-                <Popupsuppr $Popupsupprdisplay = {Popupsupprime ? 'flex' : 'none'}>
-                    <p>voulez-vous supprimer cet rendezvous ?</p>
-                    <Containbouttonpopup>
-                        <Bouttonpopup onClick={supprimerrendezvous}> oui </Bouttonpopup>
-                        <Bouttonpopup onClick={()=> setPopupsupprime(false)}> non </Bouttonpopup>
-                    </Containbouttonpopup>
-                                    
-                </Popupsuppr>
-                <Popupstat $Popupstatutdisplay = {Popupstatut ? 'flex' : 'none'}>
-                    <p>voulez-vous changez le statut de cet rendezvous ?</p>
-                    <Containbouttonpopup>
-                        <Bouttonpopup onClick={toggleStatus}> oui </Bouttonpopup>
-                        <Bouttonpopup onClick={()=> setPopupstatut(false)}> non </Bouttonpopup>
-                    </Containbouttonpopup>
-                                    
-                </Popupstat>
+            <Overlay onClick={() => setPopup(false)} $Overlaydisplay = {Popup  ? 'block' : 'none'}/>
+            <Popupsuppr $Popupsupprdisplay = {Popup ? 'flex' : 'none'}>
+                
+                <Containbouttonpopup>
+                    <Bouttonpopup onClick={()=> consultations(rdvaouvrir)}> Faire une Consultation </Bouttonpopup>
+                    <Bouttonpopup onClick={()=> dossierMedical(rdvaouvrir)}> voir le Dossier medical </Bouttonpopup>
+                    
+                </Containbouttonpopup>
+                                
+            </Popupsuppr>
+                
             <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil={nomprofil}> 
+                <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil='bahebeck'> 
                     <Span1>Liste des rendez vous</Span1>
                 </Barrehorizontal1>
             </SousDiv1Style>

@@ -14,95 +14,16 @@ import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
 
 const SousDiv1Style = Styled.div`
- width: 100%;
- padding-left: 32px;
- padding-right: 32px;
+    padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
    width: 100%;
-  padding-left: 32px;
   padding-right: 32px;
   display: flex;
   flex-direction: column;
   gap: 32px;
 `
-const ZonedaffichageStyle = Styled.div`
-    height: 70vh;
-    display: ${props => props.$zonedaffichagedisplay};
-    flex-direction: column;
-    gap: 15px;
-    background-color: rgba(239, 239, 255, 1);
-    border-radius: 10px;
-`
 
-const Affichebarh2 = Styled.div`
-    display: flex;
-    width: 100%;
-    height: 89px;
-    gap: 64px
-`
-//justify-content: space-between;
-// affichage bar de recherche et boutton
-
-const RechercheStyle = Styled.div`
-   width: 100%;
-   height: 56px;
-   border-radius: 28px;
-   background-color: rgba(239, 239, 255, 1);
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   padding-left: 20px;
-   padding-right: 20px;
-`
-const IconburgerStyle = Styled.img`
-    width: 24px;
-    height: 20px;
-
-`
-const IconrechercheStyle = Styled.img`
-    width: 20px;
-    height: 20px;
-`
-const InputStyle = Styled.input`
-    width: 90%;
-    height: 56px;
-    border: none;
-    background-color:  rgba(239, 239, 255, 1);
-    font-family: Body/Font Family;
-    font-weight: 400;
-    font-size: 1em;
-     &:focus{
-        outline: none;
-        border: none;
-    }
-`
-
-const BouttonStyle = Styled.button`
-width: 15vw;
-height: 56px;
-border-radius: 28px;
-padding-top: 12px;
-padding-right: 16px;
-padding-bottom: 12px;
-padding-left: 16px;
-background-color: rgba(65, 65, 255, 1);
-font-family: Body/Font Family;
-font-weight: 700;
-font-size: 1.3em;
-color: #fff;
-border: none;
-&:hover{
-    cursor: pointer;
-}
-`
-
-//
-
-const AfficheTableauStyle = Styled.div`
-    display: flex;
-    justify-content: center;
-`
 
 
 
@@ -112,16 +33,7 @@ const Span1= Styled.span`
 `
 
 
-// Style component du tableau
-    const NumeroStyle = Styled.div`
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 20px;
-`
-const DivbuttonStyle = Styled.div`
-    display: flex;
-    gap: 15px;
-`
+
 const ButtonStyle = Styled.button`
     width: 25px;
     height: 25px;
@@ -146,30 +58,7 @@ const ButtonStyle = Styled.button`
     }
     
 `
-const ButtonPSStyle = Styled.button`
-    padding: 5px 5px;
-    font-family: Roboto;
-    font-weight: 300;
-    font-size: 1em;
-     &:hover{
-        cursor: pointer;
-    }
-`
 
-const NomtableStyle = Styled.p`
-    font-family: "Inter", sans-serif;
-    font-weight: 700;
-    font-size: 1.5em;
-`
-const BarreStyle = Styled.div`
-    width: 100%;
-    height: 5px;
-    border-radius: 2.5px;
-    background-color: rgba(159, 159, 255, 1);
-    padding-left:  20px;
-
-`
-//
 
 // gerer les popups
 
@@ -215,20 +104,21 @@ const Popupstat= Styled.div`
 `
 
 const Containbouttonpopup = Styled.div`
-
     display: flex;
-    
+    padding: 32px;
+    border-radius: 16px;
     gap: 30px;
-    background-color: rgba(159, 159, 255, 1);
+    background-color: white;
 `
 const Bouttonpopup =Styled.button`
-    font-family: "Inter", sans-serif;
+    font-family: "Roboto", sans-serif;
     font-weight: 400;
     font-size: 1em;
-    width: 80px;
-    height: 30px;
-    border-radius: 10px;
-    background-color: white;
+    min-width: 150px;
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(159, 159, 255, 1);
+    color: rgba(159, 159, 255, 1);
 `
 const Overlay = Styled.div`
   display: ${props => props.$Overlaydisplay};
@@ -242,7 +132,34 @@ const Overlay = Styled.div`
 `
 function Utilisateur(){
     //const [isVisible, setisVisible] = useState(0)
-    const nomprofil = localStorage.getItem('username');
+    const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil]= useState('')
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                } else {
+                setErreur('Données introuvables');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                setErreur('Erreur lors du chargement');
+            } finally {
+                setisloading(false);
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);
 
     // fonction du tableau
     const [Popupsupprime, setPopupsupprime] = useState(false)

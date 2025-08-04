@@ -6,7 +6,6 @@ const Barrehorizontal1Style = Styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
-    
 `
 const DivStyle = Styled.div`
     display: flex;
@@ -17,7 +16,6 @@ const TitreStyle = Styled.h1`
     font-family: Roboto;
     font-weight: 700;
     font-size: 40px;
-   
     color: rgba(102, 102, 102, 1);
 `
 const NomDocStyle = Styled.p`

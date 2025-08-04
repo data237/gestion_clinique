@@ -17,12 +17,12 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const SousDiv1Style = Styled.div`
   width: 100%;
- padding-left: 32px;
+
  padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
    width: 100%;
-  padding-left: 32px;
+ 
   padding-right: 32px;
   display: flex;
   flex-direction: column;
@@ -216,6 +216,33 @@ const Overlay = Styled.div`
   z-index: 998;
 `
 function PatientSecretaire(){
+
+      const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil]= useState('')
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);
         
         const [Popupsupprime, setPopupsupprime] = useState(false)
         const [patientASupprimer, setpatientASupprimer] = useState(null);
@@ -226,7 +253,7 @@ function PatientSecretaire(){
         const [erreur, setErreur] = useState(null);
         const [isloading, setisloading] = useState(true);
 
-    const nomprofil = localStorage.getItem('username');
+   
 
       const patientsPerPage = 7;
     
@@ -360,7 +387,7 @@ function PatientSecretaire(){
    const navigate = useNavigate();
 
   const handleRowClick = (patient) => {
-    navigate(`/admin/patient/viewpatient/${patient.id}`);
+    navigate(`/secretaire/patient/rendezvous/${patient.nom}`);
   };
 
   // gestion popup

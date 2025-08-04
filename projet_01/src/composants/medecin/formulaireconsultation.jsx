@@ -3,7 +3,7 @@ import { API_BASE } from '../../composants/config/apiconfig'
 import axios from 'axios';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 
@@ -151,10 +151,12 @@ const Button = Styled.button`
   }
 `;
 
-const FormulairePatient = () => {
+const FormulaireConsultation = () => {
 
-  const idUser = localStorage.getItem('id');
+    const idUser = localStorage.getItem('id');
     const [nomprofil, setnomprofil]= useState('')
+    const idrendezvous = useParams()
+    const idrdv = parseInt(idrendezvous.idrendezvous)
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -182,52 +184,67 @@ const FormulairePatient = () => {
 
   
   const [formData, setFormData] = useState({
-  nom: "",
-  prenom: "",
-  email: "",
-  dateNaissance: "",
-  telephone: "",
-  adresse: "",
-  genre: "",
-  dossierMedical: {
-    groupeSanguin: "",
-    antecedentsMedicaux: "",
-    allergies: "",
-    traitementsEnCours: "",
-    observations: "",
-    }
+    motifs: "",
+    tensionArterielle: "",
+    temperature: 0.1,
+    poids: 0.1,
+    taille: 0.1,
+    compteRendu: "",
+    diagnostic: "",
+    rendezVousId: idrdv,
+    prescriptions: [
+        {
+        typePrescription: "",
+        medicaments: "",
+        instructions: "",
+        dureePrescription: "",
+        quantite: 9007199254740991
+        }
+    ]
 
-  });
+    });
   
   
 
 const handleChange = e => {
   const { name, value } = e.target;
 
-  if (name.startsWith("dossierMedical.")) {
+  // Champs numériques à convertir
+  const champsNumeriques = ["temperature", "poids", "taille", "quantite"];
+
+  // Si le champ est dans prescriptions[0]
+  if (name.startsWith("prescriptions[0].")) {
     const field = name.split(".")[1];
+    console.log(field,value)
     setFormData(prev => ({
       ...prev,
-      dossierMedical: {
-        ...prev.dossierMedical,
-        [field]: value
-      }
+      prescriptions: [
+        {
+          ...prev.prescriptions[0],
+          [field]: champsNumeriques.includes(field)
+            ? parseFloat(value) || 0
+            : value
+        }
+      ]
     }));
   } else {
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: champsNumeriques.includes(name)
+        ? parseFloat(value) || 0
+        : value
     }));
   }
 };
-  
+
+ 
   const token = localStorage.getItem('token');
 
   const handleSubmit = async(e) => {
     console.log(formData)
     e.preventDefault();
     try {
-          const response = await axios.post(`${API_BASE}/patients`, formData,
+          const response = await axios.post(`${API_BASE}/consultations/start/${idrdv}`, formData,
           {
             headers: {
               accept: 'application/json',
@@ -278,127 +295,99 @@ const handleChange = e => {
 
   const handleClick = () => {
     // Redirige vers /utilisateur
-    navigate("/admin/patient");
+    navigate("/medecin/rendezvous");
   };
   return (
     
       <>
             <SousDiv1Style>
                 <Barrehorizontal1 titrepage="Gestion des patients" imgprofil1={imgprofil} nomprofil={nomprofil}> 
-                    <Span1 onClick={handleClick}>Liste des patients</Span1>
-                    <Span2 > {">"} Ajouter un patient</Span2>
+                    <Span1 onClick={handleClick}>Liste des rendez vous</Span1>
+                    <Span2 > {">"} Créer une consultation </Span2>
                 </Barrehorizontal1>
             </SousDiv1Style>
             <Afficheformulaireadd>
               <Form onSubmit={handleSubmit}>
                 <FormContainer>
-                <Title>Créer un patient</Title>
+                <Title>Créer une consultation</Title>
                 <TraitHorizontal></TraitHorizontal>
-                <Title>Informations générales</Title>
+                
                 <FormRow>
-                  <FormGroup>
-                    <Label htmlFor="nom">Nom</Label>
-                    <Input id="nom" name="nom" value={formData.nom} onChange={handleChange} />
-                  </FormGroup>
-                  <FormGroup>
-                    <Label htmlFor="prenom">Prénom</Label>
-                    <Input id="prenom" name="prenom" value={formData.prenom} onChange={handleChange} />
-                  </FormGroup>
+                    <FormGroup>
+                        <Label htmlFor="motifs">Motifs</Label>
+                        <TextArea id='motifs' name="motifs" value={formData.motifs} onChange={handleChange} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label htmlFor="tensionArterielle">Traitements en cours</Label>
+                        <TextArea id='tensionArterielle' name="tensionArterielle" value={formData.tensionArterielle} onChange={handleChange} />
+                    </FormGroup>
                 </FormRow>
 
                 <FormRow>
                   <FormGroup>
-                    <Label htmlFor="adresse">Adresse</Label>
-                    <Input id="adresse" name="adresse" value={formData.adresse} onChange={handleChange} />
+                    <Label htmlFor="temperature">Temperature</Label>
+                    <Input id="temperature" name="temperature" type='number' step="0.01" value={formData.temperature} onChange={handleChange} />
                   </FormGroup>
                   <FormGroup>
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} />
+                    <Label htmlFor="poids">Poids</Label>
+                    <Input id="poids" name="poids" type='number' step="0.01" value={formData.poids} onChange={handleChange} />
                   </FormGroup>
                 </FormRow>
 
                 <FormRow>
-                  <FormGroup>
-                    <Label htmlFor="genre">Genre</Label>
-                    <Select id="genre" name="genre" value={formData.genre} onChange={handleChange}>
-                      <option value="Femme">Femme</option>
-                      <option value="Homme">Homme</option>
-                    </Select>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label htmlFor="dateNaissance">Date de naissance</Label>
-                    <Input id="dateNaissance" name="dateNaissance" type="date" value={formData.dateNaissance} onChange={handleChange} />
-                  </FormGroup>
+                     <FormGroup>
+                        <Label htmlFor="compteRendu">Compte rendu</Label>
+                        <TextArea id='compteRendu' name="compteRendu" value={formData.compteRendu} onChange={handleChange} />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label htmlFor="diagnostic">Diagnostic</Label>
+                        <TextArea id='diagnostic' name="diagnostic" value={formData.diagnostic} onChange={handleChange} />
+                    </FormGroup>
                 </FormRow>
                 <FormRow>
-                  
-                  <FormGroup>
-                    <Label htmlFor="telephone">telephone</Label>
-                    <Input id="telephone" name="telephone" value={formData.telephone} onChange={handleChange} />
-                  </FormGroup>
+                    <FormGroup>
+                        <Label htmlFor="taille">Taille</Label>
+                        <Input id="taille" name="taille" type='number' step="0.01" value={formData.taille} onChange={handleChange} />
+                    </FormGroup>
                 </FormRow>
+                
+                <Title>Prescription</Title>
                 <TraitHorizontal2></TraitHorizontal2>
-                <Title>Dossier médical</Title>
                 <FormRow>
                     <FormGroup>
-                      <Label htmlFor="groupeSanguin">Groupe sanguin et Rhésus</Label>
-                      <Select id='groupeSanguin' name="dossierMedical.groupeSanguin" value={formData.dossierMedical.groupeSanguin} onChange={handleChange}>
-                        <option value="">-- Choisir --</option>
-                        <option value="A+">A+</option>
-                        <option value="A-">A-</option>
-                        <option value="B+">B+</option>
-                        <option value="B-">B-</option>
-                        <option value="AB+">AB+</option>
-                        <option value="AB-">AB-</option>
-                        <option value="O+">O+</option>
-                        <option value="O-">O-</option>
-                      </Select>
+                        <Label htmlFor="typePrescription">Type prescription</Label>
+                        <TextArea id='typePrescription' name="prescriptions[0].typePrescription" value={formData.prescriptions[0].typePrescription} onChange={handleChange} />
                     </FormGroup>
                     <FormGroup>
-                      <Label htmlFor="alergies">Alergies</Label>
-                      <Input id='alergies'  name="dossierMedical.allergies" value={formData.dossierMedical.allergies} onChange={handleChange} />
-                    </FormGroup>
-              </FormRow>
+                        <Label htmlFor="medicaments">Medicaments</Label>
+                        <TextArea id='medicaments' name="prescriptions[0].medicaments" value={formData.prescriptions[0].medicaments} onChange={handleChange} />
+                    </FormGroup>        
+                </FormRow>
 
               <FormRow>
                 <FormGroup>
-                  <Label htmlFor="traitements">Traitements en cours</Label>
-                  <TextArea id='traitements' name="dossierMedical.traitementsEnCours" value={formData.dossierMedical.traitementsEnCours} onChange={handleChange} />
+                    <Label htmlFor="instructions">Instructions</Label>
+                    <TextArea id='instructions' name="prescriptions[0].instructions" value={formData.prescriptions[0].instructions} onChange={handleChange} />
                 </FormGroup>
                 <FormGroup>
-                  <Label htmlFor='antecedents'>Antécédents médicaux</Label>
-                  <TextArea id='antecedents' name="dossierMedical.antecedentsMedicaux" value={formData.dossierMedical.antecedentsMedicaux} onChange={handleChange} />
+                    <Label htmlFor="dureePrescription">Duree prescription</Label>
+                    <TextArea id='dureePrescription' name="prescriptions[0].dureePrescription" value={formData.prescriptions[0].dureePrescription} onChange={handleChange} />
                 </FormGroup>
               </FormRow>
               <FormRow>
                 <FormGroup>
-                  <Label htmlFor='observation'>observation</Label>
-                  <TextArea id='observation' name="dossierMedical.observations" value={formData.dossierMedical.observations} onChange={handleChange} />
+                    <Label htmlFor="quantite">Quantite</Label>
+                    <Input id="quantite" name="prescriptions[0].quantite" type='number' step="0.01" value={formData.prescriptions[0].quantite} onChange={handleChange} />
                 </FormGroup>
               </FormRow>
                 
             </FormContainer>
                 <ButtonRow>
-                  <Button type="button" onClick={()=> setFormData({
-                        nom: "",
-                        prenom: "",
-                        email: "",
-                        dateNaissance: "",
-                        telephone: "",
-                        adresse: "",
-                        genre: "",
-                        dossierMedical: {
-                          groupeSanguin: "",
-                          antecedentsMedicaux: "",
-                          allergies: "",
-                          traitementsEnCours: "",
-                          observations: "",
-                        }
-                      })}>
+                  <Button type="button" onClick={handleClick}>
                     Annuler
                   </Button>
                   <Button type="submit" primary>
-                    Créer un patient
+                    Créer la consultation
                   </Button>
                 </ButtonRow>
             </Form>
@@ -407,4 +396,4 @@ const handleChange = e => {
   );
 };
 
-export default FormulairePatient;
+export default FormulaireConsultation;

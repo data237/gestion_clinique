@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React from 'react';
+import { useEffect, useState } from 'react';
+import { API_BASE } from '../../composants/config/apiconfig'
 import { Link, useNavigate } from 'react-router-dom';
 import Styled from 'styled-components'
 import FullCalendar from '@fullcalendar/react';
@@ -13,7 +16,7 @@ import imgprofil from '../../assets/photoDoc.png'
 
 const SousDiv1Style = Styled.div`
  width: 99%;
- padding-left: 1%;
+
 `
 const Span1= Styled.span`
     cursor: pointer;
@@ -51,8 +54,36 @@ const BarreStyle = Styled.div`
 
 `
 const CalendarSecretaire = () => {
+
+  const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil]= useState('')
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);
+
     const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false)
-    const nomprofil = localStorage.getItem('username');
+  
      const nbr = 10
      const navigate = useNavigate();
     

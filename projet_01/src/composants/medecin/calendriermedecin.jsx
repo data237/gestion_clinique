@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+//import axios from 'axios';
+import React from 'react';
+import { useState } from 'react';
+import { API_BASE } from '../../composants/config/apiconfig'
 import { Link, useNavigate } from 'react-router-dom';
 import Styled from 'styled-components'
 import FullCalendar from '@fullcalendar/react';
@@ -13,7 +16,7 @@ import imgprofil from '../../assets/photoDoc.png'
 
 const SousDiv1Style = Styled.div`
  width: 99%;
- padding-left: 1%;
+ 
 `
 const Span1= Styled.span`
     cursor: pointer;
@@ -51,13 +54,41 @@ const BarreStyle = Styled.div`
 
 `
 const Calendar = () => {
+
+    //const idUser = localStorage.getItem('id');
+    //const [nomprofil, setnomprofil]= useState('')
+
+    /*useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);*/
+
     const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false)
-    const nomprofil = localStorage.getItem('username');
+   
      const nbr = 10
      const navigate = useNavigate();
     
-      const handleClick = () => {
-        navigate(`/medecin/calendrier/today`);
+      const handleClick = (today) => {
+        navigate(`/medecin/calendrier/${today.dateStr}`);
       };
   const events = [
     { title: `${nbr} rendez-vous`, start: '2025-07-24' },
@@ -77,7 +108,7 @@ const Calendar = () => {
     <>
     
    <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}> 
+                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil='bahebeck'> 
                     <Span1 onClick={()=> setrendezvousdayvisible(false)}>Liste des evenements</Span1>
                 </Barrehorizontal1>
             </SousDiv1Style>

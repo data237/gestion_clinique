@@ -14,12 +14,12 @@ import { Link, useNavigate, useParams  } from 'react-router-dom';
 
 const SousDiv1Style = Styled.div`
  width: 100%;
- padding-left: 32px;
+
  padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
   width: 100%;
-  padding-left: 32px;
+
   padding-right: 32px;
   display: flex;
   flex-direction: column;
@@ -241,7 +241,32 @@ const Overlay = Styled.div`
 `
 function RendezvousMedecinToday(){
     //const [isVisible, setisVisible] = useState(0)
-    const nomprofil = localStorage.getItem('username');
+    //  const idUser = localStorage.getItem('id');
+   // const [nomprofil, setnomprofil]= useState('')
+
+    /*useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);*/
 
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -261,7 +286,7 @@ function RendezvousMedecinToday(){
             const token = localStorage.getItem('token');
             const id = localStorage.getItem('id');
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/rendezvous/medecin/${id}/confirmed/${today}`,
+                const response = await axios.get(`${API_BASE}/utilisateurs/${id}/rendez-vous/confirmed/${today}`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -391,7 +416,7 @@ function RendezvousMedecinToday(){
     return(<>
             
             <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}> 
+                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil='bahebeck'> 
                     <Span1 onClick={()=> navigate("/medecin/calendrier")}>Liste des evenements</Span1>
                     <Span2 > {">"} Rendez vous du jours </Span2>
                 </Barrehorizontal1>

@@ -1,14 +1,21 @@
 import '../../styles/Zonedaffichage.css'
+import React ,{useEffect, useState}from 'react';
+import { API_BASE } from '../../composants/config/apiconfig'
+import axios from 'axios';
+import { Chart as ChartJS } from "chart.js/auto";
+import { Line } from "react-chartjs-2";
 import Styled from 'styled-components'
 //import axios from 'axios';
-import React from 'react';
+
 //import { useEffect, useState } from 'react';
 import Barrehorizontal1 from '../barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
+import iconutilisateurblanc from '../../assets/iconutilisateurdashboardblanc.svg'
+import iconutilisateurgris from '../../assets/iconutilisateurdashboardgris.svg'
 
 const SousDiv1Style = Styled.div`
  width: 100%;
- padding-left: 32px;
+ 
  padding-right: 32px;
 `
 const Span1= Styled.span`
@@ -16,14 +23,152 @@ const Span1= Styled.span`
 `
 const SousDiv2Style = Styled.div`
     width: 100%;
-  padding-left: 32px;
+ 
   padding-right: 32px;
   display: flex;
   flex-direction: column;
   gap: 32px;
 `
 function Dashboard(){
-    const nomprofil = localStorage.getItem('username');
+    const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil]= useState('')
+    const [statjour, setstatjour] = useState({})
+    const [usersconnecte, setusersconnecte] = useState([]) 
+    const [usersdisconnecte, setusersdisconnecte] = useState([]) 
+    const [historiques, sethistoriques] = useState([])
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                
+                 setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);
+
+     useEffect(() => {
+        const token = localStorage.getItem('token');
+           const statjournalier =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/stats/daily`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                console.log(response.data)
+                 setstatjour(response.data)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            statjournalier()
+    }, []);
+
+useEffect(() => {
+        const token = localStorage.getItem('token');
+           const utilisateursconnectes =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/connected/last-activity`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+                let date
+              if (response) {
+                console.log(response.data)
+                setusersconnecte(response.data)
+                date = response.data[0].modificationDate.split("T")[0]
+                console.log(date)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            utilisateursconnectes()
+    }, []);
+
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const utilisateursconnectes =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/disconnected/last-activity`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+                let date
+              if (response) {
+                console.log(response.data)
+                setusersdisconnecte(response.data)
+                date = response.data[0].modificationDate.split("T")[0]
+                console.log(date)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            utilisateursconnectes()
+    }, []);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const Historique =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/historiqueActions/utilisateur/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+                
+              if (response) {
+                const hist = response.data.slice(-3)
+                sethistoriques(hist)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            Historique()
+    }, [idUser]);
     return (
     <>
     
@@ -45,33 +190,150 @@ function Dashboard(){
                     <div className='conteneurbarre'>
                         <div className='barre'></div>
                     </div>
-                    <div className='tableau-board'>
-                    
-                        <div className='conteneur-1'>
-                            <div className='sconteneur-01'>
-                                <div className='sconteneur-001'>
-                                    <div className='conteneur-0001'>
-                                        <h2> Ce compte </h2>
-                                        <p> bdnoduhfsd,fàjzehgogonhbidnbgdfnkbkidfhbghdgh</p>
+                    <div className='content-grid'>
+                        <div className='dashboard-grid'>
+                        
+                            <div className='grid-1'>
+                                <p className='grid-title'> Ce compte </p>
+                                <div className='grid-01'>
+                                    <div className='grid-11'>
+                                        <div className="grid-1-content-image">
+                                           <img className='grid-image' src={imgprofil}></img> 
+                                        </div>
+                                        
+                                        <div className='grid-11-content'>
+                                            <p className='sous-grid-title'> Connecté depuis le  </p>
+                                            <p className='grid-11-date'>10 avr. 2025 à<br></br><span className='grid-11-date-heure'> 08H02 </span></p>
+                                        </div>
                                     </div>
-                                    <div className='conteneur-0011'>
-                                        <h2> Aujourd'hui </h2>
-                                        <p> bdnoduhfsd,fàjzehgogonhbidnbgdfnkbkidnhmenshgfbd</p>
+                                    <div className='grid-12'>
+                                        <p className='sous-grid-title'> Action recente</p>
+                                        <ul className='sous-grid-liste'>
+                                            {historiques.map((historique)=>(<li key={historique.id}> {historique.action}</li>))}
+                                            
+                                        </ul>
+                                    </div>
+                                    <div className='grid-13'>11</div>
+                                    <div className='grid-14'>
+                                        <p className='sous-grid-title'> En attente </p>
+                                        <ul className='sous-grid-liste'>
+                                            <li>Confirmation de création de compte.</li>
+                                            <li>2 messages de la secrétaire Mengne non lus</li>
+                                            <li>1 messages du docteur Kipenbé non lu.</li>
+                                        </ul>
                                     </div>
                                 </div>
-                                <div className='conteneur-011'>
-                                        <p> jnoeoerngonoigoieegioegioingeoiegoiengneorgnegnegnoengengoeng</p>
+                                
+                            </div>
+                            <div className='grid-2'>
+                                <p className='grid-2-title'> Aujourd'hui </p>
+                                <div className='grid-2-content'> 
+                                    <div className="grid-2-content-chid">
+                                        <p className="grid-2-content-chid-text">Nombre de patient enregistré</p>
+                                        <div className="grid-2-content-chid-chiffre">{statjour.nbrPatientEnrg}</div>
+                                    </div>
+                                    <div className="grid-2-content-chid">
+                                        <p className="grid-2-content-chid-text"> Nombre de RDV validés</p>
+                                        <div className="grid-2-content-chid-chiffre">{statjour.nbrRendezVousCONFIRME}</div>
+                                    </div>
+                                    <div className="grid-2-content-chid">
+                                        <p className="grid-2-content-chid-text"> Nombre de RDV manqués</p>
+                                        <div className="grid-2-content-chid-chiffre">{statjour.nbrRendezANNULE}</div>
+                                    </div>
+                                    <div className="grid-2-content-chid">
+                                        <p className="grid-2-content-chid-text">Nombre de consultations effectuées</p>
+                                        <div className="grid-2-content-chid-chiffre">{statjour.nbrConsultation}</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div className='grid-3'>
+                                <p className='grid-3-title'> Connectés recement </p>
+                                <div className='grid-3-content'>
+                                    {usersconnecte.map((user)=>( 
+                                    <div key={user.id}  className='grid-31'>
+                                        
+                                        <div className="content-image">
+                                            <img className='grid-image' src={imgprofil}></img>
+                                            <div className='grid-31-nom'><p>{user.nom}</p></div>
+                                        </div>
+                                        
+                                        <div className='grid-31-content'>
+                                            <p className='sous-grid-3-title'> Connecté depuis le  </p>
+                                            <p className='grid-31-date'>{user.modificationDate.split("T")[0]} à <br></br><span className='grid-31-date-heure'> {user.modificationDate.split("T")[1].split(".")[0]} </span></p>
+                                        </div>
+                                    </div>))}
+                                    {usersdisconnecte.map((user)=>( 
+                                    <div key={user.id}  className='grid-31 disconnect'>
+                                        
+                                        <div className="content-image">
+                                            <img className='grid-image' src={imgprofil}></img>
+                                            <div className='grid-31-nom'><p>{user.nom}</p></div>
+                                        </div>
+                                        
+                                        <div className='grid-31-content'>
+                                            <p className='sous-grid-3-title'> Dernière connexion   </p>
+                                            <p className='grid-31-date'>{user.modificationDate.split("T")[0]} à <br></br><span className='grid-31-date-heure'> {user.modificationDate.split("T")[1].split(".")[0]} </span></p>
+                                        </div>
+                                    </div>))}
+                                    
+                                </div>
+                                
+                            </div>
+                            <div className='grid-4'>
+                                 <p className='grid-title chart'> Revenus en dizaine de dollars par mois </p>
+                                 <div className='line-chart'>
+                                    <Line
+                                        data={{
+                                            labels: ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Decembre'],
+                                            datasets: [
+                                            {
+                                                label: "Revenue",
+                                                data: [10, 15, 20, 100, -10 , 80 , 14, 54, 60, 74, 12, 14],
+                                                backgroundColor: "#FF3030",
+                                                borderColor: "rgba(159, 159, 255, 1)",
+                                            },
+                                            
+                                            ],
+                                        }}
+                                        options={{
+                                                    responsive: true,
+                                                    maintainAspectRatio: false, // pour que height du conteneur soit prise en compte
+                                                    
+                                            elements: {
+                                            line: {
+                                                tension: 0,
+                                            },
+                                            },
+                                            plugins: {
+                                            title: {
+                                                text: "Monthly Revenue & Cost",
+                                            },
+                                            },
+                                        }}
+                                        />
+                                 </div>
+                                 
+                            </div>
+                        
+                        
+                        </div>
+                        <div className='content-barre-dashboard'>
+                            <div  className='barre-dashboard'>
+                                <div className="element-barre">
+                                    <img className='image-barre' src={iconutilisateurblanc}></img>
+                                    <p>Uti. connecté : {usersconnecte.length}</p>
+                                </div>
+                                <div className="element-barre">
+                                    <img className='image-barre' src={iconutilisateurgris}></img>
+                                    <p>idle : 5</p>
                                 </div>
                             </div>
-                            <div className='conteneur-11'>
-                                <p> jnoeoerngonoigoieegioegioingeoie nknjknkjbhjk hbhkbkjbiub;bnlhibk</p>
-                            </div>
                         </div>
-                        <div className='conteneur-2'>
-                                <p> njnonznonnvznnvclonln</p>
-                        </div>
+
                     </div>
-                </div>
+                    
+                </div>    
 
                
                 

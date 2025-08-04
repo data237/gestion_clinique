@@ -153,11 +153,40 @@ const Button = Styled.button`
 `;
 
 const DetailsUtilisateur = () => {
+
+  const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil]= useState('')
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                } else {
+                setErreur('Données introuvables');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                setErreur('Erreur lors du chargement');
+            } finally {
+                setisloading(false);
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);
   const [isVisiblerole, setisVisiblerole] = useState(false)
   /*if(user.rôle === "Médecin"){
     
   }*/
- const { id } = useParams();
+  const { id } = useParams();
   const [utilisateur, setUtilisateur] = useState(null);
   const [erreur, setErreur] = useState(null);
   const [isloading, setisloading] = useState(true);
@@ -194,7 +223,7 @@ const DetailsUtilisateur = () => {
 
 
        
-  const nomprofil = localStorage.getItem('username');
+  
   
   let navigate = useNavigate();
   const handleClick = () => {

@@ -14,12 +14,12 @@ import { Link, useNavigate, useParams  } from 'react-router-dom';
 
 const SousDiv1Style = Styled.div`
   width: 100%;
- padding-left: 32px;
+ 
  padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
   width: 100%;
-  padding-left: 32px;
+ 
   padding-right: 32px;
   display: flex;
   flex-direction: column;
@@ -241,7 +241,32 @@ const Overlay = Styled.div`
 `
 function RendezvousScretaireToday(){
     //const [isVisible, setisVisible] = useState(0)
-    const nomprofil = localStorage.getItem('username');
+      const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil]= useState('')
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                
+            } finally {
+              console.log('fin')
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);
 
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -261,7 +286,7 @@ function RendezvousScretaireToday(){
             const token = localStorage.getItem('token');
             
             try {
-                const response = await axios.get(`${API_BASE}/rendezvous/jour/2025-06-28`,
+                const response = await axios.get(`${API_BASE}/rendezvous/jour/${today}`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -283,7 +308,7 @@ function RendezvousScretaireToday(){
     
         };
             fetchrendezvous();
-        },[]);
+        },[today]);
         
     useEffect(() => {
             if (!valeurrecherche.trim()) {

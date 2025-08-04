@@ -17,10 +17,10 @@ const Adminroute = ()=>{
         <>
             <Route path="/admin" element={<PageAdmin />}>
             {/* Route par défaut pour /admin */}
-                <Route index element={<Dashboard  />} />
+                <Route index element={<Dashboard/>} />
 
                 {/* Routes utilisateurs */}
-                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="dashboard" element={<Dashboard/>} />
                 <Route path="utilisateur" element={<Utilisateur />} />
                 <Route path="utilisateur/add" element={<FormulaireUtilisateur />} />
                 <Route path="utilisateur/viewuser/:id" element={<DetailsUtilisateur />} />

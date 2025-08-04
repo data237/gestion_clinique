@@ -146,6 +146,34 @@ const TextArea = Styled.textarea`
 
 const DetailsPatient = () => {
   
+  const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil]= useState('')
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+           const nomutilisateur =  async ()=> {
+                try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+                    {   headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    }},);
+                console.log(token);
+              if (response) {
+                 setnomprofil(response.data.nom)
+                } else {
+                setErreur('Données introuvables');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+                setErreur('Erreur lors du chargement');
+            } finally {
+                setisloading(false);
+            }
+            }
+            nomutilisateur()
+    }, [idUser]);
  
     const { id } = useParams();
     const [patient, setPatient] = useState(null);
@@ -179,7 +207,7 @@ const DetailsPatient = () => {
             },[id]);
 
 
-    const nomprofil = localStorage.getItem('username');
+  
 
       let navigate = useNavigate();
       const handleClick = () => {

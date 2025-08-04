@@ -5,6 +5,7 @@ import Rendezvous from "../composants/secretaire/rendezvoussecretaire";
 import PatientSecretaire from "../composants/secretaire/patientsecretaire";
 import CalendarSecretaire from "../composants/secretaire/calendriersecretaire";
 import RendezvousScretaireToday from "../composants/secretaire/rdvsecretaireday";
+import FormulaireRendezVous from "../composants/secretaire/formulairerendezvous";
 
 
 
@@ -24,6 +25,7 @@ const Secretaireroute = ()=>{
 
                 {/* Routes patients */}
                 <Route path="patient" element={<PatientSecretaire />} />
+                <Route path="patient/rendezvous/:nompatient" element={<FormulaireRendezVous/>}/>
                 <Route path="calendrier" element={<CalendarSecretaire/>}/>
                 <Route path="calendrier/:today" element={<RendezvousScretaireToday/>}/>
                 
