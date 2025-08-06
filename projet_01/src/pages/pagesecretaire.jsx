@@ -41,8 +41,9 @@ function PageSecretaire(){
     <PageStyle>
         <Barrelatteral> 
             <Link to="/secretaire/rendezvous" className={contenuActif === 'rendez-vous' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('rendez-vous')}}><Eltmenu nommenu='rendez-vous' img={imgrendezvous} /></Link>
-            <Link to="/secretaire/patient" className={contenuActif === 'patient' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('patient')}}><Eltmenu nommenu='Patients' img={imgpatient} className={contenuActif === 'patient' ? 'eltmenu' : ''} onClick={() => {changerContenu('patient')}}/></Link>
-            <Link to="/secretaire/calendrier" className={contenuActif === 'calendrier' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('calendrier')}}><Eltmenu nommenu='Calendrier' img={imgcalendrier} className={contenuActif === 'patient' ? 'eltmenu' : ''} onClick={() => {changerContenu('calendrier')}}/></Link>
+            <Link to="/secretaire/patient" className={contenuActif === 'patient' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('patient')}}><Eltmenu nommenu='Patients' img={imgpatient} /></Link>
+            <Link to="/secretaire/calendrier" className={contenuActif === 'calendrier' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('calendrier')}}><Eltmenu nommenu='Calendrier' img={imgcalendrier} /></Link>
+            <Link to="/secretaire/facture" className={contenuActif === 'facture' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('facture')}}><Eltmenu nommenu='Facture' img={imgcalendrier} /></Link>
             {/*<button className={contenuActif === 'utilisateur' ? 'eltmenu' : ''} onClick={changerContenu('utilisateur')}> <Eltmenu nommenu='utilisateurs' img={imgutilisateur}/> </button>*/}
             {/*<button className={contenuActif === 'patient' ? 'eltmenu' : ''} onClick={() => changerContenu('patient')}> <Eltmenu nommenu='Patients' img={imgpatient}/> </button>*/}
             {/*<button className={contenuActif === 'messagerie' ? 'eltmenu' : ''} onClick={() => changerContenu('messagerie')}> <Eltmenu nommenu='Messagerie' img={mail}/> </button>*/}

@@ -97,7 +97,6 @@
 }
 .image-barre{
     height: 16px;
-    opacity: 0.5;
 }
 .dashboard-grid > div{
      background-color: rgba(159, 159, 255, 1);
@@ -165,6 +164,10 @@
     flex-direction: column;
     gap: 16px;
     width: 100%;
+}
+.grid-13{
+   display: flex;
+    gap: 9px;
 }
 .grid-11-date{
     color: rgba(159, 159, 255, 1);

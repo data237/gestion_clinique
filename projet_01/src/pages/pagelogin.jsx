@@ -1,6 +1,7 @@
 import '../styles/pagelogin.css'
 import { useState } from 'react';
 import axios from 'axios'
+import { API_BASE } from '../composants/config/apiconfig'
 import { Link, useNavigate } from 'react-router-dom';
 import imageclinique from '../assets/img_clinique.jpg'
 import logoclinique from '../assets/logo.png'
@@ -15,7 +16,7 @@ function PageLogin() {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8081/Api/V1/clinique/login', {
+      const response = await axios.post(`${API_BASE}/login`, {
         email,
         password,
       });

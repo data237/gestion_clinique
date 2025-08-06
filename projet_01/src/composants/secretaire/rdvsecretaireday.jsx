@@ -417,7 +417,7 @@ function RendezvousScretaireToday(){
             
             <SousDiv1Style>
                 <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}> 
-                    <Span1 onClick={()=> navigate("/medecin/calendrier")}>Liste des evenements</Span1>
+                    <Span1 onClick={()=> navigate("/secretaire/calendrier")}>Liste des evenements</Span1>
                     <Span2 > {">"} Rendez vous du jours </Span2>
                 </Barrehorizontal1>
             </SousDiv1Style>

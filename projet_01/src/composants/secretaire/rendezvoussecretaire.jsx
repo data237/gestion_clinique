@@ -498,7 +498,7 @@ function Rendezvous(){
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
                         <img className='iconrecherche' src={iconrecherche}></img>
                     </div>
-                    <Link to="/secretaire/rendezvous/add"><button className='boutton'>Ajouter un rendez vous</button></Link>
+                    <Link to="/secretaire/patient"><button className='boutton'>Ajouter un rendez vous</button></Link>
                 </div>
                   
                 
@@ -506,7 +506,7 @@ function Rendezvous(){
                 <div className='zonedaffichage'>
                     <div className='numero'>
                             <div>
-                                <h2 className='nomtable'> Utilisateurs </h2>
+                                <h2 className='nomtable'> Rendez-vous </h2>
                             </div>
                             <div className='divbutton'>
                                 <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
@@ -562,7 +562,7 @@ function Rendezvous(){
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.nomSalle}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.statut ? "actif" : "inactif"}</td>
-                             <td className='bouttons'>
+                             <td className='td bouttons'>
                                 <button
                                     onClick={() => {setstatutAmodifier([rendezvous.id,rendezvous.statut]);
                                         setPopupstatut(true)

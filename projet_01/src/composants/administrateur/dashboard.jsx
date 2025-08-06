@@ -11,7 +11,7 @@ import Styled from 'styled-components'
 import Barrehorizontal1 from '../barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import iconutilisateurblanc from '../../assets/iconutilisateurdashboardblanc.svg'
-import iconutilisateurgris from '../../assets/iconutilisateurdashboardgris.svg'
+
 
 const SousDiv1Style = Styled.div`
  width: 100%;
@@ -35,6 +35,7 @@ function Dashboard(){
     const [statjour, setstatjour] = useState({})
     const [usersconnecte, setusersconnecte] = useState([]) 
     const [usersdisconnecte, setusersdisconnecte] = useState([]) 
+    const [connexionadmin , setconnexionadmin] = useState([])
     const [historiques, sethistoriques] = useState([])
 
     useEffect(() => {
@@ -98,12 +99,12 @@ useEffect(() => {
                     'Content-Type': 'application/json',
                     }},);
                 console.log(token);
-                let date
+                
               if (response) {
-                console.log(response.data)
+                
                 setusersconnecte(response.data)
-                date = response.data[0].modificationDate.split("T")[0]
-                console.log(date)
+                setconnexionadmin(response.data.filter((user)=> user.id === 1))
+                
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
@@ -169,6 +170,9 @@ useEffect(() => {
             }
             Historique()
     }, [idUser]);
+
+
+    usersconnecte
     return (
     <>
     
@@ -203,7 +207,14 @@ useEffect(() => {
                                         
                                         <div className='grid-11-content'>
                                             <p className='sous-grid-title'> Connecté depuis le  </p>
-                                            <p className='grid-11-date'>10 avr. 2025 à<br></br><span className='grid-11-date-heure'> 08H02 </span></p>
+                                            {connexionadmin.map((connexion)=>(
+                                                <p className='grid-11-date' key={connexion.id}>
+                                                    {connexion.lastLoginDate.split("T")[0]}<br></br>
+                                                    <span className='grid-11-date-heure'> 
+                                                        {connexion.lastLoginDate.split("T")[1].split(".")[0]}  
+                                                    </span>
+                                                </p>))}
+                                            
                                         </div>
                                     </div>
                                     <div className='grid-12'>
@@ -213,7 +224,22 @@ useEffect(() => {
                                             
                                         </ul>
                                     </div>
-                                    <div className='grid-13'>11</div>
+                                    <div className='grid-13'>
+                                        <div className="grid-1-content-image">
+                                           <img className='grid-image' src={imgprofil}></img> 
+                                        </div>
+                                        
+                                        <div className='grid-11-content'>
+                                            <p className='sous-grid-title'> Dernière connection   </p>
+                                            {connexionadmin.map((connexion)=>(
+                                                <p className='grid-11-date' key={connexion.id}>
+                                                    {connexion.lastLogoutDate.split("T")[0]}<br></br>
+                                                    <span className='grid-11-date-heure'> 
+                                                        {connexion.lastLogoutDate.split("T")[1].split(".")[0]}  
+                                                    </span>
+                                                </p>))}
+                                        </div>
+                                    </div>
                                     <div className='grid-14'>
                                         <p className='sous-grid-title'> En attente </p>
                                         <ul className='sous-grid-liste'>
@@ -260,7 +286,7 @@ useEffect(() => {
                                         
                                         <div className='grid-31-content'>
                                             <p className='sous-grid-3-title'> Connecté depuis le  </p>
-                                            <p className='grid-31-date'>{user.modificationDate.split("T")[0]} à <br></br><span className='grid-31-date-heure'> {user.modificationDate.split("T")[1].split(".")[0]} </span></p>
+                                            <p className='grid-31-date'>{user.lastLoginDate.split("T")[0]} à <br></br><span className='grid-31-date-heure'> {user.lastLoginDate.split("T")[1].split(".")[0]} </span></p>
                                         </div>
                                     </div>))}
                                     {usersdisconnecte.map((user)=>( 
@@ -273,7 +299,7 @@ useEffect(() => {
                                         
                                         <div className='grid-31-content'>
                                             <p className='sous-grid-3-title'> Dernière connexion   </p>
-                                            <p className='grid-31-date'>{user.modificationDate.split("T")[0]} à <br></br><span className='grid-31-date-heure'> {user.modificationDate.split("T")[1].split(".")[0]} </span></p>
+                                            <p className='grid-31-date'>{user.lastLogoutDate.split("T")[0]} à <br></br><span className='grid-31-date-heure'> {user.lastLogoutDate.split("T")[1].split(".")[0]} </span></p>
                                         </div>
                                     </div>))}
                                     
@@ -290,7 +316,7 @@ useEffect(() => {
                                             {
                                                 label: "Revenue",
                                                 data: [10, 15, 20, 100, -10 , 80 , 14, 54, 60, 74, 12, 14],
-                                                backgroundColor: "#FF3030",
+                                                backgroundColor: "white",
                                                 borderColor: "rgba(159, 159, 255, 1)",
                                             },
                                             
@@ -323,10 +349,6 @@ useEffect(() => {
                                 <div className="element-barre">
                                     <img className='image-barre' src={iconutilisateurblanc}></img>
                                     <p>Uti. connecté : {usersconnecte.length}</p>
-                                </div>
-                                <div className="element-barre">
-                                    <img className='image-barre' src={iconutilisateurgris}></img>
-                                    <p>idle : 5</p>
                                 </div>
                             </div>
                         </div>

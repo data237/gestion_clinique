@@ -10,11 +10,12 @@ import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import iconrecherche from '../../assets/iconrecherche.png'
 import iconburger from '../../assets/iconburger.png'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import FormulaireFacture from './formulairefacture';
 
 const SousDiv1Style = Styled.div`
   width: 100%;
-
+ 
  padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
@@ -109,7 +110,9 @@ const AfficheTableauStyle = Styled.div`
 const Span1= Styled.span`
     cursor: pointer;
 `
-
+const Span2= Styled.span`
+  
+`
 
 // Style component du tableau
     const NumeroStyle = Styled.div`
@@ -173,22 +176,11 @@ const BarreStyle = Styled.div`
 const Popupsuppr= Styled.div`
 
     display: ${props => props.$Popupsupprdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 350px;
-    height: 100px;
-    border-radius: 10px;
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 20%;
+    left: 40%;
     z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
+   
 `
 const Popupstat= Styled.div`
 
@@ -214,21 +206,18 @@ const Popupstat= Styled.div`
 const Containbouttonpopup = Styled.div`
 
     display: flex;
-    padding: 32px;
     
-    border-radius: 16px;
     gap: 30px;
-    background-color: white;
+    background-color: rgba(159, 159, 255, 1);
 `
 const Bouttonpopup =Styled.button`
-    font-family: "Roboto", sans-serif;
+    font-family: "Inter", sans-serif;
     font-weight: 400;
     font-size: 1em;
-    min-width: 150px;
-    padding: 16px;
-    border-radius: 16px;
-    border: 1px solid rgba(159, 159, 255, 1);
-    color: rgba(159, 159, 255, 1);
+    width: 80px;
+    height: 30px;
+    border-radius: 10px;
+    background-color: white;
 `
 const Overlay = Styled.div`
   display: ${props => props.$Overlaydisplay};
@@ -237,16 +226,19 @@ const Overlay = Styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0,0,0,0.8);
   z-index: 998;
 `
-function RendezvousMedecin(){
+function Facture(){
     //const [isVisible, setisVisible] = useState(0)
-     // const idUser = localStorage.getItem('id');
-    //const [nomprofil, setnomprofil]= useState('')
-
-    /*useEffect(() => {
+      const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil]= useState('')
+    const [idfacture, setidfacture] = useState(0)
+     const [Popup, setPopup] = useState(false)
+ 
+    useEffect(() => {
         const token = localStorage.getItem('token');
+        console.log(token);
            const nomutilisateur =  async ()=> {
                 try {
                 const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
@@ -267,32 +259,27 @@ function RendezvousMedecin(){
             }
             }
             nomutilisateur()
-    }, [idUser]);*/
+    }, [idUser]);
 
-    // fonction du tableau
-    const [Popup, setPopup] = useState(false)
-   
-    
-    const [rdvaouvrir, setrdvaouvrir] = useState(null)
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [isloading, setisloading] = useState(true);
-    const [rendezvous, setrendezvous] = useState([]);
-    const [rendezvousFiltres, setrendezvousFiltres] = useState([]);
+    const [factures, setfactures] = useState([]);
+    const [facturesFiltres, setfacturesFiltres] = useState([]);
   
     const [erreur, setErreur] = useState(null);
 
-
+   
     const rendezvousPerPage = 8;
-
+   
     
     useEffect(()=>{
          
-         const fetchrendezvous = async () => {
+         const fetchfactures = async () => {
             const token = localStorage.getItem('token');
-            const id = localStorage.getItem('id');
+              console.log(token);
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${id}/confirmed/from-today`,
+                const response = await axios.get(`${API_BASE}/factures/statut/impayee`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -300,46 +287,45 @@ function RendezvousMedecin(){
                     }},);
                 console.log(token);
               if (response && response.data) {
-                setrendezvous(response.data);
-               setrendezvousFiltres(response.data);
-                } /*else {
-                setErreur('Données introuvables');
-                }*/
+                setfactures(response.data);
+                setfacturesFiltres(response.data);
+                } else {
+                //setErreur('Données introuvables');
+                }
             } catch (error) {
-                console.error('Erreur lors de la récupération des rendezvous:', error);
+                console.log('Erreur lors de la récupération des rendezvous:', error);
                 setErreur('Erreur lors du chargement');
             } finally {
                 setisloading(false);
             }
     
         };
-            fetchrendezvous();
+            fetchfactures();
         },[]);
         
     useEffect(() => {
             if (!valeurrecherche.trim()) {
-                setrendezvousFiltres(rendezvous); // Si rien à chercher, on affiche tout
+                setfactures(factures); // Si rien à chercher, on affiche tout
                 return;
             }
 
             const recherche = valeurrecherche.toLowerCase();
 
-            const resultats = rendezvous.filter((u) =>
-                u.jour.toLowerCase().includes(recherche) ||
+            const resultats = factures.filter((u) =>
+                u.dateEmission.toLowerCase().includes(recherche) ||
                 u.patientNomComplet.toLowerCase().includes(recherche) ||
-                u.medecinNomComplet.toLowerCase().includes(recherche) ||
-                u.statut.toLowerCase().includes(recherche)
+                u.serviceMedicalNom.toLowerCase().includes(recherche) 
             );
 
-            setrendezvousFiltres(resultats);
-    }, [valeurrecherche, rendezvous]);
+            setfactures(resultats);
+    }, [valeurrecherche, factures]);
 
 
 
 
 
     const [pagesToShow, setpagesToShow] = useState([]);
-    const totalPages = Math.ceil(rendezvous.length / rendezvousPerPage);
+    const totalPages = Math.ceil(factures.length / rendezvousPerPage);
 
     useEffect(() => {
             if (totalPages >= 6) {
@@ -348,7 +334,7 @@ function RendezvousMedecin(){
             const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
             setpagesToShow(fullList);
             }
-            }, [rendezvous.length, totalPages]);
+            }, [factures.length, totalPages]);
 
             //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
 
@@ -363,7 +349,7 @@ function RendezvousMedecin(){
     //toggle boutton
     
     
-   
+    
                     
     
          
@@ -395,7 +381,7 @@ function RendezvousMedecin(){
     const indexOfLastrendezvous = currentPage * rendezvousPerPage;
     const indexOfFirstrendezvous = indexOfLastrendezvous - rendezvousPerPage;
     //const currentrendezvous = rendezvous.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
-    const currentrendezvous = rendezvousFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
+    const currentrendezvous = facturesFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
     
 
     //
@@ -404,47 +390,31 @@ function RendezvousMedecin(){
         //const [user, setuser] = useState({})
         
     //
-    
-    const navigate = useNavigate();
+   
+
+  const handleRowClick = (facture) => {
+    setidfacture(facture.id)
+    setPopup(true)
+  };
+
+
 
   
-    const consultations = (rdv)=>{
-            if(!rdv) return;
-            setPopup(false)
-            navigate(`/medecin/rendezvous/consultation/${rdv.id}`)
-        };
 
-  const dossierMedical = (rdv)=>{
-    if(!rdv) return;
-    setPopup(false)
-    navigate(`/medecin/rendezvous/dossiermedical/${rdv.id}`)
-  }
-
-  const handleRowClick = (rdv)=>{
-        console.log(rdv)
-        setPopup(true)
-        setrdvaouvrir(rdv)
-  }
 
 
   if (isloading) return <p>Chargement...</p>;
 
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
     return(<>
-            <Overlay onClick={() => setPopup(false)} $Overlaydisplay = {Popup  ? 'block' : 'none'}/>
-            <Popupsuppr $Popupsupprdisplay = {Popup ? 'flex' : 'none'}>
-                
-                <Containbouttonpopup>
-                    <Bouttonpopup onClick={()=> consultations(rdvaouvrir)}> Faire une Consultation </Bouttonpopup>
-                    <Bouttonpopup onClick={()=> dossierMedical(rdvaouvrir)}> voir le Dossier medical </Bouttonpopup>
-                    
-                </Containbouttonpopup>
-                                
-            </Popupsuppr>
-                
+            <Overlay onClick={() => setPopup(false)} $Overlaydisplay = { Popup ? 'block' : 'none'}/>
+                <Popupsuppr $Popupsupprdisplay = {Popup ? 'block' : 'none'}>
+                   <FormulaireFacture id={idfacture} onClick1={()=> setPopup(false)} />                 
+                </Popupsuppr>
             <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil='bahebeck'> 
-                    <Span1>Liste des rendez vous</Span1>
+                <Barrehorizontal1 titrepage="Factures" imgprofil1={imgprofil} nomprofil={nomprofil}> 
+                    <Span1>Liste des factures impayées</Span1>
+                    
                 </Barrehorizontal1>
             </SousDiv1Style>
             
@@ -463,7 +433,7 @@ function RendezvousMedecin(){
                 <div className='zonedaffichage'>
                     <div className='numero'>
                             <div>
-                                <h2 className='nomtable'> Utilisateurs </h2>
+                                <h2 className='nomtable'> Facture impayee </h2>
                             </div>
                             <div className='divbutton'>
                                 <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
@@ -499,26 +469,24 @@ function RendezvousMedecin(){
                             <th className='th'>Heure</th>
                             <th className='th'>Service medical</th>
                             <th className='th'>Nom du patient</th>
-                            <th className='th'>Nom du medecin</th>
-                            <th className='th'>Nom de la salle</th>
+                            <th className='th'>Montant</th>
                             <th className='th'>Statut</th>
                            
                            
                         </tr>
                         </thead>
                         <tbody>
-                        {currentrendezvous.map((rendezvous) => (
-                           <tr key={rendezvous.id} className='tr'>
+                        {currentrendezvous.map((facture) => (
+                           <tr key={facture.id} className='tr'>
     
                             
                             
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.jour}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.heure}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.serviceMedical}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.nomSalle}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.statut ? "actif" : "inactif"}</td>
+                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.dateEmission.split("T")[0]}</td>
+                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.dateEmission.split("T")[1].split(".")[0]}</td>
+                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.serviceMedicalNom}</td>
+                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.patientNomComplet}</td>
+                             <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.montant}</td>
+                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.statutPaiement}</td>
                             
                             </tr>
                         ))}
@@ -533,4 +501,4 @@ function RendezvousMedecin(){
             </SousDiv2Style>
     </>)   
 }
-export default RendezvousMedecin
+export default Facture

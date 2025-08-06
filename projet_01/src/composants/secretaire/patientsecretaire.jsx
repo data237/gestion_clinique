@@ -480,7 +480,7 @@ function PatientSecretaire(){
                             <tr key={patient.id} className='tr'>
         
                                 
-                                <td /*className={`${patient.isActive ? "off" : ""}`}*/ onClick={() => handleRowClick(patient)}>{patient.nom}</td>
+                                <td onClick={() => handleRowClick(patient)} className='td'>{patient.nom}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.prenom}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.email}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.telephone}</td>

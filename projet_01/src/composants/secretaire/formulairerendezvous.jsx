@@ -6,6 +6,7 @@ import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
+import FormulaireFacture from './formulairefacture';
 
 
 const SousDiv1Style = Styled.div`
@@ -150,11 +151,33 @@ const Button = Styled.button`
   }
 `;
 
+
+const Overlay = Styled.div`
+  display: ${props => props.$Overlaydisplay};
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0,0,0,0.8);
+  z-index: 998;
+`
+const Popupsuppr= Styled.div`
+
+    display: ${props => props.$Popupsupprdisplay};
+    position: fixed;
+    top: 20%;
+    left: 40%;
+    z-index: 10000;
+   
+`
 const FormulaireRendezVous = () => {
 
     const idUser = localStorage.getItem('id');
     const { nompatient } = useParams();
     const [nomprofil, setnomprofil]= useState('')
+    const [idfacture, setidfacture] = useState(0)
+    const [Popup, setPopup] = useState(false)
 
     const [patient, setpatient] = useState(null);
     //const [nommedecin, setnommedecin] = useState('mabou')
@@ -283,6 +306,8 @@ const FormulaireRendezVous = () => {
       }
     );
     console.log(response.data);
+    setidfacture(response.data.factureId)
+    setPopup(true)
       } catch (error) {
       console.error('Erreur de connexion :', error);
       console.log(token)
@@ -318,6 +343,10 @@ const FormulaireRendezVous = () => {
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
   return (
     <>
+          <Overlay onClick={() => setPopup(false)} $Overlaydisplay = { Popup ? 'block' : 'none'}/>
+          <Popupsuppr $Popupsupprdisplay = {Popup ? 'block' : 'none'}>
+            <FormulaireFacture id={idfacture} onClick1={()=> setPopup(false)}/>
+          </Popupsuppr>
         <SousDiv1Style>
         <Barrehorizontal1 titrepage="Gestion des patients" imgprofil1={imgprofil} nomprofil={nomprofil}> 
             <Span1 onClick={handleClick}>Liste des patients</Span1>
