@@ -1,6 +1,7 @@
 import '../../styles/tableau.css'
 import '../../styles/Zonedaffichage.css'
 import '../../styles/Barrehorizontal2.css'
+import '../../styles/facture.css'
 import Styled from 'styled-components'
 import axios from 'axios';
 import React from 'react';
@@ -411,94 +412,96 @@ function Facture(){
                 <Popupsuppr $Popupsupprdisplay = {Popup ? 'block' : 'none'}>
                    <FormulaireFacture id={idfacture} onClick1={()=> setPopup(false)} />                 
                 </Popupsuppr>
-            <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Factures" imgprofil1={imgprofil} nomprofil={nomprofil}> 
-                    <Span1>Liste des factures impayées</Span1>
-                    
-                </Barrehorizontal1>
-            </SousDiv1Style>
-            
-            <SousDiv2Style >
-                <div className='affichebarh2'>
-                    <div className='recherche'>
-                        <img className='iconburger' src={iconburger}></img>
-                        <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
-                        <img className='iconrecherche' src={iconrecherche}></img>
-                    </div>
-                    
-                </div>
-                 
-                
-                
-                <div className='zonedaffichage'>
-                    <div className='numero'>
-                            <div>
-                                <h2 className='nomtable'> Facture impayee </h2>
-                            </div>
-                            <div className='divbutton'>
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
-                                <div>
-                                        {pagesToShow.map((page, idx) => (
-                                            <ButtonStyle
-                                            key={idx}
-                                            onClick={() => handleClick(page)}
-                                            $buttonbackgroundColor = {page === currentPage ? 'rgba(65, 65, 255, 1)' : ''}
-                                            $buttonColor = {page === currentPage ? 'white' : ''}
-                                            disabled={page === "..."}
-                                            >
-                                            {page}
-                                            </ButtonStyle>
-                                        ))}
-                                </div>
-                                
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
-                                disabled={currentPage === totalPages}>Suivant</button>
-                            </div>
                             
+            <div className="facture-container">
+                <div className="facture-header">
+                    <Barrehorizontal1 titrepage="Factures" imgprofil1={imgprofil} nomprofil={nomprofil}> 
+                        <Span1>Liste des factures impayées</Span1>
+                    </Barrehorizontal1>
+                </div>
+                
+                <div className="search-container">
+                    <div className="search-bar">
+                        <img className="search-icon" src={iconburger} alt="Menu" />
+                        <input 
+                            className="search-input" 
+                            type="text" 
+                            placeholder="Rechercher une facture..."  
+                            value={valeurrecherche} 
+                            onChange={(e) => setvaleurrecherche(e.target.value)} 
+                            required
+                        />
+                        <img className="search-icon" src={iconrecherche} alt="Rechercher" />
                     </div>
-                        <div className='conteneurbarre'>
-                            <div className='barre'></div>
+                </div>
+                
+                <div className="table-container">
+                    <div className="table-header">
+                        <div className="table-title">
+                            Factures impayées
                         </div>
-                <div className='affichetableau'>
-                   
-                    <table className='tableau-2'>
-                        <thead>
-                        <tr>
-                            
-                            <th className='th'>Jour</th>
-                            <th className='th'>Heure</th>
-                            <th className='th'>Service medical</th>
-                            <th className='th'>Nom du patient</th>
-                            <th className='th'>Montant</th>
-                            <th className='th'>Statut</th>
-                           
-                           
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {currentrendezvous.map((facture) => (
-                           <tr key={facture.id} className='tr'>
-    
-                            
-                            
-                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.dateEmission.split("T")[0]}</td>
-                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.dateEmission.split("T")[1].split(".")[0]}</td>
-                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.serviceMedicalNom}</td>
-                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.patientNomComplet}</td>
-                             <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.montant}</td>
-                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.statutPaiement}</td>
-                            
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                   
+                        <div className="pagination-controls">
+                            <button 
+                                className="pagination-button" 
+                                onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} 
+                                disabled={currentPage === 1}
+                            >
+                                ← Précédent
+                            </button>
+                            <div className="page-numbers">
+                                {pagesToShow.map((page, idx) => (
+                                    <button
+                                        key={idx}
+                                        className={`page-number ${page === currentPage ? 'active' : ''}`}
+                                        onClick={() => handleClick(page)}
+                                        disabled={page === "..."}
+                                    >
+                                        {page}
+                                    </button>
+                                ))}
+                            </div>
+                            <button 
+                                className="pagination-button" 
+                                onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
+                                disabled={currentPage === totalPages}
+                            >
+                                Suivant →
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div className="table-content">
+                        <table className="medical-table">
+                            <thead>
+                                <tr>
+                                    <th>📅 Date</th>
+                                    <th>🕐 Heure</th>
+                                    <th>🏥 Service médical</th>
+                                    <th>👤 Patient</th>
+                                    <th>💰 Montant</th>
+                                    <th>📊 Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {currentrendezvous.map((facture) => (
+                                    <tr key={facture.id} onClick={() => {handleRowClick(facture)}}>
+                                        <td className="date-cell">{facture.dateEmission.split("T")[0]}</td>
+                                        <td className="time-cell">{facture.dateEmission.split("T")[1].split(".")[0]}</td>
+                                        <td className="service-medical">{facture.serviceMedicalNom}</td>
+                                        <td className="patient-name">{facture.patientNomComplet}</td>
+                                        <td className="amount">{facture.montant} FCFA</td>
+                                        <td>
+                                            <span className={`status-badge status-${facture.statutPaiement.toLowerCase()}`}>
+                                                {facture.statutPaiement}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
-
-               
-                
-            </SousDiv2Style>
+            </div>
     </>)   
 }
 export default Facture
