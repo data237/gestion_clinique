@@ -17,11 +17,13 @@ const Affichedetailuser = Styled.div`display: flex; justify-content: center; ali
 const FormContainer = Styled.div`
   position: relative;
   overflow: hidden;
-  background: #fff;
-  padding: 30px;
-  border-radius: 16px;
-  font-family: sans-serif;
-  border: 1px solid rgba(217, 217, 217, 1);
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 40px;
+  border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
   &::before {
     content: '';
     position: absolute;
@@ -30,38 +32,91 @@ const FormContainer = Styled.div`
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.1;
+    opacity: 0.05;
     z-index: 0;
   }
   > * { position: relative; z-index: 1; }
 `;
 const Title = Styled.div`display: flex; justify-content: space-between;`;
-const Title1 = Styled.h2`margin-bottom: 0px; font-size: 24px; font-weight: 400; color: rgba(102, 102, 102, 1); padding-bottom: 10px; font-family: Roboto;`;
-const Title2 = Styled.h2`margin-bottom: 0px; font-size: 24px; font-weight: 400; color: rgba(159, 159, 255, 1); padding-bottom: 10px; font-family: Roboto; cursor: pointer;`;
-const TraitHorizontal = Styled.div`width: 718px; height: 5px; border-radius: 2.5px; background-color: rgba(159, 159, 255, 1); margin-bottom: 20px;`;
+const Title1 = Styled.h2`margin-bottom: 0px; font-size: 28px; font-weight: 600; color: #1e40af; padding-bottom: 15px; font-family: 'Inter', sans-serif;`;
+const Title2 = Styled.h2`margin-bottom: 0px; font-size: 24px; font-weight: 500; color: #1e40af; padding-bottom: 10px; font-family: 'Inter', sans-serif; cursor: pointer;`;
+const TraitHorizontal = Styled.div`width: 100%; height: 4px; border-radius: 2px; background: linear-gradient(90deg, #1e40af, #3b82f6); margin-bottom: 25px; box-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);`;
 const FormRow = Styled.div`display: flex; gap: 10px; margin-bottom: 15px;`;
 const FormGroup = Styled.div`flex: 1; display: flex; flex-direction: column;`;
 const FormGroupvisible = Styled.div`flex: 1; display: ${props => props.$formgroupdisplay || "none"}; flex-direction: column;`;
 const Form = Styled.form`margin: 0; padding-left:0; width: 766px;`;
-const Label = Styled.label`font-size: 14px; margin-bottom: 5px; color: rgba(51, 51, 51, 1);`;
-const Input = Styled.input`padding: 10px; border: 1px solid rgba(217, 217, 217, 1); border-radius: 8px; width: 351px; color: rgba(30, 30, 30, 1); &:focus{ border: 1px solid rgba(217, 217, 217, 1); }`;
-const Select = Styled.select`min-width: 351px; padding: 10px; border: 1px solid #ddd; border-radius: 8px;`;
+const Label = Styled.label`font-size: 14px; margin-bottom: 8px; color: #374151; font-weight: 500; font-family: 'Inter', sans-serif;`;
+const Input = Styled.input`
+  padding: 12px 16px; 
+  border: 2px solid #e5e7eb; 
+  border-radius: 10px; 
+  width: 100%; 
+  color: #1f2937; 
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  background: #ffffff;
+  
+  &:focus{ 
+    border: 2px solid #1e40af; 
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  }
+  
+  &:disabled {
+    background: #f9fafb;
+    color: #6b7280;
+    cursor: not-allowed;
+  }
+`;
+const Select = Styled.select`
+  min-width: 100%; 
+  padding: 12px 16px; 
+  border: 2px solid #e5e7eb; 
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  color: #1f2937;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    border: 2px solid #1e40af;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+  }
+`;
 const ButtonRow = Styled.div`display: flex; justify-content: space-between; gap: 10px; margin-top: 20px;`;
 const Button = Styled.button`
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(159, 159, 255, 1);
-  background: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'transparent'};
-  color: ${props => props.primary ? 'white' : 'rgba(159, 159, 255, 1)'};
-  font-weight: 500;
-  font-size: 20px;
-  font-familly: Roboto;
-  width:375px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  border: 2px solid ${props => props.primary ? '#1e40af' : '#e5e7eb'};
+  background: ${props => props.primary ? '#1e40af' : 'transparent'};
+  color: ${props => props.primary ? 'white' : '#1e40af'};
+  font-weight: 600;
+  font-size: 16px;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
   &:hover {
-    background: ${props => props.primary ? 'rgba(239, 239, 255, 1)' : '#f2f2ff'};
-    color: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'rgba(159, 159, 255, 1)'};
+    background: ${props => props.primary ? '#1d4ed8' : '#f8fafc'};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  
+  &:active {
+    transform: translateY(0);
   }
 `;
 // === fin styled-components ===
@@ -190,20 +245,20 @@ const FormulaireFacture = ({ id, onClick1 }) => {
       <Form onSubmit={handleSubmit}>
         <FormContainer>
           <Title>
-            <Title1>Détail facture</Title1>
+            <Title1>🏥 Détail de la Facture</Title1>
           </Title>
 
           <TraitHorizontal />
-          <FormRow>
-            <FormGroup>
-              <Label htmlFor="nom">Nom patient</Label>
-              <Input id="nom" value={facture.patientNomComplet} readOnly />
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="date">Date Emission</Label>
-              <Input id="date" value={facture.dateEmission.split("T")[0]} readOnly />
-            </FormGroup>
-          </FormRow>
+                      <FormRow>
+              <FormGroup>
+                <Label htmlFor="nom">👤 Nom du Patient</Label>
+                <Input id="nom" value={facture.patientNomComplet} readOnly />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="date">📅 Date d'Émission</Label>
+                <Input id="date" value={facture.dateEmission.split("T")[0]} readOnly />
+              </FormGroup>
+            </FormRow>
 
           <FormRow>
             <FormGroup>
@@ -216,22 +271,22 @@ const FormulaireFacture = ({ id, onClick1 }) => {
             </FormGroup>
           </FormRow>
 
-          <FormRow>
-            <FormGroup>
-              <Label htmlFor="montant">Montant</Label>
-              <Input id="montant" name="montant" value={facture.montant} readOnly />
-            </FormGroup>
-            <FormGroup>
-              <Label htmlFor="modepaiement">Mode paiement</Label>
-              <Select id="modepaiement" name="modePaiement" value={facture.modePaiement} onChange={handleChange}>
-                <option value="ESPECES">ESPECES</option>
-                <option value="CARTE_BANCAIRE">CARTE BANCAIRE</option>
-                <option value="VIREMENT">VIREMENT</option>
-                <option value="CHEQUE">CHEQUE</option>
-                <option value="MOBILE_MONEY">MOBILE MONEY</option>
-              </Select>
-            </FormGroup>
-          </FormRow>
+                      <FormRow>
+              <FormGroup>
+                <Label htmlFor="montant">💰 Montant (XAF)</Label>
+                <Input id="montant" name="montant" value={facture.montant} readOnly />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="modepaiement">💳 Mode de Paiement</Label>
+                <Select id="modepaiement" name="modePaiement" value={facture.modePaiement} onChange={handleChange}>
+                  <option value="ESPECES">💵 Espèces</option>
+                  <option value="CARTE_BANCAIRE">💳 Carte Bancaire</option>
+                  <option value="VIREMENT">🏦 Virement</option>
+                  <option value="CHEQUE">📄 Chèque</option>
+                  <option value="MOBILE_MONEY">📱 Mobile Money</option>
+                </Select>
+              </FormGroup>
+            </FormRow>
         </FormContainer>
 
         <ButtonRow>
