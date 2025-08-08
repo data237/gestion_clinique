@@ -133,21 +133,54 @@ const ButtonRow = Styled.div`
 `;
 
 const Button = Styled.button`
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(159, 159, 255, 1);
-  background: ${props => props.$primary ? 'rgba(159, 159, 255, 1)' : 'transparent'};
-  color: ${props => props.$primary ? 'white' : 'rgba(159, 159, 255, 1)'};
-  font-weight: 500;
-  font-size: 20px;
-  font-familly: Roboto;
-  width:375px;
+  padding: 12px 24px;
+  border-radius: 12px;
+  border: 2px solid #1e40af;
+  background: ${props => props.$primary ? 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)' : 'transparent'};
+  color: ${props => props.$primary ? '#ffffff' : '#1e40af'};
+  font-weight: 600;
+  font-size: 16px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  width: 375px;
   cursor: pointer;
-  transition: 0.3s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: ${props => props.$primary ? '0 4px 6px rgba(0, 0, 0, 0.07)' : 'none'};
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover::before {
+    left: 100%;
+  }
 
   &:hover {
-    background: ${props => props.$primary ? 'rgba(239, 239, 255, 1)' : '#f2f2ff'};
-    color: ${props => props.$primary ? 'rgba(159, 159, 255, 1)' : 'rgba(159, 159, 255, 1)'};
+    background: ${props => props.$primary ? 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)' : '#f0f9ff'};
+    color: ${props => props.$primary ? '#ffffff' : '#1e40af'};
+    transform: translateY(-1px);
+    box-shadow: ${props => props.$primary ? '0 10px 15px rgba(0, 0, 0, 0.1), 0 0 20px rgba(30, 64, 175, 0.3)' : '0 4px 6px rgba(0, 0, 0, 0.07)'};
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
   }
 `;
 

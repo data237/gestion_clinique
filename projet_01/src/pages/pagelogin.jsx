@@ -1,4 +1,5 @@
 import '../styles/pagelogin.css'
+import '../styles/buttons.css'
 import { useState, useEffect } from 'react';
 import axios from 'axios'
 import { API_BASE } from '../composants/config/apiconfig'
@@ -276,7 +277,7 @@ function PageLogin() {
             
             <button 
               type="submit" 
-              className={`button1 ${isLoading ? 'loading' : ''} ${success ? 'success' : ''}`} 
+              className={`modern-login-button ${isLoading ? 'loading' : ''} ${success ? 'success' : ''}`} 
               disabled={isLoading || !emailValid || !passwordValid || loginAttempts >= 5}
             >
               {isLoading ? (

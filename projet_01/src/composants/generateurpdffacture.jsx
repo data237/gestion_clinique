@@ -76,14 +76,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
   },
-  clinicName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#1e40af",
-    marginBottom: 3,
-    textTransform: "uppercase",
-    letterSpacing: 1
-  },
   clinicDetails: {
     fontSize: 9,
     color: "#64748b",
@@ -388,15 +380,14 @@ export default function ReceiptPDF({
               <View style={styles.logoSection}>
                 {logo && <Image style={styles.logo} src={logo} />}
                 <View style={styles.clinicInfo}>
-                  <Text style={styles.clinicName}>CLINIQUE D'AFRIK</Text>
                   <Text style={styles.clinicDetails}>
                     123 Avenue de la Santé, Douala{'\n'}
                     Cameroun • Tél: +237 677 850 000{'\n'}
                     Email: admin@gmail.com
                   </Text>
                 </View>
-              </View>
-              
+          </View>
+
               <View style={styles.factureInfo}>
                 <Text style={styles.factureTitle}>FACTURE</Text>
                 <Text style={styles.factureNumber}>
@@ -407,7 +398,7 @@ export default function ReceiptPDF({
                 </Text>
               </View>
             </View>
-          </View>
+            </View>
 
           {/* Informations patient avec design amélioré */}
           <View style={styles.patientSection}>
@@ -451,7 +442,7 @@ export default function ReceiptPDF({
               <Text style={styles.totalLabel}>Total à Payer</Text>
               <Text style={styles.totalAmount}>{amount}</Text>
             </View>
-          </View>
+            </View>
 
           {/* Footer professionnel avec informations complètes */}
           <View style={styles.footer}>

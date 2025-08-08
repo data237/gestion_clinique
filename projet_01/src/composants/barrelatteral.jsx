@@ -18,8 +18,10 @@ const Image = Styled.img`
 `
 
 const Imgsvg = Styled.img`
-     width: 28px;
-    height: 28px;
+    width: 22px;
+    height: 22px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: brightness(0) invert(1);
 `
 
 const BarrelatteralStyle = Styled.div`
@@ -37,25 +39,139 @@ const BarrelatteralStyle = Styled.div`
 
 const Button = Styled.button`
     display: flex;
-    justify-content: space-between;
-    background-color:  rgba(68, 68, 68, 0.3);
-    position : absolute;
-    bottom: 0px;
-    width: 20vw;
-    gap: 8px;
-    padding: 15px 15px 15px 25px;
-    text-align: left;
-    align-items: left;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    position: absolute;
+    bottom: 25px;
+    left: 15px;
+    right: 15px;
+    width: calc(20vw - 30px);
+    gap: 12px;
+    padding: 20px 28px;
+    text-align: center;
     font-family: "Inter", sans-serif;
-    font-weight: 300;
-    font-size: 1.2em;
+    font-weight: 600;
+    font-size: 15px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 
+        0 8px 32px rgba(102, 126, 234, 0.3),
+        0 2px 8px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    overflow: hidden;
     
-    &:hover{
-        cursor: pointer;
-        background-color:  rgba(159, 159, 255, 1);
-        color: #fff;
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    &:hover {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.95) 0%, rgba(220, 38, 38, 0.95) 100%);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-6px) scale(1.05);
+        box-shadow: 
+            0 20px 40px rgba(239, 68, 68, 0.4),
+            0 8px 16px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        
+        &::before {
+            left: 100%;
+        }
+        
+        ${Imgsvg} {
+            transform: translateX(8px) rotate(-15deg) scale(1.2);
+            filter: brightness(0) invert(1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+    }
+    
+    &:active {
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 
+            0 12px 24px rgba(239, 68, 68, 0.3),
+            0 4px 8px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    
+    &:focus {
+        outline: none;
+        box-shadow: 
+            0 0 0 4px rgba(239, 68, 68, 0.2),
+            0 8px 32px rgba(102, 126, 234, 0.3),
+            0 2px 8px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 `
+
+const LogoutText = Styled.p`
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 2;
+`
+
+const LogoutContainer = Styled.div`
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    z-index: 2;
+    
+    &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: all 0.6s ease;
+        z-index: 1;
+    }
+    
+    ${Button}:hover &::after {
+        width: 200px;
+        height: 200px;
+    }
+`
+
+const PulseEffect = Styled.div`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.6s ease;
+    pointer-events: none;
+    z-index: 1;
+    
+    ${Button}:hover & {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 0;
+    }
+`
+
 function Barrelatteral({children}){
 
     const navigate = useNavigate()
@@ -89,8 +205,11 @@ function Barrelatteral({children}){
                     
                 </MenuStyle>
                 <Button onClick={()=> handleLogout()}> 
-                    <p>Deconnexion</p> 
-                    <Imgsvg src={logout}></Imgsvg>
+                    <PulseEffect />
+                    <LogoutContainer>
+                        <Imgsvg src={logout}></Imgsvg>
+                        <LogoutText>Déconnexion</LogoutText>
+                    </LogoutContainer>
                 </Button>
             </BarrelatteralStyle>
     </>)
