@@ -15,25 +15,31 @@ import {
 
 const styles = StyleSheet.create({
   page: { 
-    padding: 40, 
+    padding: 25, 
     fontFamily: "Helvetica",
     backgroundColor: "#ffffff",
     fontSize: 10
   },
   container: { 
     flex: 1,
-    backgroundColor: "#ffffff"
+    backgroundColor: "#ffffff",
+    border: "2px solid #1e40af",
+    borderRadius: 8,
+    padding: 20
   },
   
   // Header moderne avec logo bien positionné
   header: { 
     backgroundColor: "#f8fafc",
-    padding: 20,
-    borderBottom: "3px solid #1e40af",
-    marginBottom: 25,
-    borderRadius: 12,
+    padding: 15,
+    borderBottom: "2px solid #1e40af",
+    marginBottom: 15,
+    borderRadius: 8,
     position: "relative",
-    overflow: "hidden"
+    overflow: "hidden",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerBackground: {
     position: "absolute",
@@ -47,57 +53,65 @@ const styles = StyleSheet.create({
   headerContent: {
     flexDirection: "column",
     justifyContent: "space-between",
-    alignItems: "flex-start",
+    alignItems: "center",
     position: "relative",
     zIndex: 2
   },
   logoSection: {
     flexDirection: "row",
+    justifyContent: "space-around",
     alignItems: "center",
-    gap: 20
+    gap: 120,
+    marginBottom: 20
   },
   logo: { 
-    width: 80, 
-    height: 80, 
-    borderRadius: 12,
-    border: "3px solid #1e40af"
+    width: 200, 
+    height: "auto", 
+    // borderRadius: 8,
+    // border: "2px solid #1e40af"
   },
   clinicInfo: {
-    flex: 1
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    textAlign: "center",
   },
   clinicName: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: "bold",
     color: "#1e40af",
-    marginBottom: 8,
+    marginBottom: 3,
     textTransform: "uppercase",
     letterSpacing: 1
   },
   clinicDetails: {
-    fontSize: 11,
+    fontSize: 9,
     color: "#64748b",
-    lineHeight: 1.5,
-    marginBottom: 4
+    lineHeight: 1.3,
+    marginBottom: 2
   },
   factureInfo: {
-    alignItems: "flex-end",
-    textAlign: "right"
+    alignItems: "center",
+    textAlign: "center",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
   factureTitle: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "bold",
     color: "#1e40af",
-    marginBottom: 12,
+    marginBottom: 6,
     textTransform: "uppercase",
-    letterSpacing: 2
+    letterSpacing: 1
   },
   factureNumber: {
-    fontSize: 14,
+    fontSize: 12,
     color: "#ffffff",
     backgroundColor: "#1e40af",
-    padding: "8px 16px",
-    borderRadius: 8,
-    marginBottom: 8,
+    padding: "5px 10px",
+    borderRadius: 5,
+    marginBottom: 5,
     fontWeight: "bold"
   },
   factureDate: {
@@ -109,64 +123,64 @@ const styles = StyleSheet.create({
   // Section patient avec design amélioré
   patientSection: {
     backgroundColor: "#ffffff",
-    padding: 25,
-    borderRadius: 12,
-    marginBottom: 30,
-    border: "2px solid #e2e8f0",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)"
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)"
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#1e40af",
-    marginBottom: 20,
+    marginBottom: 12,
     textTransform: "uppercase",
     letterSpacing: 1,
-    borderBottom: "2px solid #1e40af",
-    paddingBottom: 8
+    borderBottom: "1px solid #1e40af",
+    paddingBottom: 4
   },
   patientGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 20
+    gap: 12
   },
   patientItem: {
-    width: "48%",
-    marginBottom: 15
+    width: "100%",
+    marginBottom: 8
   },
   patientLabel: {
-    fontSize: 11,
+    fontSize: 9,
     color: "#64748b",
     fontWeight: "medium",
-    marginBottom: 4,
+    marginBottom: 2,
     textTransform: "uppercase",
     letterSpacing: 0.5
   },
   patientValue: {
-    fontSize: 13,
+    fontSize: 10,
     color: "#1e293b",
     fontWeight: "bold",
-    padding: "8px 12px",
+    padding: "4px 8px",
     backgroundColor: "#f8fafc",
-    borderRadius: 6,
+    borderRadius: 3,
     border: "1px solid #e2e8f0"
   },
   
   // Section services avec design moderne
   servicesSection: {
-    marginBottom: 30
+    marginBottom: 15
   },
   serviceHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     backgroundColor: "#1e40af",
-    borderRadius: 8,
-    marginBottom: 15
+    borderRadius: 5,
+    marginBottom: 10
   },
   serviceHeaderText: {
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: "bold",
     color: "#ffffff",
     textTransform: "uppercase",
@@ -176,22 +190,22 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     backgroundColor: "#ffffff",
-    borderRadius: 8,
-    marginBottom: 10,
+    borderRadius: 5,
+    marginBottom: 6,
     border: "1px solid #e2e8f0",
-    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)"
+    boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)"
   },
   serviceName: {
-    fontSize: 13,
+    fontSize: 10,
     color: "#1e293b",
     fontWeight: "medium",
     flex: 1
   },
   serviceAmount: {
-    fontSize: 14,
+    fontSize: 11,
     color: "#1e40af",
     fontWeight: "bold"
   },
@@ -199,15 +213,15 @@ const styles = StyleSheet.create({
   // Section paiement avec design professionnel
   paymentSection: {
     backgroundColor: "#f0f9ff",
-    padding: 25,
-    borderRadius: 12,
-    marginBottom: 30,
-    border: "2px solid #bae6fd"
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 15,
+    border: "1px solid #bae6fd"
   },
   paymentGrid: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 20
+    marginBottom: 12
   },
   paymentItem: {
     width: "48%"
@@ -216,7 +230,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: "#0369a1",
     fontWeight: "medium",
-    marginBottom: 6,
+    marginBottom: 4,
     textTransform: "uppercase",
     letterSpacing: 0.5
   },
@@ -224,59 +238,59 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#1e293b",
     fontWeight: "bold",
-    padding: "8px 12px",
+    padding: "4px 8px",
     backgroundColor: "#ffffff",
-    borderRadius: 6,
+    borderRadius: 3,
     border: "1px solid #bae6fd"
   },
   totalSection: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingTop: 20,
-    borderTop: "3px solid #bae6fd",
-    marginTop: 20
+    paddingTop: 12,
+    borderTop: "1px solid #bae6fd",
+    marginTop: 12
   },
   totalLabel: {
-    fontSize: 16,
+    fontSize: 13,
     color: "#1e40af",
     fontWeight: "bold",
     textTransform: "uppercase",
     letterSpacing: 1
   },
   totalAmount: {
-    fontSize: 18,
-    color: "#1e40af",
+    fontSize: 16,
+    color: "red",
     fontWeight: "bold",
-    padding: "12px 20px",
+    padding: "6px 12px",
     backgroundColor: "#ffffff",
-    borderRadius: 8,
-    border: "2px solid #1e40af"
+    borderRadius: 4,
+    border: "1px solid #1e40af"
   },
   
   // Footer professionnel avec informations complètes
   footer: {
-    marginTop: 40,
-    paddingTop: 25,
-    borderTop: "3px solid #e2e8f0",
+    marginTop: 30,
+    paddingTop: 15,
+    borderTop: "1px solid #e2e8f0",
     textAlign: "center"
   },
   footerText: {
-    fontSize: 10,
+    fontSize: 8,
     color: "#64748b",
-    lineHeight: 1.6,
-    marginBottom: 15
+    lineHeight: 1.4,
+    marginBottom: 10
   },
   footerContact: {
-    fontSize: 11,
+    fontSize: 9,
     color: "#1e40af",
     fontWeight: "medium",
-    marginBottom: 8
+    marginBottom: 5
   },
   footerInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 20,
-    paddingTop: 20,
+    marginTop: 12,
+    paddingTop: 12,
     borderTop: "1px solid #e2e8f0"
   },
   footerInfoItem: {
@@ -284,13 +298,13 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   footerInfoTitle: {
-    fontSize: 10,
+    fontSize: 8,
     color: "#64748b",
     fontWeight: "medium",
-    marginBottom: 4
+    marginBottom: 2
   },
   footerInfoValue: {
-    fontSize: 11,
+    fontSize: 9,
     color: "#1e293b",
     fontWeight: "bold"
   },
@@ -299,17 +313,17 @@ const styles = StyleSheet.create({
   badge: {
     backgroundColor: "#dcfce7",
     color: "#166534",
-    padding: "6px 12px",
-    borderRadius: 6,
-    fontSize: 10,
+    padding: "3px 6px",
+    borderRadius: 3,
+    fontSize: 8,
     fontWeight: "bold",
     textTransform: "uppercase",
     letterSpacing: 0.5
   },
   divider: {
-    height: 2,
+    height: 1,
     backgroundColor: "#1e40af",
-    marginVertical: 20,
+    marginVertical: 10,
     borderRadius: 1
   }
 });
@@ -372,21 +386,7 @@ export default function ReceiptPDF({
             <View style={styles.headerBackground} />
             <View style={styles.headerContent}>
               <View style={styles.logoSection}>
-                {logo ? (
-                  <Image style={styles.logo} src={logo} />
-                ) : (
-                  <View style={{
-                    width: 80,
-                    height: 80,
-                    borderRadius: 12,
-                    backgroundColor: "#1e40af",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    border: "3px solid #1e40af"
-                  }}>
-                    <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>CLINIQUE</Text>
-                  </View>
-                )}
+                {logo && <Image style={styles.logo} src={logo} />}
                 <View style={styles.clinicInfo}>
                   <Text style={styles.clinicName}>CLINIQUE D'AFRIK</Text>
                   <Text style={styles.clinicDetails}>
@@ -403,7 +403,7 @@ export default function ReceiptPDF({
                   N° {factureId ? factureId.toString().padStart(6, '0') : '000000'}
                 </Text>
                 <Text style={styles.factureDate}>
-                  {date}
+                  {formatDate(date)}
                 </Text>
               </View>
             </View>
@@ -416,13 +416,6 @@ export default function ReceiptPDF({
               <View style={styles.patientItem}>
                 <Text style={styles.patientLabel}>Nom et Prénom</Text>
                 <Text style={styles.patientValue}>{patientName || "—"}</Text>
-              </View>
-
-              <View style={styles.patientItem}>
-                <Text style={styles.patientLabel}>Numéro de facture</Text>
-                <Text style={styles.patientValue}>
-                  {factureId ? factureId.toString().padStart(6, '0') : '000000'}
-                </Text>
               </View>
             </View>
           </View>
@@ -445,11 +438,11 @@ export default function ReceiptPDF({
             <View style={styles.paymentGrid}>
               <View style={styles.paymentItem}>
                 <Text style={styles.paymentLabel}>Mode de paiement</Text>
-                <Text style={styles.paymentValue}>{paymentMethod}</Text>
+                <Text style={styles.paymentValue}>{translatePaymentMethod(paymentMethod)}</Text>
               </View>
               <View style={styles.paymentItem}>
                 <Text style={styles.paymentLabel}>Statut du paiement</Text>
-                <Text style={[styles.badge, { marginTop: 8 }]}>
+                <Text style={[styles.badge, { marginTop: 4 }]}>
                   PAYÉ
                 </Text>
               </View>
@@ -467,7 +460,7 @@ export default function ReceiptPDF({
               Pour toute question concernant cette facture, veuillez nous contacter.
             </Text>
             <Text style={styles.footerContact}>
-              📧 admin@gmail.com • 📞 +237 677 850 000
+              admin@gmail.com • +237 677 850 000
             </Text>
             
             <View style={styles.footerInfo}>
@@ -477,7 +470,7 @@ export default function ReceiptPDF({
               </View>
               <View style={styles.footerInfoItem}>
                 <Text style={styles.footerInfoTitle}>Adresse</Text>
-                <Text style={styles.footerInfoValue}>123 Avenue de la Santé</Text>
+                <Text style={styles.footerInfoValue}>Terminus Mimboman</Text>
               </View>
               <View style={styles.footerInfoItem}>
                 <Text style={styles.footerInfoTitle}>Ville</Text>

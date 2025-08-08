@@ -101,9 +101,7 @@ useEffect(() => {
         setCurrentPage(page);
         }
     }
-
-
-
+    console.log(pagesToShow) 
 
 
     //toggle boutton
