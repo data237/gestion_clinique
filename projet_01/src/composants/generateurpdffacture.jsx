@@ -15,236 +15,302 @@ import {
 
 const styles = StyleSheet.create({
   page: { 
-    padding: 30, 
+    padding: 40, 
     fontFamily: "Helvetica",
-    backgroundColor: "#ffffff"
+    backgroundColor: "#ffffff",
+    fontSize: 10
   },
   container: { 
     flex: 1,
-    backgroundColor: "#ffffff",
-    border: "3px solid #4ade80", // Bordure verte comme l'exemple
-    borderRadius: 8
+    backgroundColor: "#ffffff"
   },
   
-  // Header moderne avec logo et titre
+  // Header moderne avec logo bien positionné
   header: { 
-    padding: 25,
-    borderBottom: "2px solid #e5e7eb",
-    marginBottom: 25
+    backgroundColor: "#f8fafc",
+    padding: 30,
+    borderBottom: "3px solid #1e40af",
+    marginBottom: 35,
+    borderRadius: 12,
+    position: "relative",
+    overflow: "hidden"
+  },
+  headerBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)",
+    opacity: 0.05
   },
   headerContent: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start"
+    alignItems: "flex-start",
+    position: "relative",
+    zIndex: 2
   },
-  clinicSection: {
+  logoSection: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 15
+    gap: 20
   },
   logo: { 
-    width: 60, 
-    height: 60, 
-    borderRadius: 8,
-    border: "2px solid #4ade80"
+    width: 80, 
+    height: 80, 
+    borderRadius: 12,
+    border: "3px solid #1e40af"
   },
   clinicInfo: {
     flex: 1
   },
   clinicName: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "bold",
-    color: "#1f2937",
-    marginBottom: 4
-  },
-  clinicSubtitle: {
-    fontSize: 14,
-    color: "#6b7280",
-    fontStyle: "italic"
+    color: "#1e40af",
+    marginBottom: 8,
+    textTransform: "uppercase",
+    letterSpacing: 1
   },
   clinicDetails: {
-    fontSize: 10,
-    color: "#6b7280",
-    lineHeight: 1.4,
-    marginTop: 8
+    fontSize: 11,
+    color: "#64748b",
+    lineHeight: 1.5,
+    marginBottom: 4
   },
   factureInfo: {
     alignItems: "flex-end",
     textAlign: "right"
   },
   factureTitle: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: "bold",
-    color: "#1f2937",
-    marginBottom: 8,
-    textTransform: "uppercase"
+    color: "#1e40af",
+    marginBottom: 12,
+    textTransform: "uppercase",
+    letterSpacing: 2
   },
   factureNumber: {
-    fontSize: 12,
-    color: "#6b7280",
-    marginBottom: 4
+    fontSize: 14,
+    color: "#ffffff",
+    backgroundColor: "#1e40af",
+    padding: "8px 16px",
+    borderRadius: 8,
+    marginBottom: 8,
+    fontWeight: "bold"
   },
   factureDate: {
-    fontSize: 11,
-    color: "#6b7280"
+    fontSize: 12,
+    color: "#64748b",
+    fontWeight: "medium"
   },
   
-  // Section client et facture
-  clientSection: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 25,
-    paddingBottom: 20,
-    borderBottom: "1px solid #e5e7eb"
+  // Section patient avec design amélioré
+  patientSection: {
+    backgroundColor: "#ffffff",
+    padding: 25,
+    borderRadius: 12,
+    marginBottom: 30,
+    border: "2px solid #e2e8f0",
+    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.05)"
   },
-  clientInfo: {
-    flex: 1
-  },
-  clientTitle: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "#374151",
-    marginBottom: 8,
-    textTransform: "uppercase"
-  },
-  clientName: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#1f2937",
-    marginBottom: 4
-  },
-  clientAddress: {
-    fontSize: 11,
-    color: "#6b7280",
-    marginBottom: 4
-  },
-  clientDate: {
-    fontSize: 11,
-    color: "#6b7280"
-  },
-  invoiceInfo: {
-    alignItems: "flex-end"
-  },
-  invoiceTitle: {
+  sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#1f2937",
-    marginBottom: 8
+    color: "#1e40af",
+    marginBottom: 20,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    borderBottom: "2px solid #1e40af",
+    paddingBottom: 8
   },
-  invoiceNumber: {
-    fontSize: 12,
-    color: "#6b7280",
-    marginBottom: 4
+  patientGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 20
+  },
+  patientItem: {
+    width: "48%",
+    marginBottom: 15
+  },
+  patientLabel: {
+    fontSize: 11,
+    color: "#64748b",
+    fontWeight: "medium",
+    marginBottom: 4,
+    textTransform: "uppercase",
+    letterSpacing: 0.5
+  },
+  patientValue: {
+    fontSize: 13,
+    color: "#1e293b",
+    fontWeight: "bold",
+    padding: "8px 12px",
+    backgroundColor: "#f8fafc",
+    borderRadius: 6,
+    border: "1px solid #e2e8f0"
   },
   
   // Section services avec design moderne
   servicesSection: {
-    marginBottom: 25
+    marginBottom: 30
   },
   serviceHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: "#f9fafb",
-    borderBottom: "1px solid #e5e7eb",
-    marginBottom: 8
+    paddingHorizontal: 20,
+    backgroundColor: "#1e40af",
+    borderRadius: 8,
+    marginBottom: 15
   },
   serviceHeaderText: {
     fontSize: 12,
     fontWeight: "bold",
-    color: "#374151",
-    textTransform: "uppercase"
+    color: "#ffffff",
+    textTransform: "uppercase",
+    letterSpacing: 0.5
   },
   serviceItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderBottom: "1px solid #f3f4f6"
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    marginBottom: 10,
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 2px 4px rgba(0, 0, 0, 0.05)"
   },
   serviceName: {
-    fontSize: 12,
-    color: "#1f2937",
+    fontSize: 13,
+    color: "#1e293b",
     fontWeight: "medium",
     flex: 1
   },
   serviceAmount: {
-    fontSize: 12,
-    color: "#1f2937",
+    fontSize: 14,
+    color: "#1e40af",
     fontWeight: "bold"
   },
   
-  // Section total avec design professionnel
-  totalSection: {
-    marginTop: 20,
-    paddingTop: 15,
-    borderTop: "2px solid #e5e7eb"
+  // Section paiement avec design professionnel
+  paymentSection: {
+    backgroundColor: "#f0f9ff",
+    padding: 25,
+    borderRadius: 12,
+    marginBottom: 30,
+    border: "2px solid #bae6fd"
   },
-  totalRow: {
+  paymentGrid: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
+    marginBottom: 20
   },
-  totalLabel: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#1f2937",
-    textTransform: "uppercase"
+  paymentItem: {
+    width: "48%"
   },
-  totalAmount: {
-    fontSize: 16,
-    color: "#1f2937",
+  paymentLabel: {
+    fontSize: 11,
+    color: "#0369a1",
+    fontWeight: "medium",
+    marginBottom: 6,
+    textTransform: "uppercase",
+    letterSpacing: 0.5
+  },
+  paymentValue: {
+    fontSize: 13,
+    color: "#1e293b",
     fontWeight: "bold",
-    padding: "8px 16px",
-    backgroundColor: "#f0f9ff",
-    borderRadius: 4,
+    padding: "8px 12px",
+    backgroundColor: "#ffffff",
+    borderRadius: 6,
     border: "1px solid #bae6fd"
   },
-  
-  // Footer avec informations complètes
-  footer: {
-    marginTop: 30,
+  totalSection: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingTop: 20,
-    borderTop: "2px solid #e5e7eb"
+    borderTop: "3px solid #bae6fd",
+    marginTop: 20
+  },
+  totalLabel: {
+    fontSize: 16,
+    color: "#1e40af",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    letterSpacing: 1
+  },
+  totalAmount: {
+    fontSize: 18,
+    color: "#1e40af",
+    fontWeight: "bold",
+    padding: "12px 20px",
+    backgroundColor: "#ffffff",
+    borderRadius: 8,
+    border: "2px solid #1e40af"
+  },
+  
+  // Footer professionnel avec informations complètes
+  footer: {
+    marginTop: 40,
+    paddingTop: 25,
+    borderTop: "3px solid #e2e8f0",
+    textAlign: "center"
   },
   footerText: {
     fontSize: 10,
-    color: "#6b7280",
-    lineHeight: 1.5,
-    marginBottom: 15,
-    textAlign: "center"
+    color: "#64748b",
+    lineHeight: 1.6,
+    marginBottom: 15
+  },
+  footerContact: {
+    fontSize: 11,
+    color: "#1e40af",
+    fontWeight: "medium",
+    marginBottom: 8
   },
   footerInfo: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 15,
-    paddingTop: 15,
-    borderTop: "1px solid #f3f4f6"
+    marginTop: 20,
+    paddingTop: 20,
+    borderTop: "1px solid #e2e8f0"
   },
   footerInfoItem: {
     width: "30%",
     textAlign: "center"
   },
   footerInfoTitle: {
-    fontSize: 9,
-    color: "#6b7280",
+    fontSize: 10,
+    color: "#64748b",
     fontWeight: "medium",
-    marginBottom: 4,
-    textTransform: "uppercase"
+    marginBottom: 4
   },
   footerInfoValue: {
-    fontSize: 10,
-    color: "#374151",
+    fontSize: 11,
+    color: "#1e293b",
     fontWeight: "bold"
   },
-  footerContact: {
+  
+  // Éléments décoratifs
+  badge: {
+    backgroundColor: "#dcfce7",
+    color: "#166534",
+    padding: "6px 12px",
+    borderRadius: 6,
     fontSize: 10,
-    color: "#4ade80",
-    fontWeight: "medium",
-    textAlign: "center",
-    marginTop: 10
+    fontWeight: "bold",
+    textTransform: "uppercase",
+    letterSpacing: 0.5
+  },
+  divider: {
+    height: 2,
+    backgroundColor: "#1e40af",
+    marginVertical: 20,
+    borderRadius: 1
   }
 });
 
@@ -263,8 +329,18 @@ export default function ReceiptPDF({
     const date = new Date(dateStr);
     return date.toLocaleDateString('fr-FR', {
       year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  // Formater l'heure
+  const formatTime = (dateStr) => {
+    if (!dateStr) return "—";
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString('fr-FR', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
 
@@ -291,39 +367,40 @@ export default function ReceiptPDF({
     <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.container}>
-          {/* Header moderne avec logo et informations */}
+          {/* Header moderne avec logo bien positionné */}
           <View style={styles.header}>
+            <View style={styles.headerBackground} />
             <View style={styles.headerContent}>
-              <View style={styles.clinicSection}>
+              <View style={styles.logoSection}>
                 {logo ? (
                   <Image style={styles.logo} src={logo} />
                 ) : (
                   <View style={{
-                    width: 60,
-                    height: 60,
-                    borderRadius: 8,
-                    backgroundColor: "#4ade80",
+                    width: 80,
+                    height: 80,
+                    borderRadius: 12,
+                    backgroundColor: "#1e40af",
                     justifyContent: "center",
                     alignItems: "center",
-                    border: "2px solid #4ade80"
+                    border: "3px solid #1e40af"
                   }}>
-                    <Text style={{ color: "white", fontSize: 14, fontWeight: "bold" }}>CLINIQUE</Text>
+                    <Text style={{ color: "white", fontSize: 18, fontWeight: "bold" }}>CLINIQUE</Text>
                   </View>
                 )}
                 <View style={styles.clinicInfo}>
-                  <Text style={styles.clinicName}>Clinique d'Afrik</Text>
-                  <Text style={styles.clinicSubtitle}>Afrikan clinic</Text>
+                  <Text style={styles.clinicName}>CENTRE MÉDICAL EXCELLENCE</Text>
                   <Text style={styles.clinicDetails}>
                     123 Avenue de la Santé, Douala{'\n'}
-                    Cameroun • Tél: +237 677 850 000
+                    Cameroun • Tél: +237 677 850 000{'\n'}
+                    Email: admin@gmail.com
                   </Text>
                 </View>
               </View>
               
               <View style={styles.factureInfo}>
-                <Text style={styles.factureTitle}>Facture de consultation</Text>
+                <Text style={styles.factureTitle}>FACTURE</Text>
                 <Text style={styles.factureNumber}>
-                  Numéro #{factureId ? factureId.toString().padStart(5, '0') : '00000'}
+                  N° {factureId ? factureId.toString().padStart(6, '0') : '000000'}
                 </Text>
                 <Text style={styles.factureDate}>
                   {formatDate(date)}
@@ -332,52 +409,72 @@ export default function ReceiptPDF({
             </View>
           </View>
 
-          {/* Section client et facture */}
-          <View style={styles.clientSection}>
-            <View style={styles.clientInfo}>
-              <Text style={styles.clientTitle}>Patient</Text>
-              <Text style={styles.clientName}>{patientName || "—"}</Text>
-              <Text style={styles.clientAddress}>Adresse du patient</Text>
-              <Text style={styles.clientDate}>Date: {formatDate(date)}</Text>
-            </View>
-            
-            <View style={styles.invoiceInfo}>
-              <Text style={styles.invoiceTitle}>Facture</Text>
-              <Text style={styles.invoiceNumber}>
-                #{factureId ? factureId.toString().padStart(5, '0') : '00000'}
-              </Text>
+          {/* Informations patient avec design amélioré */}
+          <View style={styles.patientSection}>
+            <Text style={styles.sectionTitle}>Informations Patient</Text>
+            <View style={styles.patientGrid}>
+              <View style={styles.patientItem}>
+                <Text style={styles.patientLabel}>Nom et Prénom</Text>
+                <Text style={styles.patientValue}>{patientName || "—"}</Text>
+              </View>
+              <View style={styles.patientItem}>
+                <Text style={styles.patientLabel}>Date de consultation</Text>
+                <Text style={styles.patientValue}>{formatDate(date)}</Text>
+              </View>
+              <View style={styles.patientItem}>
+                <Text style={styles.patientLabel}>Heure de consultation</Text>
+                <Text style={styles.patientValue}>{formatTime(date)}</Text>
+              </View>
+              <View style={styles.patientItem}>
+                <Text style={styles.patientLabel}>Numéro de facture</Text>
+                <Text style={styles.patientValue}>
+                  {factureId ? factureId.toString().padStart(6, '0') : '000000'}
+                </Text>
+              </View>
             </View>
           </View>
 
-          {/* Section services avec design moderne */}
+          {/* Services médicaux avec design moderne */}
           <View style={styles.servicesSection}>
             <View style={styles.serviceHeader}>
-              <Text style={styles.serviceHeaderText}>Description du service</Text>
+              <Text style={styles.serviceHeaderText}>Services Médicaux</Text>
               <Text style={styles.serviceHeaderText}>Montant</Text>
             </View>
             <View style={styles.serviceItem}>
-              <Text style={styles.serviceName}>{serviceMedicalName || "Consultation médicale"}</Text>
+              <Text style={styles.serviceName}>{serviceMedicalName || "Consultation médicale générale"}</Text>
               <Text style={styles.serviceAmount}>{formatAmount(amount)}</Text>
-            </View>
-            <View style={styles.serviceItem}>
-              <Text style={styles.serviceName}>Mode de paiement</Text>
-              <Text style={styles.serviceAmount}>{translatePaymentMethod(paymentMethod)}</Text>
             </View>
           </View>
 
-          {/* Section total avec design professionnel */}
-          <View style={styles.totalSection}>
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total</Text>
+          {/* Section paiement avec design professionnel */}
+          <View style={styles.paymentSection}>
+            <Text style={styles.sectionTitle}>Détails du Paiement</Text>
+            <View style={styles.paymentGrid}>
+              <View style={styles.paymentItem}>
+                <Text style={styles.paymentLabel}>Mode de paiement</Text>
+                <Text style={styles.paymentValue}>{translatePaymentMethod(paymentMethod)}</Text>
+              </View>
+              <View style={styles.paymentItem}>
+                <Text style={styles.paymentLabel}>Statut du paiement</Text>
+                <Text style={[styles.badge, { marginTop: 8 }]}>
+                  PAYÉ
+                </Text>
+              </View>
+            </View>
+            <View style={styles.totalSection}>
+              <Text style={styles.totalLabel}>Total à Payer</Text>
               <Text style={styles.totalAmount}>{formatAmount(amount)}</Text>
             </View>
           </View>
 
-          {/* Footer avec informations complètes */}
+          {/* Footer professionnel avec informations complètes */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Merci de votre confiance. Cette facture est un document officiel.{'\n'}
-              Pour toute question, veuillez nous contacter.
+              Pour toute question concernant cette facture, veuillez nous contacter.
+            </Text>
+            <Text style={styles.footerContact}>
+              📧 admin@gmail.com • 📞 +237 677 850 000
             </Text>
             
             <View style={styles.footerInfo}>
@@ -390,14 +487,10 @@ export default function ReceiptPDF({
                 <Text style={styles.footerInfoValue}>123 Avenue de la Santé</Text>
               </View>
               <View style={styles.footerInfoItem}>
-                <Text style={styles.footerInfoTitle}>Contact</Text>
-                <Text style={styles.footerInfoValue}>+237 677 850 000</Text>
+                <Text style={styles.footerInfoTitle}>Ville</Text>
+                <Text style={styles.footerInfoValue}>Douala, Cameroun</Text>
               </View>
             </View>
-            
-            <Text style={styles.footerContact}>
-              📧 admin@gmail.com • 📞 +237 677 850 000
-            </Text>
           </View>
         </View>
       </Page>
