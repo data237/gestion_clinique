@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   // Header moderne avec logo bien positionné
   header: { 
     backgroundColor: "#f8fafc",
-    padding: 30,
+    padding: 20,
     borderBottom: "3px solid #1e40af",
     marginBottom: 35,
     borderRadius: 12,
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     opacity: 0.05
   },
   headerContent: {
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "flex-start",
     position: "relative",
@@ -388,7 +388,7 @@ export default function ReceiptPDF({
                   </View>
                 )}
                 <View style={styles.clinicInfo}>
-                  <Text style={styles.clinicName}>CENTRE MÉDICAL EXCELLENCE</Text>
+                  <Text style={styles.clinicName}>CLINIQUE D'AFRIK</Text>
                   <Text style={styles.clinicDetails}>
                     123 Avenue de la Santé, Douala{'\n'}
                     Cameroun • Tél: +237 677 850 000{'\n'}
@@ -403,7 +403,7 @@ export default function ReceiptPDF({
                   N° {factureId ? factureId.toString().padStart(6, '0') : '000000'}
                 </Text>
                 <Text style={styles.factureDate}>
-                  {formatDate(date)}
+                  {date}
                 </Text>
               </View>
             </View>
@@ -417,14 +417,7 @@ export default function ReceiptPDF({
                 <Text style={styles.patientLabel}>Nom et Prénom</Text>
                 <Text style={styles.patientValue}>{patientName || "—"}</Text>
               </View>
-              <View style={styles.patientItem}>
-                <Text style={styles.patientLabel}>Date de consultation</Text>
-                <Text style={styles.patientValue}>{formatDate(date)}</Text>
-              </View>
-              <View style={styles.patientItem}>
-                <Text style={styles.patientLabel}>Heure de consultation</Text>
-                <Text style={styles.patientValue}>{formatTime(date)}</Text>
-              </View>
+
               <View style={styles.patientItem}>
                 <Text style={styles.patientLabel}>Numéro de facture</Text>
                 <Text style={styles.patientValue}>
@@ -442,7 +435,7 @@ export default function ReceiptPDF({
             </View>
             <View style={styles.serviceItem}>
               <Text style={styles.serviceName}>{serviceMedicalName || "Consultation médicale générale"}</Text>
-              <Text style={styles.serviceAmount}>{formatAmount(amount)}</Text>
+              <Text style={styles.serviceAmount}>{amount}</Text>
             </View>
           </View>
 
@@ -452,7 +445,7 @@ export default function ReceiptPDF({
             <View style={styles.paymentGrid}>
               <View style={styles.paymentItem}>
                 <Text style={styles.paymentLabel}>Mode de paiement</Text>
-                <Text style={styles.paymentValue}>{translatePaymentMethod(paymentMethod)}</Text>
+                <Text style={styles.paymentValue}>{paymentMethod}</Text>
               </View>
               <View style={styles.paymentItem}>
                 <Text style={styles.paymentLabel}>Statut du paiement</Text>
@@ -463,7 +456,7 @@ export default function ReceiptPDF({
             </View>
             <View style={styles.totalSection}>
               <Text style={styles.totalLabel}>Total à Payer</Text>
-              <Text style={styles.totalAmount}>{formatAmount(amount)}</Text>
+              <Text style={styles.totalAmount}>{amount}</Text>
             </View>
           </View>
 
@@ -497,3 +490,4 @@ export default function ReceiptPDF({
     </Document>
   );
 }
+
