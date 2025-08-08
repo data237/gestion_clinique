@@ -139,24 +139,7 @@ const ButtonRow = Styled.div`
   margin-top: 20px;
 `;
 
-const Button = Styled.button`
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(159, 159, 255, 1);
-  background: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'transparent'};
-  color: ${props => props.primary ? 'white' : 'rgba(159, 159, 255, 1)'};
-  font-weight: 500;
-  font-size: 20px;
-  font-familly: Roboto;
-  width:375px;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background: ${props => props.primary ? 'rgba(239, 239, 255, 1)' : '#f2f2ff'};
-    color: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'rgba(159, 159, 255, 1)'};
-  }
-`;
+// Button styling is now handled by add-buttons.css
 
 const ModifierUtilisateur = () => {
 const idUser = localStorage.getItem('id');
@@ -277,7 +260,7 @@ const idUser = localStorage.getItem('id');
     e.preventDefault();
     try {
       if(formData.role.roleType != "MEDECIN"){
-        const response = await axios.post(`${API_BASE}/utilisateurs/${id}`, formData2,
+        const response = await axios.put(`${API_BASE}/utilisateurs/${id}`, formData2,
       {
         headers: {
           accept: 'application/json',
@@ -288,7 +271,7 @@ const idUser = localStorage.getItem('id');
     );
     console.log(response.data);
       }else{
-        const response = await axios.post(`${API_BASE}/utilisateurs/${id}`, formData,
+        const response = await axios.put(`${API_BASE}/utilisateurs/${id}`, formData,
       {
         headers: {
           accept: 'application/json',
@@ -438,12 +421,12 @@ const idUser = localStorage.getItem('id');
             </FormRow>
             </FormContainer>
             <ButtonRow>
-              <Button type="button" onClick={()=> setFormData({ nom: '', prenom: '', adresse: '', email: '', genre: 'Femme', dateNaissance: '', role: '',servicemedical:'' })}>
+              <button type="button" className="cancel-button" onClick={()=> setFormData({ nom: '', prenom: '', adresse: '', email: '', genre: 'Femme', dateNaissance: '', role: '',servicemedical:'' })}>
                 Annuler
-              </Button>
-              <Button type="submit" primary>
+              </button>
+              <button type="submit" className="submit-button">
                 Modifier
-              </Button>
+              </button>
             </ButtonRow>
           </Form>
       </Modifieruser>
