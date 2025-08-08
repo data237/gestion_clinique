@@ -1,6 +1,7 @@
 import '../../styles/tableau.css'
 import '../../styles/Zonedaffichage.css'
 import '../../styles/Barrehorizontal2.css'
+import '../../styles/add-buttons.css'
 import Styled from 'styled-components'
 import { useState, useEffect} from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'

@@ -6,6 +6,7 @@ import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
+import '../../styles/add-buttons.css'
 
 
 const SousDiv1Style = Styled.div`

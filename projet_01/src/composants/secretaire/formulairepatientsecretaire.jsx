@@ -6,6 +6,7 @@ import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useNavigate } from 'react-router-dom';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
+import '../../styles/add-buttons.css'
 
 
 

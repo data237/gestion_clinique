@@ -4,6 +4,7 @@ import { API_BASE } from '../../composants/config/apiconfig';
 import axios from 'axios';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
+import '../../styles/add-buttons.css'
 
 // IMPORTS pour la génération PDF
 import { pdf } from '@react-pdf/renderer';
