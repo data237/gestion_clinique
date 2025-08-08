@@ -387,3 +387,150 @@
     border-radius: 8px;
 }
 }
+
+/* Responsive pour tablettes */
+@media (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        gap: 12px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    .grid-4 {
+        grid-column-start: 1;
+        grid-column-end: 1;
+    }
+    
+    .numero {
+        padding: 16px 16px 0px 16px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .nomtable {
+        font-size: 1.2em;
+    }
+    
+    .content-barre-dashboard {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    .barre-dashboard {
+        padding-left: 16px;
+    }
+    
+    .grid-01 {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+    
+    .grid-2-content {
+        height: auto;
+        max-height: 200px;
+    }
+    
+    .grid-3-content {
+        height: auto;
+        max-height: 300px;
+    }
+    
+    .content-image {
+        width: 60px;
+        height: 60px;
+    }
+}
+
+/* Responsive pour mobiles */
+@media (max-width: 480px) {
+    .zonedaffichage-dashboad {
+        height: auto;
+        min-height: 100vh;
+    }
+    
+    .dashboard-grid {
+        padding-left: 8px;
+        padding-right: 8px;
+        gap: 8px;
+    }
+    
+    .numero {
+        padding: 8px 8px 0px 8px;
+    }
+    
+    .nomtable {
+        font-size: 1em;
+    }
+    
+    .content-barre-dashboard {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+    
+    .barre-dashboard {
+        padding-left: 8px;
+        font-size: 12px;
+    }
+    
+    .grid-title {
+        font-size: 14px;
+        padding: 6px 0 0 12px;
+    }
+    
+    .grid-2-title,
+    .grid-3-title {
+        font-size: 18px;
+        padding: 8px;
+    }
+    
+    .grid-2-content-chid,
+    .grid-01 > div {
+        padding: 12px;
+        border-radius: 12px;
+    }
+    
+    .grid-2-content-chid-text {
+        font-size: 12px;
+    }
+    
+    .grid-2-content-chid-chiffre {
+        font-size: 14px;
+    }
+    
+    .sous-grid-title,
+    .sous-grid-3-title {
+        font-size: 12px;
+        padding-left: 8px;
+    }
+    
+    .sous-grid-liste {
+        padding-left: 16px;
+        font-size: 11px;
+    }
+    
+    .grid-11-date,
+    .grid-31-date {
+        font-size: 12px;
+    }
+    
+    .grid-11-date-heure,
+    .grid-31-date-heure {
+        font-size: 20px;
+    }
+    
+    .content-image {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .grid-31-nom {
+        font-size: 9px;
+    }
+    
+    .line-chart {
+        height: 200px;
+        padding: 12px;
+    }
+}

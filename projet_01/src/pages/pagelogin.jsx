@@ -12,8 +12,13 @@ function PageLogin() {
   let navigate = useNavigate()
    const [email, setemail] = useState('');
    const [password, setpassword] = useState('');
+   const [isLoading, setIsLoading] = useState(false);
+   const [error, setError] = useState('');
+   
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
     try {
       const response = await axios.post(`${API_BASE}/login`, {
@@ -43,9 +48,19 @@ function PageLogin() {
 
     } catch (error) {
       console.error('Erreur de connexion :', error);
+      if (error.response?.status === 401) {
+        setError('Email ou mot de passe incorrect');
+      } else if (error.response?.status === 404) {
+        setError('Utilisateur non trouvé');
+      } else {
+        setError('Erreur de connexion. Veuillez réessayer.');
+      }
     } finally{
-      setemail('');
-      setpassword('');
+      setIsLoading(false);
+      if (!error) {
+        setemail('');
+        setpassword('');
+      }
     };
   };
   
@@ -54,22 +69,57 @@ function PageLogin() {
     <>
       <div className='accueil'>
         <img src={imageclinique} className='img_cli_acc'></img>
-        <form className='formulaire'>
+        <form className='formulaire' onSubmit={handleSubmit}>
             <img src={logoclinique}></img>
             <div className='formulaire_1'>
               
              
                 <p className='text'><span>Bonjour ! </span><br></br> Connectez vous pour commencer à travailler.</p>
+                
+                {error && (
+                  <div className="error-message">
+                    {error}
+                  </div>
+                )}
+                
                 <div className="form-group">
                      <label htmlFor="email" className='login-label'>Email</label>
-                      <input type="email" id="email" name="email" value={email} onChange={(e) => setemail(e.target.value)} placeholder='Entrez votre email' required className='login-input'></input>
+                      <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        value={email} 
+                        onChange={(e) => setemail(e.target.value)} 
+                        placeholder='Entrez votre email' 
+                        required 
+                        className='login-input'
+                        disabled={isLoading}
+                      ></input>
                 </div>
         
                 <div className="form-group">
                     <label htmlFor="password" className='login-label'>Mot de passe</label>
-                    <input type="password" id="password" name="password" value={password} onChange={(e) => setpassword(e.target.value)} placeholder='Entrez votre mot de passe' required className='login-input'></input>
+                    <input 
+                      type="password" 
+                      id="password" 
+                      name="password" 
+                      value={password} 
+                      onChange={(e) => setpassword(e.target.value)} 
+                      placeholder='Entrez votre mot de passe' 
+                      required 
+                      className='login-input'
+                      disabled={isLoading}
+                    ></input>
                 </div>
-               <Link to="/admin"><button type="submit" className='button1' onClick={handleSubmit}>Se connecter <img src={icon} className='icon'></img></button></Link>
+               
+                <button 
+                  type="submit" 
+                  className={`button1 ${isLoading ? 'loading' : ''}`} 
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Connexion...' : 'Se connecter'} 
+                  <img src={icon} className='icon'></img>
+                </button>
               
             </div>
         </form>

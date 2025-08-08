@@ -14,14 +14,15 @@ import RoleBasedRoute from './composants/rolebasedroute'
 import Medecinroute from './pages/medecinrouter'
 import Calendrier from './composants/calendar'
 import Secretaireroute from './pages/secretaireroute'
-
+import NotificationProvider from './composants/notification'
 
 
 
 
 function App() {
   
-   return(<>
+   return(
+   <NotificationProvider>
    <Router>
       <Routes>
         <Route path="/" element={<PageLogin/>} />
@@ -45,7 +46,8 @@ function App() {
       </Route>
       </Routes>
     </Router>
-   </>)
+   </NotificationProvider>
+   )
   
 }
 
