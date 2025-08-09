@@ -94,6 +94,7 @@ function Dashboard(){
             } catch (error) {
                 console.error('Erreur lors de la récupération des statistiques:', error);
             }
+
         }
         statjournalier()
     }, []);
