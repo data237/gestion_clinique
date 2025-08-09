@@ -13,6 +13,8 @@ import imgmedecin from '../../assets/imagemedecin.jpg'
 import iconrecherche from '../../assets/iconrecherche.png'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
+import { useLoading } from '../LoadingProvider';
+import { useConfirmation } from '../ConfirmationProvider';
 
 
 const SousDiv1Style = Styled.div`
@@ -76,7 +78,7 @@ const InputStyle = Styled.input`
     font-family: Body/Font Family;
     font-weight: 400;
     font-size: 1em;
-     &:focus{
+    &:focus{
         outline: none;
         border: none;
     }
@@ -162,60 +164,12 @@ const BarreStyle = Styled.div`
     padding-left:  20px;
 
 `
-//
 
-// gerer les popups
-
-const Popupsuppr= Styled.div`
-
-    display: ${props => props.$Popupdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 350px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-
-const Containbouttonpopup = Styled.div`
-
-    display: flex;
-    
-    gap: 30px;
-    background-color: rgba(159, 159, 255, 1);
-`
-const Bouttonpopup =Styled.button`
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    width: 80px;
-    height: 30px;
-    border-radius: 10px;
-    background-color: white;
-`
-const Overlay = Styled.div`
-  display: ${props => props.$Overlaydisplay};
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 998;
-`
 function Patient(){
-        
-const idUser = localStorage.getItem('id');
+    const navigate = useNavigate();
+    const { startLoading, stopLoading, isLoading } = useLoading();
+    const { showConfirmation } = useConfirmation();
+    const idUser = localStorage.getItem('id');
     const [nomprofil, setnomprofil]= useState('')
 
     useEffect(() => {
@@ -242,14 +196,11 @@ const idUser = localStorage.getItem('id');
             nomutilisateur()
     }, [idUser]);
 
-        const [Popupsupprime, setPopupsupprime] = useState(false)
-        const [patientASupprimer, setpatientASupprimer] = useState(null);
         const [valeurrecherche, setvaleurrecherche] = useState('');
         const [currentPage, setCurrentPage] = useState(1);
         const [patients, setPatients] = useState([]);
         const [patientsFiltres, setpatientsFiltres] = useState([]);
         const [erreur, setErreur] = useState(null);
-        const [isloading, setisloading] = useState(true);
 
     
 
@@ -257,8 +208,8 @@ const idUser = localStorage.getItem('id');
     
       
     useEffect(()=>{
-         
-         const fetchPatients = async () => {
+        startLoading('fetchPatients');
+        const fetchPatients = async () => {
             const token = localStorage.getItem('token');
             try {
                 const response = await axios.get(`${API_BASE}/patients`,
@@ -276,7 +227,7 @@ const idUser = localStorage.getItem('id');
                 console.error('Erreur lors de la récupération des patients:', error);
                 setErreur('Erreur lors du chargement');
             } finally {
-                setisloading(false);
+                stopLoading('fetchPatients');
             }
     
         };
@@ -302,7 +253,7 @@ const idUser = localStorage.getItem('id');
             }, [valeurrecherche, patients]);
     
     const [pagesToShow, setpagesToShow] = useState([]);
-    const totalPages = Math.ceil(patients.length / patientsPerPage);
+    const totalPages = Math.ceil(patientsFiltres.length / patientsPerPage);
     
     useEffect(() => {
       if (totalPages >= 6) {
@@ -311,7 +262,7 @@ const idUser = localStorage.getItem('id');
         const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
         setpagesToShow(fullList);
       }
-    }, [patients.length, totalPages]);
+    }, [patientsFiltres.length, totalPages]);
     
       //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
     
@@ -323,12 +274,13 @@ const idUser = localStorage.getItem('id');
     
   
     
-    const supprimerPatient = async () => {
-        if (!patientASupprimer) return;
+    const supprimerPatient = async (patientId) => {
+        if (!patientId) return;
 
+        startLoading('deletePatient');
         const token2 = localStorage.getItem('token');
         try {
-            await axios.delete(`${API_BASE}/patients/${patientASupprimer}`, {
+            await axios.delete(`${API_BASE}/patients/${patientId}`, {
             headers: {
                 accept: 'application/json',
                 Authorization: `Bearer ${token2}`,
@@ -338,13 +290,15 @@ const idUser = localStorage.getItem('id');
 
             // Supprime l'patient localement du tableau
             setPatients((prevData) =>
-                prevData.filter((item) => item.id !== patientASupprimer)
+                prevData.filter((item) => item.id !== patientId)
             );
-            setPopupsupprime(false);
-            setpatientASupprimer(null);
-            console.log(`patient ${patientASupprimer} supprimé`);
+            window.showNotification('Patient supprimé avec succès', 'success');
+            console.log(`patient ${patientId} supprimé`);
         } catch (error) {
             console.error('Erreur lors de la suppression :', error);
+            window.showNotification('Erreur lors de la suppression', 'error');
+        } finally {
+            stopLoading('deletePatient');
         }
         };
     
@@ -382,8 +336,6 @@ const idUser = localStorage.getItem('id');
   const currentPatients = patientsFiltres.slice(indexOfFirstPatient, indexOfLastPatient);
 
 
-   const navigate = useNavigate();
-
   const handleRowClick = (patient) => {
     navigate(`/admin/patient/viewpatient/${patient.id}`);
   };
@@ -391,20 +343,10 @@ const idUser = localStorage.getItem('id');
   // gestion popup
  
  
-   if (isloading) return <p>Chargement...</p>;
+   if (isLoading('fetchPatients')) return <p>Chargement...</p>;
 
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
     return(<>
-            <Overlay onClick={() => setPopupsupprime(false)} $Overlaydisplay = {Popupsupprime ? 'block' : 'none'}/>
-            
-            <Popupsuppr $Popupdisplay = {Popupsupprime ? 'flex' : 'none'}>
-                <p>voulez-vous supprimer ce patient ?</p>
-                <Containbouttonpopup>
-                    <Bouttonpopup onClick={supprimerPatient}> oui </Bouttonpopup>
-                    <Bouttonpopup onClick={()=> setPopupsupprime(false)}> non </Bouttonpopup>
-                </Containbouttonpopup>
-                                    
-            </Popupsuppr>
             <SousDiv1Style>
                 <Barrehorizontal1 titrepage="Gestion des patients" imgprofil1={imgmedecin} nomprofil={nomprofil}>
                     <Span1>Liste des patients</Span1>
@@ -420,7 +362,7 @@ const idUser = localStorage.getItem('id');
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
                         <img className='iconrecherche' src={iconrecherche}></img>
                     </div>
-                    <Link to="/admin/patient/add"><button className='boutton'>Ajouter un patient</button></Link>
+                    <Link to="/admin/patient/add"><button className='add-button add-button-with-icon'>+ Ajouter un patient</button></Link>
                 </div>
                 
                 <div className='zonedaffichage'>
@@ -488,8 +430,21 @@ const idUser = localStorage.getItem('id');
                                     className={`toggle-button ${patient.isActive ? "on" : ""}`}
                                     >
                                 <div className={ `circle  ${patient.isActive  ? "active" : ""}`} ></div></button>*/}
-                                <button onClick={()=> {setpatientASupprimer(patient.id);
-                                                        setPopupsupprime(true);}}>🗑️</button>
+                                <button 
+                                    onClick={()=> {
+                                        showConfirmation({
+                                            title: "Suppression de patient",
+                                            content: `Voulez-vous vraiment supprimer le patient ${patient.nom} ${patient.prenom} ?`,
+                                            onConfirm: () => supprimerPatient(patient.id),
+                                            confirmText: "Supprimer",
+                                            cancelText: "Annuler",
+                                            variant: "danger"
+                                        });
+                                    }}
+                                    disabled={isLoading('deletePatient')}
+                                >
+                                    🗑️
+                                </button>
                             </td>
                                 </tr>
                             ))}

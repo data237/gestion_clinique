@@ -100,31 +100,67 @@ const Form = Styled.form`
 const Label = Styled.label`
   font-size: 14px;
   margin-bottom: 5px;
-  color: rgba(51, 51, 51, 1);
+  color: #333333;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 `;
 
 const Input = Styled.input`
   padding: 10px;
-  border: 1px solid rgba(217, 217, 217, 1);
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   width: 351px;
-  color: rgba(30, 30, 30, 1);
+  color: #333333;
+  background-color: #ffffff;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
   &:focus{
-    border: 1px solid rgba(217, 217, 217, 1);
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  &::placeholder {
+    color: #9ca3af;
   }
 `;
 
 const Select = Styled.select`
   min-width: 351px;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
+  &:focus {
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
 `;
 const TextArea = Styled.textarea`
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
   resize: vertical;
+  
+  &:focus {
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  &::placeholder {
+    color: #9ca3af;
+  }
 `;
 const ButtonRow = Styled.div`
   display: flex;
@@ -133,58 +169,7 @@ const ButtonRow = Styled.div`
   margin-top: 20px;
 `;
 
-const Button = Styled.button`
-  padding: 12px 24px;
-  border-radius: 12px;
-  border: 2px solid #1e40af;
-  background: ${props => props.$primary ? 'linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)' : 'transparent'};
-  color: ${props => props.$primary ? '#ffffff' : '#1e40af'};
-  font-weight: 600;
-  font-size: 16px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  width: 375px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  box-shadow: ${props => props.$primary ? '0 4px 6px rgba(0, 0, 0, 0.07)' : 'none'};
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &:hover::before {
-    left: 100%;
-  }
-
-  &:hover {
-    background: ${props => props.$primary ? 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%)' : '#f0f9ff'};
-    color: ${props => props.$primary ? '#ffffff' : '#1e40af'};
-    transform: translateY(-1px);
-    box-shadow: ${props => props.$primary ? '0 10px 15px rgba(0, 0, 0, 0.1), 0 0 20px rgba(30, 64, 175, 0.3)' : '0 4px 6px rgba(0, 0, 0, 0.07)'};
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-  }
-`;
-
+// Button styling is now handled by add-buttons.css
 
 const Overlay = Styled.div`
   display: ${props => props.$Overlaydisplay};
@@ -481,12 +466,12 @@ const FormulaireRendezVous = () => {
                     </FormRow>
                 </FormContainer>
                 <ButtonRow>
-                    <Button type="button" onClick={()=> setFormData({ nom: '', prenom: '', adresse: '', email: '', genre: '', password: " ",dateNaissance: '',telephone: "", role: '',serviceMedicalName:'' })}>
-                        Annuler
-                    </Button>
-                    <Button type="submit" $primary>
-                        Créer un rendez-vous
-                    </Button>
+                  <button type="button" className="cancel-button" onClick={() => setFormData({ patientId: '', medecinId: '', dateRendezVous: '', heureRendezVous: '', motif: '', statut: 'En attente' })}>
+                    Annuler
+                  </button>
+                  <button type="submit" className="submit-button">
+                    Créer un rendez-vous
+                  </button>
                 </ButtonRow>
             </Form>
         </Afficheformulaireadd>

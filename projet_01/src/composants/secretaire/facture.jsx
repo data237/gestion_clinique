@@ -12,6 +12,8 @@ import iconrecherche from '../../assets/iconrecherche.png'
 import iconburger from '../../assets/iconburger.png'
 import { Link } from 'react-router-dom';
 import FormulaireFacture from './formulairefacture';
+import { useLoading } from '../LoadingProvider';
+import { useConfirmation } from '../ConfirmationProvider';
 
 const SousDiv1Style = Styled.div`
   width: 100%;
@@ -171,70 +173,13 @@ const BarreStyle = Styled.div`
 `
 //
 
-// gerer les popups
 
-const Popupsuppr= Styled.div`
-
-    display: ${props => props.$Popupsupprdisplay};
-    position: fixed;
-    top: 20%;
-    left: 40%;
-    z-index: 10000;
-   
-`
-const Popupstat= Styled.div`
-
-    display: ${props => props.$Popupstatutdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 450px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-
-const Containbouttonpopup = Styled.div`
-
-    display: flex;
-    
-    gap: 30px;
-    background-color: rgba(159, 159, 255, 1);
-`
-const Bouttonpopup =Styled.button`
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    width: 80px;
-    height: 30px;
-    border-radius: 10px;
-    background-color: white;
-`
-const Overlay = Styled.div`
-  display: ${props => props.$Overlaydisplay};
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.8);
-  z-index: 998;
-`
 function Facture(){
-    //const [isVisible, setisVisible] = useState(0)
-      const idUser = localStorage.getItem('id');
+    const { startLoading, stopLoading, isLoading } = useLoading();
+    const { showConfirmation } = useConfirmation();
+    const idUser = localStorage.getItem('id');
     const [nomprofil, setnomprofil]= useState('')
     const [idfacture, setidfacture] = useState(0)
-     const [Popup, setPopup] = useState(false)
  
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -263,7 +208,6 @@ function Facture(){
 
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [isloading, setisloading] = useState(true);
     const [factures, setfactures] = useState([]);
     const [facturesFiltres, setfacturesFiltres] = useState([]);
   
@@ -274,8 +218,8 @@ function Facture(){
    
     
     useEffect(()=>{
-         
-         const fetchfactures = async () => {
+        startLoading('fetchFactures');
+        const fetchfactures = async () => {
             const token = localStorage.getItem('token');
               console.log(token);
             try {
@@ -296,7 +240,7 @@ function Facture(){
                 console.log('Erreur lors de la récupération des rendezvous:', error);
                 setErreur('Erreur lors du chargement');
             } finally {
-                setisloading(false);
+                stopLoading('fetchFactures');
             }
     
         };
@@ -394,7 +338,22 @@ function Facture(){
 
   const handleRowClick = (facture) => {
     setidfacture(facture.id)
-    setPopup(true)
+    showConfirmation({
+      title: "Modification de facture",
+      content: `Voulez-vous modifier la facture de ${facture.patientNomComplet} ?`,
+      onConfirm: () => {
+        startLoading('modifyFacture');
+        // Ici on peut ajouter la logique pour ouvrir le formulaire de modification
+        console.log('Modification de la facture:', facture.id);
+        // Simulation d'une opération de modification
+        setTimeout(() => {
+          window.showNotification('Facture modifiée avec succès', 'success');
+          stopLoading('modifyFacture');
+        }, 1000);
+      },
+      confirmText: "Modifier",
+      cancelText: "Annuler"
+    });
   };
 
 
@@ -403,14 +362,17 @@ function Facture(){
 
 
 
-  if (isloading) return <p>Chargement...</p>;
+  if (isLoading('fetchFactures')) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '18px', marginBottom: '10px' }}>Chargement des factures...</div>
+        <div style={{ fontSize: '14px', color: '#666' }}>Veuillez patienter</div>
+      </div>
+    </div>
+  );
 
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
     return(<>
-            <Overlay onClick={() => setPopup(false)} $Overlaydisplay = { Popup ? 'block' : 'none'}/>
-                <Popupsuppr $Popupsupprdisplay = {Popup ? 'block' : 'none'}>
-                   <FormulaireFacture id={idfacture} onClick1={()=> setPopup(false)} />                 
-                </Popupsuppr>
             <SousDiv1Style>
                 <Barrehorizontal1 titrepage="Factures" imgprofil1={imgprofil} nomprofil={nomprofil}> 
                     <Span1>Liste des factures impayées</Span1>

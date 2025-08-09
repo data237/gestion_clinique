@@ -7,6 +7,8 @@ import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import '../../styles/add-buttons.css'
+import { useLoading } from '../LoadingProvider';
+import { useConfirmation } from '../ConfirmationProvider';
 
 
 const SousDiv1Style = Styled.div`
@@ -120,25 +122,47 @@ const Form = Styled.form`
 const Label = Styled.label`
   font-size: 14px;
   margin-bottom: 5px;
-  color: rgba(51, 51, 51, 1);
+  color: #333333;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 `;
 
 const Input = Styled.input`
   padding: 10px;
-  border: 1px solid rgba(217, 217, 217, 1);
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   width: 351px;
-  color: rgba(30, 30, 30, 1);
+  color: #333333;
+  background-color: #ffffff;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
   &:focus{
-    border: 1px solid rgba(217, 217, 217, 1);
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  &::placeholder {
+    color: #9ca3af;
   }
 `;
 
 const Select = Styled.select`
   min-width: 351px;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
+  &:focus {
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
 `;
 
 const TextArea = Styled.textarea`
@@ -155,29 +179,14 @@ const ButtonRow = Styled.div`
   margin-top: 20px;
 `;
 
-const Button = Styled.button`
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(159, 159, 255, 1);
-  background: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'transparent'};
-  color: ${props => props.primary ? 'white' : 'rgba(159, 159, 255, 1)'};
-  font-weight: 500;
-  font-size: 20px;
-  font-familly: Roboto;
-  width:375px;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background: ${props => props.primary ? 'rgba(239, 239, 255, 1)' : '#f2f2ff'};
-    color: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'rgba(159, 159, 255, 1)'};
-  }
-`;
+// Button styling is now handled by add-buttons.css
 
 const ModifierPatient = () => {
-
+  const navigate = useNavigate();
+  const { startLoading, stopLoading, isLoading } = useLoading();
+  const { showConfirmation } = useConfirmation();
   const idUser = localStorage.getItem('id');
-    const [nomprofil, setnomprofil]= useState('')
+  const [nomprofil, setnomprofil]= useState('')
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -205,7 +214,6 @@ const ModifierPatient = () => {
   
   const [formData, setFormData] = useState(null);
   const [erreur, setErreur] = useState(null);
-  const [isloading, setisloading] = useState(true);
  
     const { id } = useParams();
       
@@ -213,7 +221,7 @@ const ModifierPatient = () => {
   
   
    useEffect(()=>{
-         
+         startLoading('fetchPatient');
          const fetchPatients = async () => {
            const token = localStorage.getItem('token');
             try {
@@ -228,8 +236,9 @@ const ModifierPatient = () => {
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
                 setErreur('Erreur lors du chargement');
+                window.showNotification('Erreur lors du chargement du patient', 'error');
             } finally {
-                setisloading(false);
+                stopLoading('fetchPatient');
             }
     
         };
@@ -238,40 +247,57 @@ const ModifierPatient = () => {
 
 
     const handleSubmit = async(e) => {
-    const token2 = localStorage.getItem('token');
-    
-    e.preventDefault();
-    try {
-        axios.put(`${API_BASE}/patients/${id}`, formData,
-      {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token2}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    } catch (error) {
-      console.error('Erreur de connexion :', error);
-    } finally{
-     setFormData({
-          nom: "",
-          prenom: "",
-          email: "",
-          dateNaissance: "",
-          telephone: "",
-          adresse: "",
-          genre: "",
-          dossierMedical: {
-            groupeSanguin: "",
-            antecedentsMedicaux: "",
-            allergies: "",
-            traitementsEnCours: "",
-            observations: "",
+      e.preventDefault();
+      
+      showConfirmation({
+        title: "Confirmer la modification",
+        content: `Voulez-vous vraiment modifier les informations du patient ${formData.nom} ${formData.prenom} ?`,
+        onConfirm: async () => {
+          const token2 = localStorage.getItem('token');
+          startLoading('updatePatient');
+          
+          try {
+            const response = await axios.put(`${API_BASE}/patients/${id}`, formData,
+            {
+              headers: {
+                accept: 'application/json',
+                Authorization: `Bearer ${token2}`,
+                'Content-Type': 'application/json',
+              },
+            });
+            
+            window.showNotification('Patient modifié avec succès', 'success');
+            navigate("/admin/patient");
+            
+          } catch (error) {
+            console.error('Erreur de connexion :', error);
+            
+            // Messages d'erreur plus spécifiques
+            if (error.response) {
+              if (error.response.status === 409) {
+                window.showNotification('Un patient avec cet email existe déjà', 'error');
+              } else if (error.response.status === 400) {
+                window.showNotification('Données invalides. Vérifiez les informations saisies', 'error');
+              } else if (error.response.status === 401) {
+                window.showNotification('Session expirée. Veuillez vous reconnecter', 'error');
+              } else if (error.response.status === 404) {
+                window.showNotification('Patient introuvable', 'error');
+              } else {
+                window.showNotification(`Erreur serveur: ${error.response.data?.message || 'Erreur lors de la modification'}`, 'error');
+              }
+            } else if (error.request) {
+              window.showNotification('Erreur de connexion au serveur. Vérifiez votre connexion internet', 'error');
+            } else {
+              window.showNotification('Erreur lors de la modification du patient', 'error');
             }
-        });
-    };
-  };    
+          } finally{
+            stopLoading('updatePatient');
+          }
+        },
+        confirmText: "Modifier",
+        cancelText: "Annuler"
+      });
+    };    
   
   
   
@@ -284,22 +310,55 @@ const ModifierPatient = () => {
 
 
 
-  let navigate = useNavigate();
   const handleClick = () => {
-    // Redirige vers /utilisateur
-    navigate("/admin/patient");
+    showConfirmation({
+      title: "Retour à la liste",
+      content: "Voulez-vous vraiment quitter sans sauvegarder ?",
+      onConfirm: () => navigate("/admin/patient"),
+      confirmText: "Quitter",
+      cancelText: "Rester",
+      variant: "danger"
+    });
   };
-  let navigate1 = useNavigate();
+  
   const handleClick1 = () => {
-    // Redirige vers /utilisateur
-    navigate1(`/admin/patient/viewpatient/${id}`);
+    showConfirmation({
+      title: "Voir les détails",
+      content: "Voulez-vous voir les détails du patient ?",
+      onConfirm: () => navigate(`/admin/patient/viewpatient/${id}`),
+      confirmText: "Voir",
+      cancelText: "Annuler"
+    });
   };
-  if (!formData) {
-  return <p style={{ textAlign: 'center' }}>Chargement...</p>;
+  if (isLoading('fetchPatient')) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '18px', marginBottom: '10px' }}>Chargement du patient...</div>
+          <div style={{ fontSize: '14px', color: '#666' }}>Veuillez patienter</div>
+        </div>
+      </div>
+    );
   }
-  if (isloading) return <p>Chargement...</p>;
 
-  if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
+  if (!formData) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '18px', marginBottom: '10px', color: '#666' }}>Aucune donnée disponible</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (erreur) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '18px', marginBottom: '10px', color: 'red' }}>Erreur</div>
+        <div style={{ fontSize: '14px', color: '#666' }}>{erreur}</div>
+      </div>
+    </div>
+  );
   return (
     <>
       <SousDiv1Style>
@@ -362,16 +421,29 @@ const ModifierPatient = () => {
                
                 </FormContainer>
                 <ButtonRow>
-                  <Button type="button" onClick={()=> setFormData({ nom: '', prenom: '', adresse: '', email: '', genre: 'Femme', dateNaissance: '',groupeSanguin: '',
-            derniereVisite: '',
-            traitements: '',
-            antecedents: '',
-            observations: ''})}>
+                  <button 
+                    type="button" 
+                    className="cancel-button" 
+                    onClick={() => {
+                      showConfirmation({
+                        title: "Annuler",
+                        content: "Voulez-vous vraiment annuler les modifications et retourner à la liste des patients ?",
+                        onConfirm: () => navigate("/admin/patient"),
+                        confirmText: "Annuler",
+                        cancelText: "Continuer"
+                      });
+                    }}
+                    disabled={isLoading('updatePatient')}
+                  >
                     Annuler
-                  </Button>
-                  <Button type="submit" primary>
-                    Créer un patient
-                  </Button>
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="submit-button"
+                    disabled={isLoading('updatePatient')}
+                  >
+                    {isLoading('updatePatient') ? 'Modification...' : 'Modifier'}
+                  </button>
                 </ButtonRow>
           </Form>
       </Modifieruser>

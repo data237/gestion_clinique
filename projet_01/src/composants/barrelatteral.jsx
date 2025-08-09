@@ -12,9 +12,42 @@ const MenuStyle = Styled.div`
     flex-direction: column;
     gap: 15px;
     padding-top: 0px;
+    flex: 1;
+    overflow-y: auto;
+    
+    &::-webkit-scrollbar {
+        width: 0px;
+        background: transparent;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: transparent;
+    }
+    
+    @media (max-width: 768px) {
+        gap: 12px;
+        padding: 0 16px;
+    }
+    
+    @media (max-width: 480px) {
+        gap: 8px;
+        padding: 0 12px;
+    }
 `
 const Image = Styled.img`
-    width: 70%
+    width: 70%;
+    
+    @media (max-width: 768px) {
+        width: 60%;
+    }
+    
+    @media (max-width: 480px) {
+        width: 50%;
+    }
 `
 
 const Imgsvg = Styled.img`
@@ -25,8 +58,8 @@ const Imgsvg = Styled.img`
 `
 
 const BarrelatteralStyle = Styled.div`
-    position: relatif;
-    background-color: rgba(254, 255, 239, 1);
+    position: relative;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -35,6 +68,31 @@ const BarrelatteralStyle = Styled.div`
     gap: 41px;
     padding-top: 32px;
     padding-bottom: 32px;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);
+    border-right: 1px solid #e9ecef;
+    overflow: hidden;
+    
+    @media (max-width: 1200px) {
+        width: 25vw;
+        gap: 32px;
+        padding-top: 24px;
+        padding-bottom: 24px;
+    }
+    
+    @media (max-width: 768px) {
+        width: 100vw;
+        height: auto;
+        min-height: 200px;
+        gap: 24px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+    
+    @media (max-width: 480px) {
+        gap: 16px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
 `
 
 const Button = Styled.button`
@@ -64,6 +122,30 @@ const Button = Styled.button`
         0 2px 8px rgba(0, 0, 0, 0.1),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     overflow: hidden;
+    
+    @media (max-width: 1200px) {
+        width: calc(25vw - 30px);
+        padding: 16px 24px;
+        font-size: 14px;
+    }
+    
+    @media (max-width: 768px) {
+        position: relative;
+        width: calc(100vw - 32px);
+        margin: 16px;
+        bottom: auto;
+        left: auto;
+        right: auto;
+        padding: 16px 20px;
+        font-size: 14px;
+    }
+    
+    @media (max-width: 480px) {
+        width: calc(100vw - 24px);
+        margin: 12px;
+        padding: 12px 16px;
+        font-size: 13px;
+    }
     
     &::before {
         content: '';

@@ -98,25 +98,47 @@ const Form = Styled.form`
 const Label = Styled.label`
   font-size: 14px;
   margin-bottom: 5px;
-  color: rgba(51, 51, 51, 1);
+  color: #333333;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 `;
 
 const Input = Styled.input`
   padding: 10px;
-  border: 1px solid rgba(217, 217, 217, 1);
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   width: 351px;
-  color: rgba(30, 30, 30, 1);
+  color: #333333;
+  background-color: #ffffff;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
   &:focus{
-    border: 1px solid rgba(217, 217, 217, 1);
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  &::placeholder {
+    color: #9ca3af;
   }
 `;
 
 const Select = Styled.select`
   min-width: 351px;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
+  &:focus {
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
 `;
 
 const TextArea = Styled.textarea`

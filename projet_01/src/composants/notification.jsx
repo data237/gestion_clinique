@@ -56,7 +56,7 @@ const Notification = ({ message, type = 'info', duration = 5000, onClose }) => {
       setIsVisible(false);
       setTimeout(() => {
         onClose();
-      }, 300);
+      }, 600);
     }, duration);
 
     return () => clearTimeout(timer);
@@ -66,7 +66,7 @@ const Notification = ({ message, type = 'info', duration = 5000, onClose }) => {
     setIsVisible(false);
     setTimeout(() => {
       onClose();
-    }, 300);
+    }, 600);
   };
 
   if (!isVisible) return null;

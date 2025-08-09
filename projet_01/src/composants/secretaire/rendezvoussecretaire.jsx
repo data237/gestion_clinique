@@ -4,8 +4,7 @@ import '../../styles/Barrehorizontal2.css'
 import '../../styles/add-buttons.css'
 import Styled from 'styled-components'
 import axios from 'axios';
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
@@ -499,7 +498,7 @@ function Rendezvous(){
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
                         <img className='iconrecherche' src={iconrecherche}></img>
                     </div>
-                    <Link to="/secretaire/patient"><button className='boutton'>Ajouter un rendez vous</button></Link>
+                    <Link to="/secretaire/rendez-vous/add"><button className='add-button add-button-with-icon'>+ Créer un rendez-vous</button></Link>
                 </div>
                   
                 

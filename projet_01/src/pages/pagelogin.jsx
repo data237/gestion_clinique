@@ -111,7 +111,7 @@ function PageLogin() {
       // Redirection conditionnelle
       setTimeout(() => {
         if (authorities[0].authority === 'ROLE_ADMIN') {
-          navigate('/admin/utilisateur');
+          navigate('/admin/dashboard');
         } else if (authorities[0].authority === 'ROLE_MEDECIN') {
           navigate('/medecin');
         } else if (authorities[0].authority === 'ROLE_SECRETAIRE') {

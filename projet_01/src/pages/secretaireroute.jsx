@@ -1,5 +1,5 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import PageSecretaire from "./pagesecretaire";
 import Rendezvous from "../composants/secretaire/rendezvoussecretaire";
 import PatientSecretaire from "../composants/secretaire/patientsecretaire";
@@ -9,33 +9,33 @@ import FormulaireRendezVous from "../composants/secretaire/formulairerendezvous"
 import Facture from "../composants/secretaire/facture";
 import FormulairePatientSecretaire from "../composants/secretaire/formulairepatientsecretaire";
 
-
-const Secretaireroute = ()=>{
-    return(
-    
-        <>
-            <Route path="/secretaire" element={<PageSecretaire />}>
-            {/* Route par défaut pour /admin */}
+const Secretaireroute = () => {
+    return (
+        <Routes>
+            <Route path="/" element={<PageSecretaire />}>
+                {/* Route par défaut pour /secretaire */}
                 <Route index element={<Rendezvous />} />
 
                 {/* Routes rendez-vous */}
                 <Route path="rendezvous" element={<Rendezvous />} />
-                {/*<Route path="rendezvous/add" element={<FormulaireUtilisateur />} />
-                <Route path="rendezvous/viewrendezvous/:id" element={<DetailsUtilisateur />} />
-                <Route path="rendezvous/edit/:id" element={<ModifierUtilisateur />} />
 
                 {/* Routes patients */}
                 <Route path="patient" element={<PatientSecretaire />} />
-                <Route path="patient/add" element={<FormulairePatientSecretaire/>} />
-                <Route path="patient/rendezvous/:nompatient" element={<FormulaireRendezVous/>}/>
-                <Route path="calendrier" element={<CalendarSecretaire/>}/>
-                <Route path="calendrier/:today" element={<RendezvousScretaireToday/>}/>
-                <Route path="facture" element={<Facture/>}/>
+                <Route path="patient/add" element={<FormulairePatientSecretaire />} />
+                <Route path="patient/rendezvous/:nompatient" element={<FormulaireRendezVous />} />
                 
-            </Route>
-        </>
-      
-    )
-}
+                {/* Routes calendrier */}
+                <Route path="calendrier" element={<CalendarSecretaire />} />
+                <Route path="calendrier/:today" element={<RendezvousScretaireToday />} />
+                
+                {/* Routes factures */}
+                <Route path="facture" element={<Facture />} />
 
-export default Secretaireroute
+                {/* Redirection par défaut */}
+                <Route path="*" element={<Navigate to="rendezvous" replace />} />
+            </Route>
+        </Routes>
+    );
+};
+
+export default Secretaireroute;

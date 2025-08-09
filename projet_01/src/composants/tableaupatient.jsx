@@ -14,34 +14,61 @@ const DivbuttonStyle = Styled.div`
     gap: 15px;
 `
 const ButtonStyle = Styled.button`
-    padding: 5px 5px;
-    font-family: Roboto;
-    font-weight: 300;
-    font-size: 1em;
-    background-color: ${props => props.$buttonbackgroundColor};
-    color: ${props => props.$buttonColor};
-    border-radius: 5px;
+    padding: 8px 12px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    background-color: ${props => props.$buttonbackgroundColor || '#ffffff'};
+    color: ${props => props.$buttonColor || '#333333'};
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
     gap: 0px;
-     &:hover{
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover{
         cursor: pointer;
-        background-color: rgba(65, 65, 255, 1);
-        border-radius: 5px;
+        background-color: #667eea;
+        color: #ffffff;
+        border-radius: 6px;
     }
     &:focus{
         cursor: pointer;
-        background-color: rgba(65, 65, 255, 1);
-        color: white;
-        border-radius: 5px;
+        background-color: #667eea;
+        color: #ffffff;
+        border-radius: 6px;
     }
-    
+    &:disabled {
+        background-color: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+        border-color: #e5e7eb;
+    }
 `
+
 const ButtonPSStyle = Styled.button`
-    padding: 5px 5px;
-    font-family: Roboto;
-    font-weight: 300;
-    font-size: 1em;
-     &:hover{
+    padding: 8px 16px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover{
         cursor: pointer;
+        background-color: #f8f9fa;
+        border-color: #9ca3af;
+        color: #374151;
+    }
+    &:disabled {
+        background-color: #f3f4f6;
+        color: #9ca3af;
+        cursor: not-allowed;
+        border-color: #e5e7eb;
     }
 `
 
@@ -49,6 +76,7 @@ const NomtableStyle = Styled.p`
     font-family: "Inter", sans-serif;
     font-weight: 700;
     font-size: 1.5em;
+    color: #333333;
 `
 const BarreStyle = Styled.div`
     width: 100%;

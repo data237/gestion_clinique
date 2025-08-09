@@ -1,5 +1,5 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import PageAdmin from "./pageadmin";
 import Utilisateur from "../composants/administrateur/utilisateurs";
 import ModifierUtilisateur from "../composants/administrateur/modifierutilisateur";
@@ -11,16 +11,17 @@ import DetailsPatient from "../composants/administrateur/afficherdetailpatient";
 import ModifierPatient from "../composants/administrateur/modifierpatient";
 import Dashboard from "../composants/administrateur/dashboard";
 
-const Adminroute = ()=>{
-    return(
-    
-        <>
-            <Route path="/admin" element={<PageAdmin />}>
-            {/* Route par défaut pour /admin */}
-                <Route index element={<Dashboard/>} />
+const Adminroute = () => {
+    return (
+        <Routes>
+            <Route path="/" element={<PageAdmin />}>
+                {/* Route par défaut pour /admin */}
+                <Route index element={<Dashboard />} />
+
+                {/* Routes dashboard */}
+                <Route path="dashboard" element={<Dashboard />} />
 
                 {/* Routes utilisateurs */}
-                <Route path="dashboard" element={<Dashboard/>} />
                 <Route path="utilisateur" element={<Utilisateur />} />
                 <Route path="utilisateur/add" element={<FormulaireUtilisateur />} />
                 <Route path="utilisateur/viewuser/:id" element={<DetailsUtilisateur />} />
@@ -31,10 +32,12 @@ const Adminroute = ()=>{
                 <Route path="patient/add" element={<FormulairePatient />} />
                 <Route path="patient/viewpatient/:id" element={<DetailsPatient />} />
                 <Route path="patient/edit/:id" element={<ModifierPatient />} />
-            </Route>
-        </>
-      
-    )
-}
 
-export default Adminroute
+                {/* Redirection par défaut */}
+                <Route path="*" element={<Navigate to="dashboard" replace />} />
+            </Route>
+        </Routes>
+    );
+};
+
+export default Adminroute;

@@ -87,39 +87,15 @@ const Select = Styled.select`
     box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
   }
 `;
-const ButtonRow = Styled.div`display: flex; justify-content: space-between; gap: 10px; margin-top: 20px;`;
-const Button = Styled.button`
-  padding: 14px 24px;
-  border-radius: 12px;
-  border: 2px solid ${props => props.primary ? '#1e40af' : '#e5e7eb'};
-  background: ${props => props.primary ? '#1e40af' : 'transparent'};
-  color: ${props => props.primary ? 'white' : '#1e40af'};
-  font-weight: 600;
-  font-size: 16px;
-  font-family: 'Inter', sans-serif;
-  width: 100%;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  
-  &:hover {
-    background: ${props => props.primary ? '#1d4ed8' : '#f8fafc'};
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.2);
-  }
-  
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-  }
-  
-  &:active {
-    transform: translateY(0);
-  }
+const ButtonRow = Styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
 `;
+
+// Button styling is now handled by add-buttons.css
+
 // === fin styled-components ===
 
 const FormulaireFacture = ({ id, onClick1 }) => {
@@ -291,10 +267,12 @@ const FormulaireFacture = ({ id, onClick1 }) => {
         </FormContainer>
 
         <ButtonRow>
-          <Button type="button" onClick={onClick1}>Annuler</Button>
-          <Button type="submit" primary disabled={loading} onClick={onClick1}>
+          <button type="button" className="cancel-button" onClick={onClick1}>
+            Annuler
+          </button>
+          <button type="submit" className="submit-button" disabled={loading} onClick={onClick1}>
             {loading ? "Génération..." : "Generer la facture"}
-          </Button>
+          </button>
         </ButtonRow>
       </Form>
     </Affichedetailuser>

@@ -12,7 +12,6 @@
 }
 
 .form-user-label {
-  /*display: block;*/
   margin-bottom: 8px;
   font-weight: bold;
   color: #666;
@@ -26,4 +25,46 @@
   border: 1px solid #999;
   border-radius: 4px;
   font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .user-form-container {
+    max-width: 100%;
+    padding: 16px;
+    margin: 0 16px;
+  }
+  
+  .form-title {
+    font-size: 1.5em;
+  }
+  
+  .form-user-label {
+    font-size: 14px;
+  }
+  
+  .form-user-input {
+    padding: 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-form-container {
+    padding: 12px;
+    margin: 0 8px;
+  }
+  
+  .form-title {
+    font-size: 1.3em;
+  }
+  
+  .form-user-label {
+    font-size: 13px;
+  }
+  
+  .form-user-input {
+    padding: 8px;
+    font-size: 12px;
+  }
 }

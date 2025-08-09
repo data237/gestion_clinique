@@ -4,8 +4,7 @@ import '../../styles/Barrehorizontal2.css'
 import '../../styles/add-buttons.css'
 import Styled from 'styled-components'
 import axios from 'axios';
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
@@ -13,6 +12,8 @@ import iconrecherche from '../../assets/iconrecherche.png'
 import iconsupprime from '../../assets/Iconsupprime.svg'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
+import { useLoading } from '../LoadingProvider';
+import { useConfirmation } from '../ConfirmationProvider';
 
 const SousDiv1Style = Styled.div`
     padding-right: 32px;
@@ -61,48 +62,7 @@ const ButtonStyle = Styled.button`
 `
 
 
-// gerer les popups
-
-const Popupsuppr= Styled.div`
-
-    display: ${props => props.$Popupsupprdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 350px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-const Popupstat= Styled.div`
-
-    display: ${props => props.$Popupstatutdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 450px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
+// Suppression des anciens popups - remplacés par le système Modal
 
 const Containbouttonpopup = Styled.div`
     display: flex;
@@ -132,7 +92,9 @@ const Overlay = Styled.div`
   z-index: 998;
 `
 function Utilisateur(){
-    //const [isVisible, setisVisible] = useState(0)
+    const navigate = useNavigate();
+    const { startLoading, stopLoading, isLoading } = useLoading();
+    const { showConfirmation } = useConfirmation();
     const idUser = localStorage.getItem('id');
     const [nomprofil, setnomprofil]= useState('')
 
@@ -155,24 +117,17 @@ function Utilisateur(){
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
                 setErreur('Erreur lors du chargement');
-            } finally {
-                setisloading(false);
             }
             }
             nomutilisateur()
     }, [idUser]);
 
     // fonction du tableau
-    const [Popupsupprime, setPopupsupprime] = useState(false)
-    const [utilisateurASupprimer, setUtilisateurASupprimer] = useState(null);
-    const [statutAmodifier, setstatutAmodifier] = useState(null);
-    const [Popupstatut, setPopupstatut] = useState(false)
+    const [utilisateurs, setutilisateurs] = useState([]);
+    const [utilisateursFiltres, setutilisateursFiltres] = useState([]);
+    const [erreur, setErreur] = useState(null);
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [isloading, setisloading] = useState(true);
-    const [utilisateurs, setutilisateurs] = useState([]);
-    const [utilisateursFiltres, setUtilisateursFiltres] = useState([]);
-    const [erreur, setErreur] = useState(null);
 
 
     const utilisateursPerPage = 8;
@@ -180,8 +135,8 @@ function Utilisateur(){
     
 
     useEffect(()=>{
-         
-         const fetchUtilisateurs = async () => {
+        startLoading('fetchUtilisateurs');
+        const fetchUtilisateurs = async () => {
             const token = localStorage.getItem('token');
             try {
                 const response = await axios.get(`${API_BASE}/utilisateurs`,
@@ -193,7 +148,7 @@ function Utilisateur(){
                 console.log(token);
               if (response && response.data) {
                 setutilisateurs(response.data);
-               setUtilisateursFiltres(response.data);
+               setutilisateursFiltres(response.data);
                 } else {
                 setErreur('Données introuvables');
                 }
@@ -201,7 +156,7 @@ function Utilisateur(){
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
                 setErreur('Erreur lors du chargement');
             } finally {
-                setisloading(false);
+                stopLoading('fetchUtilisateurs');
             }
     
         };
@@ -210,7 +165,7 @@ function Utilisateur(){
         
     useEffect(() => {
             if (!valeurrecherche.trim()) {
-                setUtilisateursFiltres(utilisateurs); // Si rien à chercher, on affiche tout
+                setutilisateursFiltres(utilisateurs); // Si rien à chercher, on affiche tout
                 return;
             }
 
@@ -223,7 +178,7 @@ function Utilisateur(){
                 u.role.roleType.toLowerCase().includes(recherche)
             );
 
-            setUtilisateursFiltres(resultats);
+            setutilisateursFiltres(resultats);
     }, [valeurrecherche, utilisateurs]);
 
 
@@ -231,7 +186,7 @@ function Utilisateur(){
 
 
     const [pagesToShow, setpagesToShow] = useState([]);
-    const totalPages = Math.ceil(utilisateurs.length / utilisateursPerPage);
+    const totalPages = Math.ceil(utilisateursFiltres.length / utilisateursPerPage);
 
     useEffect(() => {
             if (totalPages >= 6) {
@@ -240,7 +195,7 @@ function Utilisateur(){
             const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
             setpagesToShow(fullList);
             }
-            }, [utilisateurs.length, totalPages]);
+            }, [utilisateursFiltres.length, totalPages]);
 
             //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
 
@@ -255,34 +210,34 @@ function Utilisateur(){
     //toggle boutton
     
     
-    const toggleStatus = () => {
-        if(!statutAmodifier) return;
-           const toggle = async () => {
-                const token2 = localStorage.getItem('token');
-                try {
-                    const response = await axios.patch(`${API_BASE}/utilisateurs/${statutAmodifier[0]}/status/${!statutAmodifier[1]}`,{utilisateurs}, {
-                    headers: {
-                        accept: 'application/json',
-                        Authorization: `Bearer ${token2}`,
-                        'Content-Type': 'application/json',
-                    },
-                    });
+    const toggleStatus = async (userId, currentStatus) => {
+        if(!userId) return;
+        
+        startLoading('toggleStatus');
+        const token2 = localStorage.getItem('token');
+        try {
+            const response = await axios.patch(`${API_BASE}/utilisateurs/${userId}/status/${!currentStatus}`,{utilisateurs}, {
+            headers: {
+                accept: 'application/json',
+                Authorization: `Bearer ${token2}`,
+                'Content-Type': 'application/json',
+            },
+            });
                     const user = response.data
                      setutilisateurs((prevData) =>
                         prevData.map((item) =>
-                        item.id === statutAmodifier[0] ?  user : item
+                        item.id === userId ?  user : item
                         )
                     )
                     
-                    setPopupstatut(false)
-                    setstatutAmodifier(null)
+                    window.showNotification('Statut modifié avec succès', 'success');
                     console.log(response.data) ;
                 } catch (error) {
                     console.log(error)
+                    window.showNotification('Erreur lors de la modification du statut', 'error');
+                } finally {
+                    stopLoading('toggleStatus');
                 }
-                };
-                toggle()
-                //console.log(`http://localhost:8081/Api/V1/clinique/utilisateurs/${id}/status/${!status}`)
         }
                     
     
@@ -346,7 +301,6 @@ function Utilisateur(){
         //const [user, setuser] = useState({})
         
     //
-     const navigate = useNavigate();
 
   const handleRowClick = (utilisateur) => {
     navigate(`/admin/utilisateur/viewuser/${utilisateur.id}`);
@@ -354,55 +308,40 @@ function Utilisateur(){
 
 
 
-  const supprimerUtilisateur = async () => {
-    console.log('mabou')
-        if (!utilisateurASupprimer) return;
+  const supprimerUtilisateur = async (userId) => {
+    if (!userId) return;
 
-        const token2 = localStorage.getItem('token');
-        try {
-            await axios.delete(`${API_BASE}/utilisateurs/${utilisateurASupprimer}`, {
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token2}`,
-                'Content-Type': 'application/json',
-            },
-            });
+    startLoading('deleteUser');
+    const token2 = localStorage.getItem('token');
+    try {
+        await axios.delete(`${API_BASE}/utilisateurs/${userId}`, {
+        headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${token2}`,
+            'Content-Type': 'application/json',
+        },
+        });
 
-            setutilisateurs((prevUtilisateurs) =>
-            prevUtilisateurs.filter((u) => u.id !== utilisateurASupprimer)
-            );
+        setutilisateurs((prevUtilisateurs) =>
+        prevUtilisateurs.filter((u) => u.id !== userId)
+        );
 
-            setPopupsupprime(false);
-            setUtilisateurASupprimer(null);
-            console.log(`Utilisateur ${utilisateurASupprimer} supprimé`);
-        } catch (error) {
-            console.error('Erreur lors de la suppression :', error);
-        }
-    };
+        window.showNotification('Utilisateur supprimé avec succès', 'success');
+        console.log(`Utilisateur ${userId} supprimé`);
+    } catch (error) {
+        console.error('Erreur lors de la suppression :', error);
+        window.showNotification('Erreur lors de la suppression', 'error');
+    } finally {
+        stopLoading('deleteUser');
+    }
+  };
 
 
 
-  if (isloading) return <p>Chargement...</p>;
+  if (isLoading('fetchUtilisateurs')) return <p>Chargement...</p>;
 
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
     return(<>
-            <Overlay onClick={() => setPopupsupprime(false)} $Overlaydisplay = {Popupsupprime || Popupstatut ? 'block' : 'none'}/>
-                <Popupsuppr $Popupsupprdisplay = {Popupsupprime ? 'flex' : 'none'}>
-                    <p>voulez-vous supprimer cet utilisateur ?</p>
-                    <Containbouttonpopup>
-                        <Bouttonpopup onClick={supprimerUtilisateur}> oui </Bouttonpopup>
-                        <Bouttonpopup onClick={()=> setPopupsupprime(false)}> non </Bouttonpopup>
-                    </Containbouttonpopup>
-                                    
-                </Popupsuppr>
-                <Popupstat $Popupstatutdisplay = {Popupstatut ? 'flex' : 'none'}>
-                    <p>voulez-vous changez le statut de cet utilisateurs ?</p>
-                    <Containbouttonpopup>
-                        <Bouttonpopup onClick={toggleStatus}> oui </Bouttonpopup>
-                        <Bouttonpopup onClick={()=> setPopupstatut(false)}> non </Bouttonpopup>
-                    </Containbouttonpopup>
-                                    
-                </Popupstat>
             <SousDiv1Style>
                 <Barrehorizontal1 titrepage="Gestion des utilisateurs" imgprofil1={imgprofil} nomprofil={nomprofil}> 
                     <Span1>Liste des utilisateurs</Span1>
@@ -416,7 +355,7 @@ function Utilisateur(){
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
                         <img className='iconrecherche' src={iconrecherche}></img>
                     </div>
-                    <Link to="/admin/utilisateur/add"><button className='boutton'>Ajouter un utilisateur</button></Link>
+                    <Link to="/admin/utilisateur/add"><button className='add-button add-button-with-icon'>+ Ajouter un utilisateur</button></Link>
                </div>
                 
                 
@@ -471,10 +410,36 @@ function Utilisateur(){
                             <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.role.roleType}</td>
                             <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.actif ? "actif" : "inactif"}</td>
                             <td className='td bouttons'>
-                                <button onClick={() => {setstatutAmodifier([utilisateur.id,utilisateur.actif]);setPopupstatut(true)}} className={`toggle-button ${utilisateur.actif ? "" : "on"}`}>
+                                <button 
+                                    onClick={() => {
+                                        showConfirmation({
+                                            title: "Modification du statut",
+                                            content: `Voulez-vous ${utilisateur.actif ? 'désactiver' : 'activer'} l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} ?`,
+                                            onConfirm: () => toggleStatus(utilisateur.id, utilisateur.actif),
+                                            confirmText: "Confirmer",
+                                            cancelText: "Annuler"
+                                        });
+                                    }} 
+                                    className={`toggle-button ${utilisateur.actif ? "" : "on"}`}
+                                    disabled={isLoading('toggleStatus')}
+                                >
                                     <div className={ `circle  ${utilisateur.actif  ? "" : "active"}`} ></div>
                                 </button>
-                                <button onClick={()=> {setUtilisateurASupprimer(utilisateur.id); setPopupsupprime(true)}}><img src={iconsupprime} className='iconsupprime'></img></button>    
+                                <button 
+                                    onClick={()=> {
+                                        showConfirmation({
+                                            title: "Suppression d'utilisateur",
+                                            content: `Voulez-vous vraiment supprimer l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} ?`,
+                                            onConfirm: () => supprimerUtilisateur(utilisateur.id),
+                                            confirmText: "Supprimer",
+                                            cancelText: "Annuler",
+                                            variant: "danger"
+                                        });
+                                    }}
+                                    disabled={isLoading('deleteUser')}
+                                >
+                                    <img src={iconsupprime} className='iconsupprime'></img>
+                                </button>    
                             </td>
                             </tr>
                         ))}

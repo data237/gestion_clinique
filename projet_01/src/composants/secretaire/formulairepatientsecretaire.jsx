@@ -133,25 +133,6 @@ const ButtonRow = Styled.div`
   margin-top: 20px;
 `;
 
-const Button = Styled.button`
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(159, 159, 255, 1);
-  background: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'transparent'};
-  color: ${props => props.primary ? 'white' : 'rgba(159, 159, 255, 1)'};
-  font-weight: 500;
-  font-size: 20px;
-  font-familly: Roboto;
-  width:375px;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background: ${props => props.primary ? 'rgba(239, 239, 255, 1)' : '#f2f2ff'};
-    color: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'rgba(159, 159, 255, 1)'};
-  }
-`;
-
 const FormulairePatientSecretaire = () => {
 
   const idUser = localStorage.getItem('id');
@@ -380,27 +361,12 @@ const handleChange = e => {
                 
             </FormContainer>
                 <ButtonRow>
-                  <Button type="button" onClick={()=> setFormData({
-                        nom: "",
-                        prenom: "",
-                        email: "",
-                        dateNaissance: "",
-                        telephone: "",
-                        adresse: "",
-                        genre: "",
-                        dossierMedical: {
-                          groupeSanguin: "",
-                          antecedentsMedicaux: "",
-                          allergies: "",
-                          traitementsEnCours: "",
-                          observations: "",
-                        }
-                      })}>
+                  <button type="button" className="cancel-button" onClick={() => setFormData({ nom: '', prenom: '', adresse: '', email: '', genre: 'Femme', dateNaissance: '', telephone: '', groupeSanguin: '' })}>
                     Annuler
-                  </Button>
-                  <Button type="submit" primary>
-                    Créer un patient
-                  </Button>
+                  </button>
+                  <button type="submit" className="submit-button">
+                    Ajouter
+                  </button>
                 </ButtonRow>
             </Form>
             </Afficheformulaireadd>

@@ -422,7 +422,7 @@ function PatientSecretaire(){
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
                         <img className='iconrecherche' src={iconrecherche}></img>
                     </div>
-                    <Link to="/secretaire/patient/add"><button className='boutton'>Ajouter un patient</button></Link>
+                    <Link to="/secretaire/patient/add"><button className='add-button add-button-with-icon'>+ Ajouter un patient</button></Link>
                 </div>
                
                

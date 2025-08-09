@@ -7,6 +7,8 @@ import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import '../../styles/add-buttons.css'
+import { useLoading } from '../LoadingProvider';
+import { useConfirmation } from '../ConfirmationProvider';
 
 
 const SousDiv1Style = Styled.div`
@@ -99,25 +101,47 @@ const Form = Styled.form`
 const Label = Styled.label`
   font-size: 14px;
   margin-bottom: 5px;
-  color: rgba(51, 51, 51, 1);
+  color: #333333;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 `;
 
 const Input = Styled.input`
   padding: 10px;
-  border: 1px solid rgba(217, 217, 217, 1);
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   width: 351px;
-  color: rgba(30, 30, 30, 1);
+  color: #333333;
+  background-color: #ffffff;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
   &:focus{
-    border: 1px solid rgba(217, 217, 217, 1);
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  &::placeholder {
+    color: #9ca3af;
   }
 `;
 
 const Select = Styled.select`
   min-width: 351px;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
+  &:focus {
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
 `;
 
 const ButtonRow = Styled.div`
@@ -127,27 +151,10 @@ const ButtonRow = Styled.div`
   margin-top: 20px;
 `;
 
-const Button = Styled.button`
-  padding: 12px 20px;
-  border-radius: 20px;
-  border: 1px solid rgba(159, 159, 255, 1);
-  background: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'transparent'};
-  color: ${props => props.primary ? 'white' : 'rgba(159, 159, 255, 1)'};
-  font-weight: 500;
-  font-size: 20px;
-  font-familly: Roboto;
-  width:375px;
-  cursor: pointer;
-  transition: 0.3s;
-
-  &:hover {
-    background: ${props => props.primary ? 'rgba(239, 239, 255, 1)' : '#f2f2ff'};
-    color: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'rgba(159, 159, 255, 1)'};
-  }
-`;
-
 const FormulaireUtilisateur = () => {
-
+  const navigate = useNavigate();
+  const { startLoading, stopLoading, isLoading } = useLoading();
+  const { showConfirmation } = useConfirmation();
   const idUser = localStorage.getItem('id');
     const [nomprofil, setnomprofil]= useState('')
 
@@ -218,8 +225,44 @@ const FormulaireUtilisateur = () => {
        role :  formData.role
       }
   const handleSubmit = async(e) => {
-    console.log(formData)
     e.preventDefault();
+    
+    // Validation spécifique des champs requis
+    if (!formData.nom.trim()) {
+      window.showNotification('Le champ "Nom" est obligatoire', 'error');
+      return;
+    }
+    if (!formData.prenom.trim()) {
+      window.showNotification('Le champ "Prénom" est obligatoire', 'error');
+      return;
+    }
+    if (!formData.email.trim()) {
+      window.showNotification('Le champ "Email" est obligatoire', 'error');
+      return;
+    }
+    if (!formData.password) {
+      window.showNotification('Le champ "Mot de passe" est obligatoire', 'error');
+      return;
+    }
+    if (!formData.role) {
+      window.showNotification('Veuillez sélectionner un rôle', 'error');
+      return;
+    }
+
+    // Validation de l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      window.showNotification('Veuillez entrer une adresse email valide', 'error');
+      return;
+    }
+
+    // Validation du mot de passe
+    if (formData.password.length < 6) {
+      window.showNotification('Le mot de passe doit contenir au moins 6 caractères', 'error');
+      return;
+    }
+
+    startLoading('createUser');
     try {
       if(formData.role != "medecin"){
         const response = await axios.post(`${API_BASE}/utilisateurs`, formData2,
@@ -245,36 +288,45 @@ const FormulaireUtilisateur = () => {
     console.log(response.data);
       }
       
-
-    
+      window.showNotification('Utilisateur créé avec succès', 'success');
+      navigate("/admin/utilisateur");
 
     } catch (error) {
       console.error('Erreur de connexion :', error);
-      console.log(token)
-      console.log(formData.serviceMedicalName)
+      
+      // Messages d'erreur plus spécifiques
+      if (error.response) {
+        if (error.response.status === 409) {
+          window.showNotification('Un utilisateur avec cet email existe déjà', 'error');
+        } else if (error.response.status === 400) {
+          window.showNotification('Données invalides. Vérifiez les informations saisies', 'error');
+        } else if (error.response.status === 401) {
+          window.showNotification('Session expirée. Veuillez vous reconnecter', 'error');
+        } else {
+          window.showNotification(`Erreur serveur: ${error.response.data?.message || 'Erreur lors de la création'}`, 'error');
+        }
+      } else if (error.request) {
+        window.showNotification('Erreur de connexion au serveur. Vérifiez votre connexion internet', 'error');
+      } else {
+        window.showNotification('Erreur lors de la création de l\'utilisateur', 'error');
+      }
     } finally{
-     /*setFormData({
-          nom: "",
-          prenom: "",
-          email: "",
-          dateNaissance: "",
-          telephone: "",
-          adresse: "",
-          genre: "m",
-          password: "",
-          serviceMedicalName: "",
-          actif: true,
-          role: ""
-        });*/
+      stopLoading('createUser');
     };
   };
 
 
-  let navigate = useNavigate();
+
 
   const handleClick = () => {
-    // Redirige vers /utilisateur
-    navigate("/admin/utilisateur");
+    showConfirmation({
+      title: "Retour à la liste",
+      content: "Voulez-vous vraiment quitter sans sauvegarder ?",
+      onConfirm: () => navigate("/admin/utilisateur"),
+      confirmText: "Quitter",
+      cancelText: "Rester",
+      variant: "danger"
+    });
   };
   return (<>
               <SousDiv1Style>
@@ -363,12 +415,29 @@ const FormulaireUtilisateur = () => {
         </FormRow>
         </FormContainer>
         <ButtonRow>
-          <Button type="button" onClick={()=> setFormData({ nom: '', prenom: '', adresse: '', email: '', genre: '', password: " ",dateNaissance: '',telephone: "", role: '',serviceMedicalName:'' })}>
+          <button 
+            type="button" 
+            className="cancel-button" 
+            onClick={() => {
+              showConfirmation({
+                title: "Annuler",
+                content: "Voulez-vous vraiment annuler la création et retourner à la liste des utilisateurs ?",
+                onConfirm: () => navigate("/admin/utilisateur"),
+                confirmText: "Annuler",
+                cancelText: "Continuer"
+              });
+            }}
+            disabled={isLoading('createUser')}
+          >
             Annuler
-          </Button>
-          <Button type="submit" primary>
-            Créer un utilisateur
-          </Button>
+          </button>
+          <button 
+            type="submit" 
+            className="submit-button"
+            disabled={isLoading('createUser')}
+          >
+            {isLoading('createUser') ? 'Création...' : 'Ajouter'}
+          </button>
         </ButtonRow>
       </Form>
       </Afficheformulaireadd>

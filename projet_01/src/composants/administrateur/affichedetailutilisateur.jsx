@@ -308,6 +308,7 @@ const DetailsUtilisateur = () => {
                 <FormGroupvisible $formgroupdisplay={isVisiblerole ? "flex" : "none"}>
                   <Label htmlFor="servicemedical">Service médical</Label>
                   <Input id="servicemedical" name="servicemedical" value={utilisateur.serviceMedicalName} readOnly />
+                  
               </FormGroupvisible>
             </FormRow>
             </FormContainer>

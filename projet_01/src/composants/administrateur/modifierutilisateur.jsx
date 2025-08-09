@@ -7,6 +7,8 @@ import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import '../../styles/add-buttons.css'
+import { useLoading } from '../LoadingProvider';
+import { useConfirmation } from '../ConfirmationProvider';
 
 
 const SousDiv1Style = Styled.div`
@@ -111,25 +113,47 @@ const Form = Styled.form`
 const Label = Styled.label`
   font-size: 14px;
   margin-bottom: 5px;
-  color: rgba(51, 51, 51, 1);
+  color: #333333;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
 `;
 
 const Input = Styled.input`
   padding: 10px;
-  border: 1px solid rgba(217, 217, 217, 1);
+  border: 1px solid #d1d5db;
   border-radius: 8px;
   width: 351px;
-  color: rgba(30, 30, 30, 1);
+  color: #333333;
+  background-color: #ffffff;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
   &:focus{
-    border: 1px solid rgba(217, 217, 217, 1);
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
+  
+  &::placeholder {
+    color: #9ca3af;
   }
 `;
 
 const Select = Styled.select`
   min-width: 351px;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
+  background-color: #ffffff;
+  color: #333333;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  
+  &:focus {
+    border: 1px solid #667eea;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  }
 `;
 
 const ButtonRow = Styled.div`
@@ -142,8 +166,11 @@ const ButtonRow = Styled.div`
 // Button styling is now handled by add-buttons.css
 
 const ModifierUtilisateur = () => {
-const idUser = localStorage.getItem('id');
-    const [nomprofil, setnomprofil]= useState('')
+  const navigate = useNavigate();
+  const { startLoading, stopLoading, isLoading } = useLoading();
+  const { showConfirmation } = useConfirmation();
+  const idUser = localStorage.getItem('id');
+  const [nomprofil, setnomprofil]= useState('')
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -172,7 +199,6 @@ const idUser = localStorage.getItem('id');
   const [isVisiblerole, setisVisiblerole] = useState(false)
   const [formData, setFormData] = useState({});
   const [erreur, setErreur] = useState(null);
-  const [isloading, setisloading] = useState(true);
   
     
   const { id } = useParams();
@@ -199,7 +225,7 @@ const idUser = localStorage.getItem('id');
   
    
    useEffect(()=>{
-         
+         startLoading('fetchUser');
          const fetchUtilisateurs = async () => {
            const token = localStorage.getItem('token');
             try {
@@ -218,8 +244,9 @@ const idUser = localStorage.getItem('id');
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
                 setErreur('Erreur lors du chargement');
+                window.showNotification('Erreur lors du chargement de l\'utilisateur', 'error');
             } finally {
-                setisloading(false);
+                stopLoading('fetchUser');
             }
     
         };
@@ -255,9 +282,11 @@ const idUser = localStorage.getItem('id');
        role :  formData.role
       }
   const handleSubmit = async(e) => {
-    const token2 = localStorage.getItem('token');
-    
     e.preventDefault();
+    
+    const token2 = localStorage.getItem('token');
+    startLoading('updateUser');
+    
     try {
       if(formData.role.roleType != "MEDECIN"){
         const response = await axios.put(`${API_BASE}/utilisateurs/${id}`, formData2,
@@ -282,24 +311,33 @@ const idUser = localStorage.getItem('id');
     );
     console.log(response.data);
       }
+      
+      window.showNotification('Utilisateur modifié avec succès', 'success');
+      navigate("/admin/utilisateur");
+      
     } catch (error) {
       console.error('Erreur de connexion :', error);
-      console.log(token2)
-      console.log(formData.serviceMedicalName)
+      
+      // Messages d'erreur plus spécifiques
+      if (error.response) {
+        if (error.response.status === 409) {
+          window.showNotification('Un utilisateur avec cet email existe déjà', 'error');
+        } else if (error.response.status === 400) {
+          window.showNotification('Données invalides. Vérifiez les informations saisies', 'error');
+        } else if (error.response.status === 401) {
+          window.showNotification('Session expirée. Veuillez vous reconnecter', 'error');
+        } else if (error.response.status === 404) {
+          window.showNotification('Utilisateur introuvable', 'error');
+        } else {
+          window.showNotification(`Erreur serveur: ${error.response.data?.message || 'Erreur lors de la modification'}`, 'error');
+        }
+      } else if (error.request) {
+        window.showNotification('Erreur de connexion au serveur. Vérifiez votre connexion internet', 'error');
+      } else {
+        window.showNotification('Erreur lors de la modification de l\'utilisateur', 'error');
+      }
     } finally{
-     setFormData({
-          nom: "",
-          prenom: "",
-          email: "",
-          dateNaissance: "",
-          telephone: "",
-          adresse: "",
-          genre: "m",
-          password: "",
-          serviceMedicalName: "",
-          actif: true,
-          role: ""
-        });
+      stopLoading('updateUser');
     };
   };
 
@@ -307,22 +345,55 @@ const idUser = localStorage.getItem('id');
   
   
 
-  let navigate = useNavigate();
   const handleClick = () => {
-    // Redirige vers /utilisateur
-    navigate("/admin/utilisateur");
+    showConfirmation({
+      title: "Retour à la liste",
+      content: "Voulez-vous vraiment quitter sans sauvegarder ?",
+      onConfirm: () => navigate("/admin/utilisateur"),
+      confirmText: "Quitter",
+      cancelText: "Rester",
+      variant: "danger"
+    });
   };
-  let navigate1 = useNavigate();
+  
   const handleClick1 = () => {
-    // Redirige vers /utilisateur
-    navigate1(`/admin/utilisateur/viewuser/${id}`);
+    showConfirmation({
+      title: "Voir les détails",
+      content: "Voulez-vous voir les détails de l'utilisateur ?",
+      onConfirm: () => navigate(`/admin/utilisateur/viewuser/${id}`),
+      confirmText: "Voir",
+      cancelText: "Annuler"
+    });
   };
- if (!formData) {
-  return <p style={{ textAlign: 'center' }}>{formData}</p>;
+  if (isLoading('fetchUser')) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '18px', marginBottom: '10px' }}>Chargement de l'utilisateur...</div>
+          <div style={{ fontSize: '14px', color: '#666' }}>Veuillez patienter</div>
+        </div>
+      </div>
+    );
   }
-  if (isloading) return <p>Chargement...</p>;
 
-  if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
+  if (!formData || Object.keys(formData).length === 0) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '18px', marginBottom: '10px', color: '#666' }}>Aucune donnée disponible</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (erreur) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '18px', marginBottom: '10px', color: 'red' }}>Erreur</div>
+        <div style={{ fontSize: '14px', color: '#666' }}>{erreur}</div>
+      </div>
+    </div>
+  );
   return (
     <>
       <SousDiv1Style>
@@ -421,11 +492,28 @@ const idUser = localStorage.getItem('id');
             </FormRow>
             </FormContainer>
             <ButtonRow>
-              <button type="button" className="cancel-button" onClick={()=> setFormData({ nom: '', prenom: '', adresse: '', email: '', genre: 'Femme', dateNaissance: '', role: '',servicemedical:'' })}>
+              <button 
+                type="button" 
+                className="cancel-button" 
+                onClick={() => {
+                  showConfirmation({
+                    title: "Annuler",
+                    content: "Voulez-vous vraiment annuler les modifications et retourner à la liste des utilisateurs ?",
+                    onConfirm: () => navigate("/admin/utilisateur"),
+                    confirmText: "Annuler",
+                    cancelText: "Continuer"
+                  });
+                }}
+                disabled={isLoading('updateUser')}
+              >
                 Annuler
               </button>
-              <button type="submit" className="submit-button">
-                Modifier
+              <button 
+                type="submit" 
+                className="submit-button"
+                disabled={isLoading('updateUser')}
+              >
+                {isLoading('updateUser') ? 'Modification...' : 'Modifier'}
               </button>
             </ButtonRow>
           </Form>

@@ -1,76 +1,77 @@
 table{
-    
     overflow: hidden; 
+    width: 100%;
+    background-color: #ffffff;
 }
 
 .conteneur-tableau-2{
-    width: 1450px;
+    width: 100%;
     overflow-x: auto; 
     border: 0px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background-color: #ffffff;
 }
-
-
-
 
 .tableau-2{
-    border: 1px solid #ccc;
-    border-radius: 10px 10px 10px 10px ;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
     border-collapse: collapse;
     width: 100%;
-    margin: 10px 32px;
+    margin: 0;
     font-family: "Inter", sans-serif;
-    
+    background-color: #ffffff;
 }
-
-/* En-têtes fixes */
-
-
-
 
 thead{
     border-radius: 20px;
+    background-color: #667eea;
 }
+
 .th{
     height: 55px;
     text-align: left;
-    background-color: rgba(159, 159, 255, 1);
+    background-color: #667eea;
     padding-left: 15px;
-    border-left: 1px solid #fff;
+    border-left: 1px solid #ffffff;
+    color: #ffffff;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
+
 .td{
-    
-    /*width: 350px;
-    white-space: nowrap; /* évite le retour à la ligne */
     height: 55px;
-    /*padding: 16px;*/
     text-align: left;
     font-size: 1.2em;
     padding-left: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: #ffffff;
+    color: #333333;
 }
+
 .tr{
-    background-color:rgba(255, 255, 255, 1);
-    border-bottom: 1px solid #ccc;
-    
+    background-color: #ffffff;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.3s ease;
 }
+
 .tr:hover{
-    background-color:rgba(254, 255, 239, 1);
+    background-color: #f8f9fa;
 }
+
 .off{
-    color:rgba(204, 204, 204, 1);
+    color: #6c757d;
 }
-/*.action{
-    width: 200px;
-}*/
-/*td .check-box{
-    width: 100px;
-}*/
+
 .bouttons{
-    /*width: 80px;*/
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
     padding: 8px 0;
+    flex-wrap: wrap;
 }
 
 .bouttons button {
@@ -80,7 +81,7 @@ thead{
     padding: 6px 12px;
     font-size: 12px;
     font-weight: 500;
-    color: #6b7280;
+    color: #333333;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
@@ -103,7 +104,7 @@ thead{
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: left 0.6s ease;
 }
 
 .bouttons button:hover::before {
@@ -111,76 +112,167 @@ thead{
 }
 
 .bouttons button:hover {
-    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
-    color: #ffffff;
-    border-color: transparent;
+    background: #f9fafb;
+    border-color: #9ca3af;
+    color: #374151;
     transform: translateY(-1px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .bouttons button:active {
     transform: translateY(0);
-    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .bouttons button:focus {
-    outline: none;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 0 0 3px rgba(30, 64, 175, 0.1);
+    outline: 2px solid rgba(102, 126, 234, 0.5);
+    outline-offset: 2px;
 }
+
 .iconsupprime{
-    height: 16px;
     width: 16px;
-    filter: brightness(0) saturate(100%) invert(45%) sepia(8%) saturate(1234%) hue-rotate(202deg) brightness(94%) contrast(86%);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 16px;
+    transition: transform 0.3s ease;
 }
 
 .bouttons button:hover .iconsupprime {
-    filter: brightness(0) invert(1);
     transform: scale(1.1);
 }
+
 .toggle-button {
-  width: 48px;
-  height: 24px;
-  border-radius: 9999px;
-  border: 2px solid #d1d5db;
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  cursor: pointer;
-  background: #ffffff;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    position: relative;
+    width: 50px;
+    height: 24px;
+    background-color: #d1d5db;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: none;
+    outline: none;
 }
 
 .toggle-button.on {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  border-color: #10b981;
-  justify-content: flex-end;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+    background-color: #667eea;
 }
 
 .toggle-button .circle {
-  width: 16px;
-  height: 16px;
-  background: #9ca3af;
-  border-radius: 50%;
-  transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .toggle-button .active {
-  background: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateX(26px);
 }
 
 .toggle-button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .toggle-button.on:hover {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 0 20px rgba(16, 185, 129, 0.4);
+    background-color: #5a67d8;
+}
+
+/* Styles pour la pagination */
+.divbutton {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.buttonPS {
+    padding: 8px 16px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.buttonPS:hover {
+    background-color: #f8f9fa;
+    border-color: #9ca3af;
+    color: #374151;
+}
+
+.buttonPS:disabled {
+    background-color: #f3f4f6;
+    color: #9ca3af;
+    cursor: not-allowed;
+    border-color: #e5e7eb;
+}
+
+/* Styles pour les boutons de pagination */
+button[disabled] {
+    background-color: #f3f4f6 !important;
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+    border-color: #e5e7eb !important;
+}
+
+/* Styles pour les inputs */
+input, textarea, select {
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: 2px solid rgba(102, 126, 234, 0.5);
+    outline-offset: 2px;
+    border-color: #667eea;
+}
+
+input::placeholder, textarea::placeholder {
+    color: #9ca3af;
+}
+
+/* Styles pour les titres de tableaux */
+.nomtable {
+    font-family: "Inter", sans-serif;
+    font-weight: 700;
+    font-size: 1.5em;
+    color: #333333;
+}
+
+/* Styles pour les numéros de page */
+.page-number {
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #d1d5db;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 36px;
+    text-align: center;
+}
+
+.page-number:hover {
+    background-color: #f8f9fa;
+    border-color: #9ca3af;
+    color: #374151;
+}
+
+.page-number.active {
+    background-color: #667eea;
+    color: #ffffff;
+    border-color: #667eea;
 }
 
