@@ -144,6 +144,28 @@ function Dashboard(){
 
     useEffect(() => {
         const token = localStorage.getItem('token');
+        const connexionAdmin = async () => {
+            try {
+                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}/connexions`,
+                    {   
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                if (response) {
+                    setconnexionadmin(response.data)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des connexions admin:', error);
+            }
+        }
+        connexionAdmin()
+    }, [idUser]);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
         const Historique = async () => {
             try {
                 // Essayer d'abord l'endpoint /historiques
@@ -161,7 +183,7 @@ function Dashboard(){
                     sethistoriques(response.data);
                 } else {
                     // Si pas de données, essayer l'endpoint alternatif
-                    response = await axios.get(`${API_BASE}/historiqueActions`,
+                    response = await axios.get(`${API_BASE}/historiques`,
                         {   
                             headers: {
                                 accept: 'application/json',
@@ -206,68 +228,89 @@ function Dashboard(){
     return (
         <>
             <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Dashboard" nomprofil={nomprofil} />
+                <Barrehorizontal1 titrepage="Dashboard" imgprofil1={imgprofil} nomprofil={nomprofil}> 
+                    <Span1>Home</Span1>
+                </Barrehorizontal1>
             </SousDiv1Style>
+
             <SousDiv2Style>
                 <div className='zonedaffichage-dashboad'>
+                    <div className='numero'>
+                        <h2 className='nomtable'> Statistiques globales </h2>
+                    </div>
+                            
+                    <div className='conteneurbarre'>
+                        <div className='barre'></div>
+                    </div>
                     <div className='content-grid'>
                         <div className='dashboard-grid'>
                             <div className='grid-1'>
-                                <p className='grid-title'>Activité récente</p>
-                                <div className='grid-1-content-image'>
-                                    {historiques && historiques.length > 0 ? (
-                                        historiques.slice(0, 3).map((historique, index) => (
-                                            <div key={historique.id || index} className='grid-01'>
-                                                <div className='grid-11'>
-                                                    <div className='grid-11-content'>
-                                                        <img className='grid-image' src={imgprofil} alt="profile" />
-                                                        <div className='grid-13'>
-                                                            <p className='sous-grid-title'>
-                                                                {historique.action || historique.description || historique.type || 'Action non spécifiée'}
-                                                            </p>
-                                                            <p className='grid-11-date'>
-                                                                {historique.date ? (
-                                                                    <>
-                                                                        {historique.date.split("T")[0]} à 
-                                                                        <span className='grid-11-date-heure'>
-                                                                            {historique.date.split("T")[1] ? historique.date.split("T")[1].split(".")[0] : 'N/A'}
-                                                                        </span>
-                                                                    </>
-                                                                ) : historique.createdAt ? (
-                                                                    <>
-                                                                        {historique.createdAt.split("T")[0]} à 
-                                                                        <span className='grid-11-date-heure'>
-                                                                            {historique.createdAt.split("T")[1] ? historique.createdAt.split("T")[1].split(".")[0] : 'N/A'}
-                                                                        </span>
-                                                                    </>
-                                                                ) : 'Date non disponible'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className='grid-01'>
-                                            <div className='grid-11'>
-                                                <div className='grid-11-content'>
-                                                    <img className='grid-image' src={imgprofil} alt="profile" />
-                                                    <div className='grid-13'>
-                                                        <p className='sous-grid-title'>Aucune activité récente</p>
-                                                        <p className='grid-11-date'>Aucune donnée disponible pour le moment</p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                <p className='grid-title'> Ce compte </p>
+                                <div className='grid-01'>
+                                    <div className='grid-11'>
+                                        <div className="grid-1-content-image">
+                                           <img className='grid-image' src={imgprofil} alt="profile"></img> 
                                         </div>
-                                    )}
+                                        
+                                        <div className='grid-11-content'>
+                                            <p className='sous-grid-title'> Connecté depuis le  </p>
+                                            {connexionadmin && connexionadmin.length > 0 ? connexionadmin.map((connexion)=>(
+                                                <p className='grid-11-date' key={connexion.id}>
+                                                    {connexion.lastLoginDate ? connexion.lastLoginDate.split("T")[0] : 'N/A'}<br></br>
+                                                    <span className='grid-11-date-heure'> 
+                                                        {connexion.lastLoginDate ? connexion.lastLoginDate.split("T")[1].split(".")[0] : 'N/A'}  
+                                                    </span>
+                                                </p>
+                                            )) : <p className='grid-11-date'>Aucune donnée disponible</p>}
+                                        </div>
+                                    </div>
+                                    <div className='grid-12'>
+                                        <p className='sous-grid-title'> Action recente</p>
+                                        <ul className='sous-grid-liste'>
+                                            {historiques && historiques.length > 0 ? historiques.slice(0, 3).map((historique)=>(<li key={historique.id}> {historique.action || historique.description || historique.type || 'Action non spécifiée'}</li>)) : <li>Aucune activité récente</li>}
+                                        </ul>
+                                    </div>
+                                    <div className='grid-13'>
+                                        <div className="grid-1-content-image">
+                                           <img className='grid-image' src={imgprofil} alt="profile"></img> 
+                                        </div>
+                                        
+                                        <div className='grid-11-content'>
+                                            <p className='sous-grid-title'> Dernière connection   </p>
+                                            {connexionadmin && connexionadmin.length > 0 ? connexionadmin.map((connexion)=>(
+                                                <p className='grid-11-date' key={connexion.id}>
+                                                    {connexion.lastLogoutDate ? connexion.lastLogoutDate.split("T")[0] : 'N/A'}<br></br>
+                                                    <span className='grid-11-date-heure'> 
+                                                        {connexion.lastLogoutDate ? connexion.lastLogoutDate.split("T")[1].split(".")[0] : 'N/A'}  
+                                                    </span>
+                                                </p>
+                                            )) : <p className='grid-11-date'>Aucune donnée disponible</p>}
+                                        </div>
+                                    </div>
+                                    <div className='grid-14'>
+                                        <p className='sous-grid-title'> En attente </p>
+                                        <ul className='sous-grid-liste'>
+                                            <li>Confirmation de création de compte.</li>
+                                            <li>2 messages de la secrétaire Mengne non lus</li>
+                                            <li>1 messages du docteur Kipenbé non lu.</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                             <div className='grid-2'>
-                                <p className='grid-2-title'>Statistiques journalières</p>
-                                <div className='grid-2-content'>
+                                <p className='grid-2-title'> Aujourd'hui </p>
+                                <div className='grid-2-content'> 
                                     <div className="grid-2-content-chid">
-                                        <p className="grid-2-content-chid-text">Nombre de patients</p>
+                                        <p className="grid-2-content-chid-text">Nombre de patient enregistré</p>
                                         <div className="grid-2-content-chid-chiffre">{statjour.nbrPatientEnrg || 0}</div>
+                                    </div>
+                                    <div className="grid-2-content-chid">
+                                        <p className="grid-2-content-chid-text"> Nombre de RDV validés</p>
+                                        <div className="grid-2-content-chid-chiffre">{statjour.nbrRendezVousCONFIRME || 0}</div>
+                                    </div>
+                                    <div className="grid-2-content-chid">
+                                        <p className="grid-2-content-chid-text"> Nombre de RDV manqués</p>
+                                        <div className="grid-2-content-chid-chiffre">{statjour.nbrRendezANNULE || 0}</div>
                                     </div>
                                     <div className="grid-2-content-chid">
                                         <p className="grid-2-content-chid-text">Nombre de consultations effectuées</p>
@@ -276,50 +319,36 @@ function Dashboard(){
                                 </div>
                             </div>
                             <div className='grid-3'>
-                                <p className='grid-3-title'>Connectés récemment</p>
+                                <p className='grid-3-title'> Connectés recement </p>
                                 <div className='grid-3-content'>
-                                    {usersconnecte.length > 0 || usersdisconnecte.length > 0 ? (
-                                        <>
-                                            {usersconnecte.map((user) => ( 
-                                                <div key={user.id} className='grid-31'>
-                                                    <div className="content-image">
-                                                        <img className='grid-image' src={imgprofil} alt="profile" />
-                                                        <div className='grid-31-nom'><p>{user.nom}</p></div>
-                                                    </div>
-                                                    <div className='grid-31-content'>
-                                                        <p className='sous-grid-3-title'>Connecté depuis le</p>
-                                                        <p className='grid-31-date'>{user.lastLoginDate ? user.lastLoginDate.split("T")[0] : 'N/A'} à <br /><span className='grid-31-date-heure'>{user.lastLoginDate ? user.lastLoginDate.split("T")[1].split(".")[0] : 'N/A'}</span></p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {usersdisconnecte.map((user) => ( 
-                                                <div key={user.id} className='grid-31 disconnect'>
-                                                    <div className="content-image">
-                                                        <img className='grid-image' src={imgprofil} alt="profile" />
-                                                        <div className='grid-31-nom'><p>{user.nom}</p></div>
-                                                    </div>
-                                                    <div className='grid-31-content'>
-                                                        <p className='sous-grid-3-title'>Dernière connexion</p>
-                                                        <p className='grid-31-date'>{user.lastLogoutDate ? user.lastLogoutDate.split("T")[0] : 'N/A'} à <br /><span className='grid-31-date-heure'>{user.lastLogoutDate ? user.lastLogoutDate.split("T")[1].split(".")[0] : 'N/A'}</span></p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </>
-                                    ) : (
-                                        <div className='grid-31'>
+                                    {usersconnecte && usersconnecte.length > 0 ? usersconnecte.map((user)=>( 
+                                        <div key={user.id}  className='grid-31'>
                                             <div className="content-image">
-                                                <img className='grid-image' src={imgprofil} alt="profile" />
+                                                <img className='grid-image' src={imgprofil} alt="profile"></img>
+                                                <div className='grid-31-nom'><p>{user.nom}</p></div>
                                             </div>
                                             <div className='grid-31-content'>
-                                                <p className='sous-grid-3-title'>Aucun utilisateur connecté</p>
-                                                <p className='grid-31-date'>Aucune activité récente</p>
+                                                <p className='sous-grid-3-title'> Connecté depuis le  </p>
+                                                <p className='grid-31-date'>{user.lastLoginDate ? user.lastLoginDate.split("T")[0] : 'N/A'} à <br></br><span className='grid-31-date-heure'> {user.lastLoginDate ? user.lastLoginDate.split("T")[1].split(".")[0] : 'N/A'} </span></p>
                                             </div>
                                         </div>
-                                    )}
+                                    )) : <div className='grid-31'><p>Aucun utilisateur connecté</p></div>}
+                                    {usersdisconnecte && usersdisconnecte.length > 0 ? usersdisconnecte.map((user)=>( 
+                                        <div key={user.id}  className='grid-31 disconnect'>
+                                            <div className="content-image">
+                                                <img className='grid-image' src={imgprofil} alt="profile"></img>
+                                                <div className='grid-31-nom'><p>{user.nom}</p></div>
+                                            </div>
+                                            <div className='grid-31-content'>
+                                                <p className='sous-grid-3-title'> Dernière connexion   </p>
+                                                <p className='grid-31-date'>{user.lastLogoutDate ? user.lastLogoutDate.split("T")[0] : 'N/A'} à <br></br><span className='grid-31-date-heure'> {user.lastLogoutDate ? user.lastLogoutDate.split("T")[1].split(".")[0] : 'N/A'} </span></p>
+                                            </div>
+                                        </div>
+                                    )) : null}
                                 </div>
                             </div>
                             <div className='grid-4'>
-                                <p className='grid-title chart'>Revenus en dizaine de dollars par mois</p>
+                                <p className='grid-title chart'> Revenus en dizaine de dollars par mois </p>
                                 <div className='line-chart'>
                                     <Line
                                         data={{
@@ -327,7 +356,7 @@ function Dashboard(){
                                             datasets: [
                                                 {
                                                     label: "Revenue",
-                                                    data: [10, 15, 20, 100, -10, 80, 14, 54, 60, 74, 12, 14],
+                                                    data: [10, 15, 20, 100, -10 , 80 , 14, 54, 60, 74, 12, 14],
                                                     backgroundColor: "white",
                                                     borderColor: "rgba(159, 159, 255, 1)",
                                                 },
@@ -352,9 +381,9 @@ function Dashboard(){
                             </div>
                         </div>
                         <div className='content-barre-dashboard'>
-                            <div className='barre-dashboard'>
+                            <div  className='barre-dashboard'>
                                 <div className="element-barre">
-                                    <img className='image-barre' src={iconutilisateurblanc} alt="users" />
+                                    <img className='image-barre' src={iconutilisateurblanc} alt="users"></img>
                                     <p>Uti. connecté : {usersconnecte.length}</p>
                                 </div>
                             </div>
