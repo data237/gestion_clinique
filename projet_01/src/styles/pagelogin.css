@@ -11,7 +11,7 @@
 }
 
 .image-container {
-  width: 50%;
+  width: 55%;
   height: 100vh;
   overflow: hidden;
 }
@@ -30,7 +30,7 @@
 }
 
 .formulaire{
-  width: 50%;
+  width: 45%;
   background-color: var(--secondaire-applat);
   height: 100vh;
   display: flex;
@@ -48,7 +48,7 @@
   margin-bottom: 15px;
   font-weight: bold;
   color: var(--Neutre-6);
-  text-align: center;
+  text-align: left;
 }
 
 .text span{
