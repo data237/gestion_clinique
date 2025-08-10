@@ -173,6 +173,50 @@ const BarreStyle = Styled.div`
 `
 //
 
+const ModalOverlay = Styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+const ModalContainer = Styled.div`
+  background: white;
+  border-radius: 12px;
+  max-width: 90%;
+  max-height: 90%;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+  
+  @keyframes slideIn {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+`;
+
 
 function Facture(){
     const { startLoading, stopLoading, isLoading } = useLoading();
@@ -180,6 +224,7 @@ function Facture(){
     const idUser = localStorage.getItem('id');
     const [nomprofil, setnomprofil]= useState('')
     const [idfacture, setidfacture] = useState(0)
+    const [showFormulaire, setShowFormulaire] = useState(false)
  
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -338,24 +383,13 @@ function Facture(){
 
   const handleRowClick = (facture) => {
     setidfacture(facture.id)
-    showConfirmation({
-      title: "Modification de facture",
-      content: `Voulez-vous modifier la facture de ${facture.patientNomComplet} ?`,
-      onConfirm: () => {
-        startLoading('modifyFacture');
-        // Ici on peut ajouter la logique pour ouvrir le formulaire de modification
-        console.log('Modification de la facture:', facture.id);
-        // Simulation d'une opération de modification
-        setTimeout(() => {
-          window.showNotification('Facture modifiée avec succès', 'success');
-          stopLoading('modifyFacture');
-        }, 1000);
-      },
-      confirmText: "Modifier",
-      cancelText: "Annuler"
-    });
+    setShowFormulaire(true)
   };
 
+  const handleCloseFormulaire = () => {
+    setShowFormulaire(false)
+    setidfacture(0)
+  }
 
 
   
@@ -461,6 +495,13 @@ function Facture(){
                
                 
             </SousDiv2Style>
+            {showFormulaire && (
+              <ModalOverlay onClick={handleCloseFormulaire}>
+                <ModalContainer onClick={(e) => e.stopPropagation()}>
+                  <FormulaireFacture id={idfacture} onClick1={handleCloseFormulaire} />
+                </ModalContainer>
+              </ModalOverlay>
+            )}
     </>)   
 }
 export default Facture

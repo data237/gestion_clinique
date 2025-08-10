@@ -1,6 +1,6 @@
 import '../styles/pageadmin.css'
 import Styled from 'styled-components'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import Barrelatteral from '../composants/barrelatteral';
 //import Utilisateur from '../composants/utilisateurs';
@@ -10,7 +10,7 @@ import Eltmenu from '../composants/eltmenu'
 import imgrendezvous from '../assets/IconRendezvous.png'
 import imgpatient from '../assets/IconPatient.png'
 import imgcalendrier from '../assets/IconCalendrier.png'
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const PageStyle = Styled.div`
     display: flex;
@@ -27,7 +27,18 @@ const DivStyle = Styled.div`
 
 function PageSecretaire(){
     const [contenuActif, setContenuActif] = useState('rendez-vous');
+    const location = useLocation();
     
+    // Détecter les changements d'URL et le paramètre focus
+    useEffect(() => {
+        const urlParams = new URLSearchParams(location.search);
+        const focusParam = urlParams.get('focus');
+        if (focusParam === 'patient') {
+            setContenuActif('patient');
+            // Nettoyer l'URL
+            window.history.replaceState({}, document.title, location.pathname);
+        }
+    }, [location]); // Déclencher à chaque changement de location
    
 
 
