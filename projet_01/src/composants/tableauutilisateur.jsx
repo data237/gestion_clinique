@@ -93,7 +93,7 @@ function UtilisateurTable(){
  
 
 
-  const utilisateursPerPage = 9;
+  const utilisateursPerPage = 7;
 
   const handleCheckboxChange = (id) => {
   setSelectedutilisateurs((prevSelected) =>

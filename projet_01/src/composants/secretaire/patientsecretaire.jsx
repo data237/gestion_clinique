@@ -256,7 +256,7 @@ function PatientSecretaire(){
 
    
 
-      const patientsPerPage = 7;
+      const patientsPerPage = 8;
     
       
     useEffect(()=>{

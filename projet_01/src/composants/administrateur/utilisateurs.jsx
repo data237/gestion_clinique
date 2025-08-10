@@ -24,13 +24,14 @@ const SousDiv2Style = Styled.div`
   display: flex;
   flex-direction: column;
   gap: 32px;
+  
 `
 
 
 
 
 
-const Span1= Styled.span`
+const Span1 = Styled.span`
     cursor: pointer;
 `
 
@@ -71,7 +72,7 @@ const Containbouttonpopup = Styled.div`
     gap: 30px;
     background-color: white;
 `
-const Bouttonpopup =Styled.button`
+const Bouttonpopup = Styled.button`
     font-family: "Roboto", sans-serif;
     font-weight: 400;
     font-size: 1em;
@@ -88,38 +89,40 @@ const Overlay = Styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(239, 239, 255, 1);
   z-index: 998;
 `
-function Utilisateur(){
+function Utilisateur() {
     const navigate = useNavigate();
     const { startLoading, stopLoading, isLoading } = useLoading();
     const { showConfirmation } = useConfirmation();
     const idUser = localStorage.getItem('id');
-    const [nomprofil, setnomprofil]= useState('')
+    const [nomprofil, setnomprofil] = useState('')
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-           const nomutilisateur =  async ()=> {
-                try {
+        const nomutilisateur = async () => {
+            try {
                 const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                    {
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        }
+                    },);
                 console.log(token);
-              if (response) {
-                 setnomprofil(response.data.nom)
+                if (response) {
+                    setnomprofil(response.data.nom)
                 } else {
-                setErreur('Données introuvables');
+                    setErreur('Données introuvables');
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
                 setErreur('Erreur lors du chargement');
             }
-            }
-            nomutilisateur()
+        }
+        nomutilisateur()
     }, [idUser]);
 
     // fonction du tableau
@@ -132,25 +135,27 @@ function Utilisateur(){
 
     const utilisateursPerPage = 8;
 
-    
 
-    useEffect(()=>{
+
+    useEffect(() => {
         startLoading('fetchUtilisateurs');
         const fetchUtilisateurs = async () => {
             const token = localStorage.getItem('token');
             try {
                 const response = await axios.get(`${API_BASE}/utilisateurs`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                    {
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        }
+                    },);
                 console.log(token);
-              if (response && response.data) {
-                setutilisateurs(response.data);
-               setutilisateursFiltres(response.data);
+                if (response && response.data) {
+                    setutilisateurs(response.data);
+                    setutilisateursFiltres(response.data);
                 } else {
-                setErreur('Données introuvables');
+                    setErreur('Données introuvables');
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
@@ -158,27 +163,27 @@ function Utilisateur(){
             } finally {
                 stopLoading('fetchUtilisateurs');
             }
-    
+
         };
-            fetchUtilisateurs();
-        },[]);
-        
+        fetchUtilisateurs();
+    }, []);
+
     useEffect(() => {
-            if (!valeurrecherche.trim()) {
-                setutilisateursFiltres(utilisateurs); // Si rien à chercher, on affiche tout
-                return;
-            }
+        if (!valeurrecherche.trim()) {
+            setutilisateursFiltres(utilisateurs); // Si rien à chercher, on affiche tout
+            return;
+        }
 
-            const recherche = valeurrecherche.toLowerCase();
+        const recherche = valeurrecherche.toLowerCase();
 
-            const resultats = utilisateurs.filter((u) =>
-                u.nom.toLowerCase().includes(recherche) ||
-                u.prenom.toLowerCase().includes(recherche) ||
-                u.email.toLowerCase().includes(recherche) ||
-                u.role.roleType.toLowerCase().includes(recherche)
-            );
+        const resultats = utilisateurs.filter((u) =>
+            u.nom.toLowerCase().includes(recherche) ||
+            u.prenom.toLowerCase().includes(recherche) ||
+            u.email.toLowerCase().includes(recherche) ||
+            u.role.roleType.toLowerCase().includes(recherche)
+        );
 
-            setutilisateursFiltres(resultats);
+        setutilisateursFiltres(resultats);
     }, [valeurrecherche, utilisateurs]);
 
 
@@ -189,58 +194,58 @@ function Utilisateur(){
     const totalPages = Math.ceil(utilisateursFiltres.length / utilisateursPerPage);
 
     useEffect(() => {
-            if (totalPages >= 6) {
+        if (totalPages >= 6) {
             setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
-            } else {
+        } else {
             const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
             setpagesToShow(fullList);
-            }
-            }, [utilisateursFiltres.length, totalPages]);
+        }
+    }, [utilisateursFiltres.length, totalPages]);
 
-            //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
+    //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
 
-            const handleClick = (page) => {
-                if (page !== "..." && page !== currentPage) {
-                setCurrentPage(page);
-                }
-            }
+    const handleClick = (page) => {
+        if (page !== "..." && page !== currentPage) {
+            setCurrentPage(page);
+        }
+    }
 
 
 
     //toggle boutton
-    
-    
+
+
     const toggleStatus = async (userId, currentStatus) => {
-        if(!userId) return;
-        
+        if (!userId) return;
+
         startLoading('toggleStatus');
         const token2 = localStorage.getItem('token');
         try {
-            const response = await axios.patch(`${API_BASE}/utilisateurs/${userId}/status/${!currentStatus}`,{utilisateurs}, {
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token2}`,
-                'Content-Type': 'application/json',
-            },
+            const response = await axios.patch(`${API_BASE}/utilisateurs/${userId}/status/${!currentStatus}`, { utilisateurs }, {
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token2}`,
+                    'Content-Type': 'application/json',
+                },
             });
-                    const user = response.data
-                     setutilisateurs((prevData) =>
-                        prevData.map((item) =>
-                        item.id === userId ?  user : item
-                        )
-                    )
-                    
-                    window.showNotification('Statut modifié avec succès', 'success');
-                    console.log(response.data) ;
-                } catch (error) {
-                    console.log(error)
-                    window.showNotification('Erreur lors de la modification du statut', 'error');
-                } finally {
-                    stopLoading('toggleStatus');
-                }
+            const user = response.data
+            setutilisateurs((prevData) =>
+                prevData.map((item) =>
+                    item.id === userId ? user : item
+                )
+            )
+
+            window.showNotification('Statut modifié avec succès', 'success');
+            console.log(response.data);
+        } catch (error) {
+            console.log(error)
+            window.showNotification('Erreur lors de la modification du statut', 'error');
+        } finally {
+            stopLoading('toggleStatus');
         }
-                    
-    
+    }
+
+
     /*
     const supprimerUtilisateur = async (id) => {
         const token2 = localStorage.getItem('token');
@@ -263,133 +268,133 @@ function Utilisateur(){
             console.error('Erreur lors de la suppression :', error);
         }
         };
-      */      
-    
+      */
+
 
 
 
 
     const modification = (numeropage) => {
-    let nouvelleListe = [...pagesToShow] // copie de l'ancien tableau
+        let nouvelleListe = [...pagesToShow] // copie de l'ancien tableau
 
-    if (numeropage > 2 && numeropage < totalPages - 2) {
-        nouvelleListe[0] = numeropage - 2
-        nouvelleListe[1] = numeropage - 1
-        nouvelleListe[2] = numeropage
-        nouvelleListe[3] = '...'
-    } else if (numeropage === totalPages - 2) {
-        nouvelleListe[0] = numeropage - 3
-        nouvelleListe[1] = numeropage - 2
-        nouvelleListe[2] = numeropage - 1
-        nouvelleListe[3] = numeropage
-    } else {
-        // Peut-être une autre logique ici ?
-    }
-    console.log(pagesToShow)
-    setpagesToShow(nouvelleListe)
+        if (numeropage > 2 && numeropage < totalPages - 2) {
+            nouvelleListe[0] = numeropage - 2
+            nouvelleListe[1] = numeropage - 1
+            nouvelleListe[2] = numeropage
+            nouvelleListe[3] = '...'
+        } else if (numeropage === totalPages - 2) {
+            nouvelleListe[0] = numeropage - 3
+            nouvelleListe[1] = numeropage - 2
+            nouvelleListe[2] = numeropage - 1
+            nouvelleListe[3] = numeropage
+        } else {
+            // Peut-être une autre logique ici ?
+        }
+        console.log(pagesToShow)
+        setpagesToShow(nouvelleListe)
     }
 
     const indexOfLastutilisateur = currentPage * utilisateursPerPage;
     const indexOfFirstutilisateur = indexOfLastutilisateur - utilisateursPerPage;
     //const currentutilisateurs = utilisateurs.slice(indexOfFirstutilisateur, indexOfLastutilisateur);
     const currentutilisateurs = utilisateursFiltres.slice(indexOfFirstutilisateur, indexOfLastutilisateur);
-    
+
 
     //
 
     //aficher les détails d'un utilisateur
-        //const [user, setuser] = useState({})
-        
+    //const [user, setuser] = useState({})
+
     //
 
-  const handleRowClick = (utilisateur) => {
-    navigate(`/admin/utilisateur/viewuser/${utilisateur.id}`);
-  };
+    const handleRowClick = (utilisateur) => {
+        navigate(`/admin/utilisateur/viewuser/${utilisateur.id}`);
+    };
 
 
 
-  const supprimerUtilisateur = async (userId) => {
-    if (!userId) return;
+    const supprimerUtilisateur = async (userId) => {
+        if (!userId) return;
 
-    startLoading('deleteUser');
-    const token2 = localStorage.getItem('token');
-    try {
-        await axios.delete(`${API_BASE}/utilisateurs/${userId}`, {
-        headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token2}`,
-            'Content-Type': 'application/json',
-        },
-        });
+        startLoading('deleteUser');
+        const token2 = localStorage.getItem('token');
+        try {
+            await axios.delete(`${API_BASE}/utilisateurs/${userId}`, {
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token2}`,
+                    'Content-Type': 'application/json',
+                },
+            });
 
-        setutilisateurs((prevUtilisateurs) =>
-        prevUtilisateurs.filter((u) => u.id !== userId)
-        );
+            setutilisateurs((prevUtilisateurs) =>
+                prevUtilisateurs.filter((u) => u.id !== userId)
+            );
 
-        window.showNotification('Utilisateur supprimé avec succès', 'success');
-        console.log(`Utilisateur ${userId} supprimé`);
-    } catch (error) {
-        console.error('Erreur lors de la suppression :', error);
-        window.showNotification('Erreur lors de la suppression', 'error');
-    } finally {
-        stopLoading('deleteUser');
-    }
-  };
+            window.showNotification('Utilisateur supprimé avec succès', 'success');
+            console.log(`Utilisateur ${userId} supprimé`);
+        } catch (error) {
+            console.error('Erreur lors de la suppression :', error);
+            window.showNotification('Erreur lors de la suppression', 'error');
+        } finally {
+            stopLoading('deleteUser');
+        }
+    };
 
 
 
-  if (isLoading('fetchUtilisateurs')) return <p>Chargement...</p>;
+    if (isLoading('fetchUtilisateurs')) return <p>Chargement...</p>;
 
-  if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
-    return(<>
-            <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Gestion des utilisateurs" imgprofil1={imgprofil} nomprofil={nomprofil}> 
-                    <Span1>Liste des utilisateurs</Span1>
-                </Barrehorizontal1>
-            </SousDiv1Style>
-            
-            <SousDiv2Style >
-               <div className='affichebarh2'>
-                    <div className='recherche'>
-                        <img className='iconburger' src={iconburger}></img>
-                        <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
-                        <img className='iconrecherche' src={iconrecherche}></img>
+    if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
+    return (<>
+        <SousDiv1Style>
+            <Barrehorizontal1 titrepage="Gestion des utilisateurs" imgprofil1={imgprofil} nomprofil={nomprofil}>
+                <Span1>Liste des utilisateurs</Span1>
+            </Barrehorizontal1>
+        </SousDiv1Style>
+
+        <SousDiv2Style >
+            <div className='affichebarh2'>
+                <div className='recherche'>
+                    <img className='iconburger' src={iconburger}></img>
+                    <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici' value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
+                    <img className='iconrecherche' src={iconrecherche}></img>
+                </div>
+                <Link to="/admin/utilisateur/add"><button className='add-button add-button-with-icon'>+ Ajouter un utilisateur</button></Link>
+            </div>
+
+
+            <div className='zonedaffichage'>
+                <div className='numero'>
+                    <div>
+                        <h2 className='nomtable'> Utilisateurs </h2>
                     </div>
-                    <Link to="/admin/utilisateur/add"><button className='add-button add-button-with-icon'>+ Ajouter un utilisateur</button></Link>
-               </div>
-                
-                
-                <div className='zonedaffichage'>
-                    <div className='numero'>
-                            <div>
-                                <h2 className='nomtable'> Utilisateurs </h2>
-                            </div>
-                            <div className='divbutton'>
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
-                                <div>
-                                        {pagesToShow.map((page, idx) => (
-                                            <ButtonStyle
-                                            key={idx}
-                                            onClick={() => handleClick(page)}
-                                            $buttonbackgroundColor = {page === currentPage ? 'rgba(65, 65, 255, 1)' : ''}
-                                            $buttonColor = {page === currentPage ? 'white' : ''}
-                                            disabled={page === "..."}
-                                            >
-                                            {page}
-                                            </ButtonStyle>
-                                        ))}
-                                </div>
-                                
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
-                                disabled={currentPage === totalPages}>Suivant</button>
-                            </div>
-                            
-                    </div>
-                        <div className='conteneurbarre'>
-                            <div className='barre'></div>
+                    <div className='divbutton'>
+                        <button className='buttonPS' onClick={() => { setCurrentPage(currentPage - 1); modification(currentPage - 1) }} disabled={currentPage === 1}>Précédent</button>
+                        <div>
+                            {pagesToShow.map((page, idx) => (
+                                <ButtonStyle
+                                    key={idx}
+                                    onClick={() => handleClick(page)}
+                                    $buttonbackgroundColor={page === currentPage ? 'rgba(65, 65, 255, 1)' : ''}
+                                    $buttonColor={page === currentPage ? 'white' : ''}
+                                    disabled={page === "..."}
+                                >
+                                    {page}
+                                </ButtonStyle>
+                            ))}
                         </div>
+
+                        <button className='buttonPS' onClick={() => { setCurrentPage(currentPage + 1); modification(currentPage + 1) }}
+                            disabled={currentPage === totalPages}>Suivant</button>
+                    </div>
+
+                </div>
+                <div className='conteneurbarre'>
+                    <div className='barre'></div>
+                </div>
                 <div className='affichetableau'>
-                    
+
                     <table className='tableau-2'>
                         <thead>
                             <tr>
@@ -402,56 +407,56 @@ function Utilisateur(){
                             </tr>
                         </thead>
                         <tbody>
-                        {currentutilisateurs.map((utilisateur) => (
-                           <tr key={utilisateur.id} className='tr'>
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.nom}</td>
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.prenom}</td>
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.email}</td>
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.role.roleType}</td>
-                            <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => {handleRowClick(utilisateur)}}>{utilisateur.actif ? "actif" : "inactif"}</td>
-                            <td className='td bouttons'>
-                                <button 
-                                    onClick={() => {
-                                        showConfirmation({
-                                            title: "Modification du statut",
-                                            content: `Voulez-vous ${utilisateur.actif ? 'désactiver' : 'activer'} l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} ?`,
-                                            onConfirm: () => toggleStatus(utilisateur.id, utilisateur.actif),
-                                            confirmText: "Confirmer",
-                                            cancelText: "Annuler"
-                                        });
-                                    }} 
-                                    className={`toggle-button ${utilisateur.actif ? "" : "on"}`}
-                                    disabled={isLoading('toggleStatus')}
-                                >
-                                    <div className={ `circle  ${utilisateur.actif  ? "" : "active"}`} ></div>
-                                </button>
-                                <button 
-                                    onClick={()=> {
-                                        showConfirmation({
-                                            title: "Suppression d'utilisateur",
-                                            content: `Voulez-vous vraiment supprimer l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} ?`,
-                                            onConfirm: () => supprimerUtilisateur(utilisateur.id),
-                                            confirmText: "Supprimer",
-                                            cancelText: "Annuler",
-                                            variant: "danger"
-                                        });
-                                    }}
-                                    disabled={isLoading('deleteUser')}
-                                >
-                                    <img src={iconsupprime} className='iconsupprime'></img>
-                                </button>    
-                            </td>
-                            </tr>
-                        ))}
+                            {currentutilisateurs.map((utilisateur) => (
+                                <tr key={utilisateur.id} className='tr'>
+                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.nom}</td>
+                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.prenom}</td>
+                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.email}</td>
+                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.role.roleType}</td>
+                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.actif ? "actif" : "inactif"}</td>
+                                    <td className='td bouttons'>
+                                        <button
+                                            onClick={() => {
+                                                showConfirmation({
+                                                    title: "Modification du statut",
+                                                    content: `Voulez-vous ${utilisateur.actif ? 'désactiver' : 'activer'} l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} ?`,
+                                                    onConfirm: () => toggleStatus(utilisateur.id, utilisateur.actif),
+                                                    confirmText: "Confirmer",
+                                                    cancelText: "Annuler"
+                                                });
+                                            }}
+                                            className={`toggle-button ${utilisateur.actif ? "" : "on"}`}
+                                            disabled={isLoading('toggleStatus')}
+                                        >
+                                            <div className={`circle  ${utilisateur.actif ? "" : "active"}`} ></div>
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                showConfirmation({
+                                                    title: "Suppression d'utilisateur",
+                                                    content: `Voulez-vous vraiment supprimer l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} ?`,
+                                                    onConfirm: () => supprimerUtilisateur(utilisateur.id),
+                                                    confirmText: "Supprimer",
+                                                    cancelText: "Annuler",
+                                                    variant: "danger"
+                                                });
+                                            }}
+                                            disabled={isLoading('deleteUser')}
+                                        >
+                                            <img src={iconsupprime} className='iconsupprime'></img>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
-                    
-                    </div>
-                </div>
 
-               
-                
-            </SousDiv2Style>
-    </>)   
+                </div>
+            </div>
+
+
+
+        </SousDiv2Style>
+    </>)
 }
 export default Utilisateur

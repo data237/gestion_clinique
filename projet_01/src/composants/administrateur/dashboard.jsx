@@ -12,6 +12,7 @@ import iconutilisateurblanc from '../../assets/iconutilisateurdashboardblanc.svg
 const SousDiv1Style = Styled.div`
     width: 100%;
     padding-right: 32px;
+
     
     @media (max-width: 768px) {
         padding-right: 16px;

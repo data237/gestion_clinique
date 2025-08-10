@@ -6,6 +6,7 @@ const Barrehorizontal1Style = Styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+    margin-top: -30px;
 `
 const DivStyle = Styled.div`
     display: flex;

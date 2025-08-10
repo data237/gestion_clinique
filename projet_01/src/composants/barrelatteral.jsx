@@ -59,7 +59,7 @@ const Imgsvg = Styled.img`
 
 const BarrelatteralStyle = Styled.div`
     position: relative;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: #FEFFEF;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -15,7 +15,7 @@ import { useConfirmation } from '../ConfirmationProvider';
 const FormContainer = Styled.div`
   position: relative;
   overflow: hidden;
-  background: #fff;
+  background-color: rgba(239, 239, 255, 1);;
   padding: 30px;
   border-radius: 16px;
   font-family: sans-serif;
