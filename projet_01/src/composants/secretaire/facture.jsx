@@ -16,163 +16,28 @@ import { useLoading } from '../LoadingProvider';
 import { useConfirmation } from '../ConfirmationProvider';
 import Pagination from '../shared/Pagination';
 
+
+
+const ZonedaffichageStyle = Styled.div`
+    border-radius: 10px;
+    padding-bottom: 50px;
+`
+
 const SousDiv1Style = Styled.div`
   width: 100%;
- 
  padding-right: 32px;
 `
 const SousDiv2Style = Styled.div`
   width: 100%;
- 
   padding-right: 32px;
   display: flex;
   flex-direction: column;
   gap: 32px;
 `
-const ZonedaffichageStyle = Styled.div`
-    height: 70vh;
-    display: ${props => props.$zonedaffichagedisplay};
-    flex-direction: column;
-    gap: 15px;
-    background-color: rgba(239, 239, 255, 1);
-    border-radius: 10px;
-`
-
-const Affichebarh2 = Styled.div`
-    display: flex;
-    width: 100%;
-    height: 89px;
-    justify-content: space-between;
-`
-
-// affichage bar de recherche et boutton
-
-const RechercheStyle = Styled.div`
-   width: 75%;
-   height: 56px;
-   border-radius: 28px;
-   background-color: rgba(239, 239, 255, 1);
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   padding-left: 20px;
-   padding-right: 20px;
-`
-const IconburgerStyle = Styled.img`
-    width: 24px;
-    height: 20px;
-
-`
-const IconrechercheStyle = Styled.img`
-    width: 20px;
-    height: 20px;
-`
-const InputStyle = Styled.input`
-    width: 90%;
-    height: 56px;
-    border: none;
-    background-color:  rgba(239, 239, 255, 1);
-    font-family: Body/Font Family;
-    font-weight: 400;
-    font-size: 1em;
-     &:focus{
-        outline: none;
-        border: none;
-    }
-`
-
-const BouttonStyle = Styled.button`
-
-height: 56px;
-border-radius: 28px;
-padding-top: 12px;
-padding-right: 16px;
-padding-bottom: 12px;
-padding-left: 16px;
-background-color: rgba(65, 65, 255, 1);
-font-family: Body/Font Family;
-font-weight: 700;
-font-size: 1.3em;
-color: #fff;
-border: none;
-&:hover{
-    cursor: pointer;
-}
-`
-
-//
-
-const AfficheTableauStyle = Styled.div`
-    display: flex;
-    justify-content: center;
-`
-
-
-
 
 const Span1= Styled.span`
     cursor: pointer;
 `
-const Span2= Styled.span`
-  
-`
-
-// Style component du tableau
-    const NumeroStyle = Styled.div`
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 20px;
-`
-const DivbuttonStyle = Styled.div`
-    display: flex;
-    gap: 15px;
-`
-const ButtonStyle = Styled.button`
-    padding: 5px 5px;
-    font-family: Roboto;
-    font-weight: 300;
-    font-size: 1em;
-    background-color: ${props => props.$buttonbackgroundColor};
-    color: ${props => props.$buttonColor};
-    border-radius: 5px;
-    gap: 0px;
-     &:hover{
-        cursor: pointer;
-        background-color: rgba(65, 65, 255, 1);
-        border-radius: 5px;
-    }
-    &:focus{
-        cursor: pointer;
-        background-color: rgba(65, 65, 255, 1);
-        color: white;
-        border-radius: 5px;
-    }
-    
-`
-const ButtonPSStyle = Styled.button`
-    padding: 5px 5px;
-    font-family: Roboto;
-    font-weight: 300;
-    font-size: 1em;
-     &:hover{
-        cursor: pointer;
-    }
-`
-
-const NomtableStyle = Styled.p`
-    font-family: "Inter", sans-serif;
-    font-weight: 700;
-    font-size: 1.5em;
-`
-const BarreStyle = Styled.div`
-    width: 100%;
-    height: 5px;
-    border-radius: 2.5px;
-    background-color: rgba(159, 159, 255, 1);
-    padding-left:  20px;
-
-`
-//
 
 const ModalOverlay = Styled.div`
   position: fixed;
@@ -427,7 +292,11 @@ function Facture(){
             </SousDiv1Style>
             
             <SousDiv2Style >
-                <div className='affichebarh2'>
+                <div className='affichebarh2'
+                style={{
+                  marginTop: '-20px',
+                }}
+                >
                     <div className='recherche'>
                         <img className='iconburger' src={iconburger}></img>
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
@@ -438,7 +307,9 @@ function Facture(){
                  
                 
                 
-                <div className='zonedaffichage'>
+                <div className='zonedaffichage'
+                
+                >
                     <div className='numero'>
                             <div>
                                 <h2 className='nomtable'> Facture impayee </h2>

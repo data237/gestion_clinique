@@ -621,7 +621,11 @@ const supprimerrendezvous = async () => {
             </SousDiv1Style>
             
             <SousDiv2Style >
-                <div className='affichebarh2'>
+                <div className='affichebarh2'
+                style={{
+                  marginTop: '-20px',
+                }}
+                >
                     <div className='recherche'>
                         <img className='iconburger' src={iconburger}></img>
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>

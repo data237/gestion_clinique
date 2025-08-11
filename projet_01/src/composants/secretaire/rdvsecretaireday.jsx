@@ -10,7 +10,7 @@ import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import iconrecherche from '../../assets/iconrecherche.png'
 import iconburger from '../../assets/iconburger.png'
-import { Link, useNavigate, useParams  } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ConfirmationModal } from '../shared/UnifiedModal';
 import Pagination from '../shared/Pagination';
 
@@ -108,15 +108,15 @@ const AfficheTableauStyle = Styled.div`
 
 
 
-const Span1= Styled.span`
+const Span1 = Styled.span`
     cursor: pointer;
 `
-const Span2= Styled.span`
+const Span2 = Styled.span`
   
 `
 
 // Style component du tableau
-    const NumeroStyle = Styled.div`
+const NumeroStyle = Styled.div`
     display: flex;
     justify-content: space-between;
     padding: 10px 20px;
@@ -175,33 +175,35 @@ const BarreStyle = Styled.div`
 // gerer les popups
 
 
-function RendezvousScretaireToday(){
+function RendezvousScretaireToday() {
     //const [isVisible, setisVisible] = useState(0)
-      const idUser = localStorage.getItem('id');
-    const [nomprofil, setnomprofil]= useState('')
+    const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil] = useState('')
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-           const nomutilisateur =  async ()=> {
-                try {
+        const nomutilisateur = async () => {
+            try {
                 const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                    {
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        }
+                    },);
                 console.log(token);
-              if (response) {
-                 setnomprofil(response.data.nom)
+                if (response) {
+                    setnomprofil(response.data.nom)
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
-                
+
             } finally {
-              console.log('fin')
+                console.log('fin')
             }
-            }
-            nomutilisateur()
+        }
+        nomutilisateur()
     }, [idUser]);
 
     const [valeurrecherche, setvaleurrecherche] = useState('');
@@ -209,31 +211,33 @@ function RendezvousScretaireToday(){
     const [isloading, setisloading] = useState(true);
     const [rendezvous, setrendezvous] = useState([]);
     const [rendezvousFiltres, setrendezvousFiltres] = useState([]);
-  
+
     const [erreur, setErreur] = useState(null);
 
     const { today } = useParams();
     const rendezvousPerPage = 8;
     console.log(today)
-    
-    useEffect(()=>{
-         
-         const fetchrendezvous = async () => {
+
+    useEffect(() => {
+
+        const fetchrendezvous = async () => {
             const token = localStorage.getItem('token');
-            
+
             try {
                 const response = await axios.get(`${API_BASE}/rendezvous/jour/${today}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                    {
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        }
+                    },);
                 console.log(token);
-              if (response && response.data) {
-                setrendezvous(response.data);
-               setrendezvousFiltres(response.data);
+                if (response && response.data) {
+                    setrendezvous(response.data);
+                    setrendezvousFiltres(response.data);
                 } else {
-                //setErreur('Données introuvables');
+                    //setErreur('Données introuvables');
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des rendezvous:', error);
@@ -241,27 +245,27 @@ function RendezvousScretaireToday(){
             } finally {
                 setisloading(false);
             }
-    
+
         };
-            fetchrendezvous();
-        },[today]);
-        
+        fetchrendezvous();
+    }, [today]);
+
     useEffect(() => {
-            if (!valeurrecherche.trim()) {
-                setrendezvousFiltres(rendezvous); // Si rien à chercher, on affiche tout
-                return;
-            }
+        if (!valeurrecherche.trim()) {
+            setrendezvousFiltres(rendezvous); // Si rien à chercher, on affiche tout
+            return;
+        }
 
-            const recherche = valeurrecherche.toLowerCase();
+        const recherche = valeurrecherche.toLowerCase();
 
-            const resultats = rendezvous.filter((u) =>
-                u.jour.toLowerCase().includes(recherche) ||
-                u.patientNomComplet.toLowerCase().includes(recherche) ||
-                u.medecinNomComplet.toLowerCase().includes(recherche) ||
-                u.statut.toLowerCase().includes(recherche)
-            );
+        const resultats = rendezvous.filter((u) =>
+            u.jour.toLowerCase().includes(recherche) ||
+            u.patientNomComplet.toLowerCase().includes(recherche) ||
+            u.medecinNomComplet.toLowerCase().includes(recherche) ||
+            u.statut.toLowerCase().includes(recherche)
+        );
 
-            setrendezvousFiltres(resultats);
+        setrendezvousFiltres(resultats);
     }, [valeurrecherche, rendezvous]);
 
 
@@ -272,175 +276,179 @@ function RendezvousScretaireToday(){
     const totalPages = Math.ceil(rendezvousFiltres.length / rendezvousPerPage);
 
     useEffect(() => {
-      // Ne pas afficher la pagination s'il n'y a qu'une page ou moins
-      if (totalPages <= 1) {
-        setpagesToShow([]);
-        return;
-      }
-      
-      if (totalPages >= 6) {
-        setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
-      } else {
-        const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
-        setpagesToShow(fullList);
-      }
+        // Ne pas afficher la pagination s'il n'y a qu'une page ou moins
+        if (totalPages <= 1) {
+            setpagesToShow([]);
+            return;
+        }
+
+        if (totalPages >= 6) {
+            setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
+        } else {
+            const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
+            setpagesToShow(fullList);
+        }
     }, [rendezvousFiltres.length, totalPages]);
 
-            //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
+    //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
 
-            const handleClick = (page) => {
-                if (page !== "..." && page !== currentPage) {
-                setCurrentPage(page);
-                }
-            }
+    const handleClick = (page) => {
+        if (page !== "..." && page !== currentPage) {
+            setCurrentPage(page);
+        }
+    }
 
 
 
     //toggle boutton
-    
-    
-    
-                    
-    
-         
-    
+
+
+
+
+
+
+
 
 
 
 
     const modification = (numeropage) => {
-    let nouvelleListe = [...pagesToShow] // copie de l'ancien tableau
+        let nouvelleListe = [...pagesToShow] // copie de l'ancien tableau
 
-    if (numeropage > 2 && numeropage < totalPages - 2) {
-        nouvelleListe[0] = numeropage - 2
-        nouvelleListe[1] = numeropage - 1
-        nouvelleListe[2] = numeropage
-        nouvelleListe[3] = '...'
-    } else if (numeropage === totalPages - 2) {
-        nouvelleListe[0] = numeropage - 3
-        nouvelleListe[1] = numeropage - 2
-        nouvelleListe[2] = numeropage - 1
-        nouvelleListe[3] = numeropage
-    } else {
-        // Peut-être une autre logique ici ?
-    }
-    console.log(pagesToShow)
-    setpagesToShow(nouvelleListe)
+        if (numeropage > 2 && numeropage < totalPages - 2) {
+            nouvelleListe[0] = numeropage - 2
+            nouvelleListe[1] = numeropage - 1
+            nouvelleListe[2] = numeropage
+            nouvelleListe[3] = '...'
+        } else if (numeropage === totalPages - 2) {
+            nouvelleListe[0] = numeropage - 3
+            nouvelleListe[1] = numeropage - 2
+            nouvelleListe[2] = numeropage - 1
+            nouvelleListe[3] = numeropage
+        } else {
+            // Peut-être une autre logique ici ?
+        }
+        console.log(pagesToShow)
+        setpagesToShow(nouvelleListe)
     }
 
     // S'assurer que currentPage est toujours valide
     const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
     if (validCurrentPage !== currentPage) {
-      setCurrentPage(validCurrentPage);
+        setCurrentPage(validCurrentPage);
     }
-    
+
     const indexOfLastrendezvous = validCurrentPage * rendezvousPerPage;
     const indexOfFirstrendezvous = indexOfLastrendezvous - rendezvousPerPage;
     const currentrendezvous = rendezvousFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
-    
+
 
     //
 
     //aficher les détails d'un rendezvous
-        //const [user, setuser] = useState({})
-        
+    //const [user, setuser] = useState({})
+
     //
-     const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const handleRowClick = (rendezvous) => {
-    navigate(`/secretaire/rendezvous/viewrendezvous/${rendezvous.id}`);
-  };
-
-
-
-  
+    const handleRowClick = (rendezvous) => {
+        navigate(`/secretaire/rendezvous/viewrendezvous/${rendezvous.id}`);
+    };
 
 
 
-  if (isloading) return <p>Chargement...</p>;
 
-  if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
-    return(<>
-            
-            <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}> 
-                    <Span1 onClick={()=> navigate("/secretaire/calendrier")}>Liste des evenements</Span1>
-                    <Span2 > {">"} Rendez vous du jours </Span2>
-                </Barrehorizontal1>
-            </SousDiv1Style>
-            
-            <SousDiv2Style >
-                <div className='affichebarh2'>
-                    <div className='recherche'>
-                        <img className='iconburger' src={iconburger}></img>
-                        <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
-                        <img className='iconrecherche' src={iconrecherche}></img>
-                    </div>
-                    
+
+
+
+    if (isloading) return <p>Chargement...</p>;
+
+    if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
+    return (<>
+
+        <SousDiv1Style>
+            <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}>
+                <Span1 onClick={() => navigate("/secretaire/calendrier")}>Liste des evenements</Span1>
+                <Span2 > {">"} Rendez vous du jours </Span2>
+            </Barrehorizontal1>
+        </SousDiv1Style>
+
+        <SousDiv2Style >
+            <div className='affichebarh2'
+                style={{
+                    marginTop: '-20px',
+                }}
+            >
+                <div className='recherche'>
+                    <img className='iconburger' src={iconburger}></img>
+                    <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici' value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
+                    <img className='iconrecherche' src={iconrecherche}></img>
                 </div>
-                 
-                
-                
-                <div className='zonedaffichage'>
-                    <div className='numero'>
-                            <div>
-                                <h2 className='nomtable'> Utilisateurs </h2>
-                            </div>
-                                                         <Pagination
-                               currentPage={currentPage}
-                               totalPages={totalPages}
-                               onPageChange={setCurrentPage}
-                               onModification={modification}
-                               itemsPerPage={rendezvousPerPage}
-                               totalItems={rendezvousFiltres.length}
-                             />
-                            
+
+            </div>
+
+
+
+            <div className='zonedaffichage'>
+                <div className='numero'>
+                    <div>
+                        <h2 className='nomtable'> Utilisateurs </h2>
                     </div>
-                        <div className='conteneurbarre'>
-                            <div className='barre'></div>
-                        </div>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        onModification={modification}
+                        itemsPerPage={rendezvousPerPage}
+                        totalItems={rendezvousFiltres.length}
+                    />
+
+                </div>
+                <div className='conteneurbarre'>
+                    <div className='barre'></div>
+                </div>
                 <div className='affichetableau'>
-                   
+
                     <table className='tableau-2'>
                         <thead>
-                        <tr>
-                            
-                            <th className='th'>Jour</th>
-                            <th className='th'>Heure</th>
-                            <th className='th'>Service medical</th>
-                            <th className='th'>Nom du patient</th>
-                            <th className='th'>Nom du medecin</th>
-                            <th className='th'>Nom de la salle</th>
-                            <th className='th'>Statut</th>
-                           
-                           
-                        </tr>
+                            <tr>
+
+                                <th className='th'>Jour</th>
+                                <th className='th'>Heure</th>
+                                <th className='th'>Service medical</th>
+                                <th className='th'>Nom du patient</th>
+                                <th className='th'>Nom du medecin</th>
+                                <th className='th'>Nom de la salle</th>
+                                <th className='th'>Statut</th>
+
+
+                            </tr>
                         </thead>
                         <tbody>
-                        {currentrendezvous.map((rendezvous) => (
-                           <tr key={rendezvous.id} className='tr'>
-    
-                            
-                            
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.jour}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.heure}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.serviceMedical}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.nomSalle}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.statut ? "actif" : "inactif"}</td>
-                            
-                            </tr>
-                        ))}
+                            {currentrendezvous.map((rendezvous) => (
+                                <tr key={rendezvous.id} className='tr'>
+
+
+
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.jour}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.heure}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.serviceMedical}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.patientNomComplet}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.medecinNomComplet}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.nomSalle}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.statut ? "actif" : "inactif"}</td>
+
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
-                   
-                    </div>
-                </div>
 
-               
-                
-            </SousDiv2Style>
-    </>)   
+                </div>
+            </div>
+
+
+
+        </SousDiv2Style>
+    </>)
 }
 export default RendezvousScretaireToday

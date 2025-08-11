@@ -38,6 +38,7 @@ const ZonedaffichageStyle = Styled.div`
     gap: 15px;
     background-color: rgba(239, 239, 255, 1);
     border-radius: 10px;
+    padding-bottom: 20px;
 `
 const AfficheTableauStyle = Styled.div`
    display: flex;
@@ -407,7 +408,11 @@ function PatientSecretaire(){
             </SousDiv1Style>
             
             <SousDiv2Style >
-               <div className='affichebarh2'>
+               <div className='affichebarh2'
+               style={{
+                marginTop: '-20px',
+              }}
+               >
                     <div className='recherche'>
                         <img className='iconburger' src={iconburger}></img>
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>

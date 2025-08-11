@@ -12,85 +12,63 @@ import frLocale from '@fullcalendar/core/locales/fr';
 import '../../styles/calendar.css'; // pour le style personnalisé
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
+import '../../styles/Zonedaffichage.css'
 
 
 const SousDiv1Style = Styled.div`
- width: 99%;
+ width: 95%;
 
 `
-const Span1= Styled.span`
+const Span1 = Styled.span`
     cursor: pointer;
 `
-const ZonedaffichageStyle = Styled.div`
-    width: 99%;
-    height: 78vh;
-    display: ${props => props.$zonedaffichagedisplay};
-    flex-direction: column;
-    gap: 15px;
-    background-color: rgba(239, 239, 255, 1);
-    border-radius: 10px;
+const CalendarContainer = Styled.div`
+ width: 100%;
+  height: 85vh;
+padding-bottom: 25px;
+margin-top: -30px;
 `
-const Rendezvousday = Styled.div`
-  width: 99%;
-  height: 78vh;
-  display: ${props => props.$Rendezvousdaydisplay};
-  flex-direction: column;
-  gap: 15px;
-  background-color: rgba(239, 239, 255, 1);
-  border-radius: 10px;
-`
-const NomtableStyle = Styled.p`
-    font-family: "Inter", sans-serif;
-    font-weight: 700;
-    font-size: 1.5em;
-    padding: 10px 20px;
-`
-const BarreStyle = Styled.div`
-    width: 100%;
-    height: 5px;
-    border-radius: 2.5px;
-    background-color: rgba(159, 159, 255, 1);
-    padding-left:  20px;
 
-`
 const CalendarSecretaire = () => {
 
   const idUser = localStorage.getItem('id');
-    const [nomprofil, setnomprofil]= useState('')
+  const [nomprofil, setnomprofil] = useState('')
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-           const nomutilisateur =  async ()=> {
-                try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
-              if (response) {
-                 setnomprofil(response.data.nom)
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération des utilisateurs:', error);
-                
-            } finally {
-              console.log('fin')
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const nomutilisateur = async () => {
+      try {
+        const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             }
-            }
-            nomutilisateur()
-    }, [idUser]);
+          },);
+        console.log(token);
+        if (response) {
+          setnomprofil(response.data.nom)
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des utilisateurs:', error);
 
-    const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false)
-  
-     const nbr = 10
-     const navigate = useNavigate();
-    
-      const handleClick = (today) => {
-        console.log("Date cliquée :", today.dateStr);
-        navigate(`/secretaire/calendrier/${today.dateStr}`);
-      };
+      } finally {
+        console.log('fin')
+      }
+    }
+    nomutilisateur()
+  }, [idUser]);
+
+  const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false)
+
+  const nbr = 10
+  const navigate = useNavigate();
+
+  const handleClick = (today) => {
+    console.log("Date cliquée :", today.dateStr);
+    navigate(`/secretaire/calendrier/${today.dateStr}`);
+  };
   const events = [
     { title: `${nbr} rendez-vous`, start: '2025-07-24' },
     { title: 'Conference', start: '2025-03-02', end: '2025-03-03' },
@@ -104,45 +82,59 @@ const CalendarSecretaire = () => {
   ];
 
 
- 
+
   return (
     <>
-    
-   <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}> 
-                    <Span1 onClick={()=> setrendezvousdayvisible(false)}>Liste des evenements</Span1>
-                </Barrehorizontal1>
-            </SousDiv1Style>
-   
-      <ZonedaffichageStyle $zonedaffichagedisplay = {rendezvousdayvisible? 'none' : 'block'}>
-        
-            <div>
-                <NomtableStyle> Evenements </NomtableStyle>
-            </div>
-                           
-                            
-                       
-            <div style={{ margin: '20px 20px' }}>
-                <BarreStyle></BarreStyle>
-            </div>
-            <FullCalendar
+
+      <SousDiv1Style>
+        <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}>
+          <Span1 onClick={() => setrendezvousdayvisible(false)}>Liste des evenements</Span1>
+        </Barrehorizontal1>
+      </SousDiv1Style>
+
+      <div className='zonedaffichage' $zonedaffichagedisplay={rendezvousdayvisible ? 'none' : 'block'}
+        style={{
+          height: '78vh',
+          marginRight: '30px',
+        }}
+      >
+
+
+        <div className='numero'
+
+        >
+          <div>
+            <h2 className='nomtable'> Evenements </h2>
+          </div>
+
+        </div>
+
+
+        <div className='conteneurbarre'
+        >
+          <div className='barre'></div>
+        </div>
+        <CalendarContainer>
+          <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
             locales={[frLocale]}
             locale="fr"
             headerToolbar={{
-            left: 'prev,next ,today',
-            right: 'title',
-            
+              left: 'prev,next ,today',
+              right: 'title',
+
             }}
             events={events}
-            height="auto"
+            height="100%"
+            width="100%"
             dateClick={handleClick}
-        />
-      </ZonedaffichageStyle>
+          />
+        </CalendarContainer>
+      </div>
       {/*right: 'dayGridMonth',timeGridWeek,timeGridDay' */}
-     
-     </>
+
+    </>
   );
 };
 
