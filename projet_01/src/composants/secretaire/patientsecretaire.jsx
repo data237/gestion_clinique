@@ -15,6 +15,7 @@ import iconsupprime from '../../assets/Iconsupprime.svg'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
 import { ConfirmationModal } from '../shared/UnifiedModal';
+import Pagination from '../shared/Pagination';
 
 
 const SousDiv1Style = Styled.div`
@@ -275,24 +276,28 @@ function PatientSecretaire(){
             }, [valeurrecherche, patients]);
     
     const [pagesToShow, setpagesToShow] = useState([]);
-    const totalPages = Math.ceil(patients.length / patientsPerPage);
+    const totalPages = Math.ceil(patientsFiltres.length / patientsPerPage);
     
     useEffect(() => {
+      // Ne pas afficher la pagination s'il n'y a qu'une page ou moins
+      if (totalPages <= 1) {
+        setpagesToShow([]);
+        return;
+      }
+      
       if (totalPages >= 6) {
         setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
       } else {
         const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
         setpagesToShow(fullList);
       }
-    }, [patients.length, totalPages]);
+    }, [patientsFiltres.length, totalPages]);
     
-      //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
-    
-      const handleClick = (page) => {
-            if (page !== "..." && page !== currentPage) {
-            setCurrentPage(page);
-            }
-        }
+    const handleClick = (page) => {
+      if (page !== "..." && page !== currentPage && page > 0 && page <= totalPages) {
+        setCurrentPage(page);
+      }
+    }
     
   
     
@@ -349,9 +354,14 @@ function PatientSecretaire(){
     console.log(pagesToShow)
     setpagesToShow(nouvelleListe)
     }
- const indexOfLastPatient = currentPage * patientsPerPage;
+  // S'assurer que currentPage est toujours valide
+  const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
+  if (validCurrentPage !== currentPage) {
+    setCurrentPage(validCurrentPage);
+  }
+  
+  const indexOfLastPatient = validCurrentPage * patientsPerPage;
   const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
-  //const currentPatients = patients.slice(indexOfFirstPatient, indexOfLastPatient);
   const currentPatients = patientsFiltres.slice(indexOfFirstPatient, indexOfLastPatient);
 
 
@@ -416,25 +426,14 @@ function PatientSecretaire(){
                             <div>
                                 <h2 className='nomtable'> Utilisateurs </h2>
                             </div>
-                            <div className='divbutton'>
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
-                                <div>
-                                        {pagesToShow.map((page, idx) => (
-                                            <ButtonStyle
-                                            key={idx}
-                                            onClick={() => handleClick(page)}
-                                            $buttonbackgroundColor = {page === currentPage ? 'rgba(65, 65, 255, 1)' : ''}
-                                            $buttonColor = {page === currentPage ? 'white' : ''}
-                                            disabled={page === "..."}
-                                            >
-                                            {page}
-                                            </ButtonStyle>
-                                        ))}
-                                </div>
-                                
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
-                                disabled={currentPage === totalPages}>Suivant</button>
-                            </div>
+                                                         <Pagination
+                               currentPage={currentPage}
+                               totalPages={totalPages}
+                               onPageChange={setCurrentPage}
+                               onModification={modification}
+                               itemsPerPage={patientsPerPage}
+                               totalItems={patientsFiltres.length}
+                             />
                             
                     </div>
                         <div className='conteneurbarre'>

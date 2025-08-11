@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom';
 import FormulaireFacture from './formulairefacture';
 import { useLoading } from '../LoadingProvider';
 import { useConfirmation } from '../ConfirmationProvider';
+import Pagination from '../shared/Pagination';
 
 const SousDiv1Style = Styled.div`
   width: 100%;
@@ -314,16 +315,22 @@ function Facture(){
 
 
     const [pagesToShow, setpagesToShow] = useState([]);
-    const totalPages = Math.ceil(factures.length / rendezvousPerPage);
+    const totalPages = Math.ceil(facturesFiltres.length / rendezvousPerPage);
 
     useEffect(() => {
-            if (totalPages >= 6) {
-            setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
-            } else {
-            const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
-            setpagesToShow(fullList);
-            }
-            }, [factures.length, totalPages]);
+      // Ne pas afficher la pagination s'il n'y a qu'une page ou moins
+      if (totalPages <= 1) {
+        setpagesToShow([]);
+        return;
+      }
+      
+      if (totalPages >= 6) {
+        setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
+      } else {
+        const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
+        setpagesToShow(fullList);
+      }
+    }, [facturesFiltres.length, totalPages]);
 
             //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
 
@@ -367,9 +374,14 @@ function Facture(){
     setpagesToShow(nouvelleListe)
     }
 
-    const indexOfLastrendezvous = currentPage * rendezvousPerPage;
+    // S'assurer que currentPage est toujours valide
+    const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
+    if (validCurrentPage !== currentPage) {
+      setCurrentPage(validCurrentPage);
+    }
+    
+    const indexOfLastrendezvous = validCurrentPage * rendezvousPerPage;
     const indexOfFirstrendezvous = indexOfLastrendezvous - rendezvousPerPage;
-    //const currentrendezvous = rendezvous.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
     const currentrendezvous = facturesFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
     
 
@@ -431,25 +443,14 @@ function Facture(){
                             <div>
                                 <h2 className='nomtable'> Facture impayee </h2>
                             </div>
-                            <div className='divbutton'>
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
-                                <div>
-                                        {pagesToShow.map((page, idx) => (
-                                            <ButtonStyle
-                                            key={idx}
-                                            onClick={() => handleClick(page)}
-                                            $buttonbackgroundColor = {page === currentPage ? 'rgba(65, 65, 255, 1)' : ''}
-                                            $buttonColor = {page === currentPage ? 'white' : ''}
-                                            disabled={page === "..."}
-                                            >
-                                            {page}
-                                            </ButtonStyle>
-                                        ))}
-                                </div>
-                                
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
-                                disabled={currentPage === totalPages}>Suivant</button>
-                            </div>
+                            <Pagination
+                              currentPage={currentPage}
+                              totalPages={totalPages}
+                              onPageChange={setCurrentPage}
+                              onModification={modification}
+                              itemsPerPage={rendezvousPerPage}
+                              totalItems={facturesFiltres.length}
+                            />
                             
                     </div>
                         <div className='conteneurbarre'>

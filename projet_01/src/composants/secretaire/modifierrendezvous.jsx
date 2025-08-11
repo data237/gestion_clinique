@@ -319,6 +319,13 @@ const ModifierRendezVous = () => {
     navigate(`/secretaire/rendezvous/viewrendezvous/${id}`);
   };
 
+  const handleAnnuler = () => {
+    if (window.showNotification) {
+      window.showNotification("Annulation de la modification du rendez-vous", "info");
+    }
+    navigate(`/secretaire/rendezvous/viewrendezvous/${id}`);
+  };
+
   // Fonction pour valider l'heure (entre 7h00 et 20h00)
   const validateTime = (time) => {
     const [hours, minutes] = time.split(':').map(Number);
@@ -628,7 +635,7 @@ const ModifierRendezVous = () => {
             
           </FormContainer>
           <ButtonRow>
-              <Button type="button" className="cancel-button" onClick={handleViewClick}>
+              <Button type="button" className="cancel-button" onClick={handleAnnuler}>
                 Annuler
               </Button>
               <Button type="submit" className="submit-button" disabled={isSubmitting}>
