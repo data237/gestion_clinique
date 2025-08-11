@@ -2,10 +2,10 @@
 
 /* Boutons d'ajout - Style moderne avec gradient subtil */
 .add-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient( #667eea);
   color: white;
   border: none;
-  padding: 18px 14px;
+  padding: 8px 18px;
   border-radius: 12px;
   font-size: 13px;
   font-weight: 500;
@@ -17,12 +17,21 @@
   display: inline-flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
+  text-align: center;
+  gap: 5px;
   min-width: 200px;
   justify-content: center;
   position: relative;
   overflow: hidden;
   letter-spacing: 0.3px;
+
+  span{
+    font-size: 25px;
+    font-weight: 700;
+    text-align: center; 
+    margin-bottom: 2px;
+  }
 }
 
 .add-button::before {

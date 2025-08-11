@@ -342,8 +342,13 @@ const FormulaireRendezVous = () => {
 
 
   useEffect(() => {
-
     const fetchmedecins = async () => {
+      // Ne récupérer les médecins que si on a une date, heure et service médical
+      if (!formData.jour || !formData.heure || !formData.serviceMedical) {
+        setmedecindisponible([]);
+        return;
+      }
+
       const token = localStorage.getItem('token');
       try {
         const response = await axios.get(`${API_BASE}/utilisateurs/available/${formData.serviceMedical}?jour=${formData.jour}&heure=${formData.heure}`,
@@ -354,19 +359,29 @@ const FormulaireRendezVous = () => {
               'Content-Type': 'application/json',
             }
           });
-        const medecins = response.data
-        setmedecindisponible(medecins)
-        console.log(response)
+        const medecins = response.data;
+        setmedecindisponible(medecins);
+        
+        // Notification du nombre de médecins disponibles
+        if (window.showNotification) {
+          if (medecins.length > 0) {
+            window.showNotification(`${medecins.length} médecin(s) disponible(s) pour ce créneau`, "success");
+          } else {
+            window.showNotification("Aucun médecin disponible pour ce créneau", "warning");
+          }
+        }
       } catch (error) {
-        console.error('Erreur lors de la récupération des medecins disponibles:', error);
-        setErreur('Erreur lors du chargement');
+        console.error('Erreur lors de la récupération des médecins disponibles:', error);
+        setmedecindisponible([]);
+        if (window.showNotification) {
+          window.showNotification("Erreur lors de la récupération des médecins disponibles", "error");
+        }
       } finally {
         setisloading(false);
       }
-
     };
     fetchmedecins();
-  }, [formData]);
+  }, [formData.jour, formData.heure, formData.serviceMedical]);
 
 
 
@@ -380,6 +395,28 @@ const FormulaireRendezVous = () => {
 
     // Réinitialiser les erreurs pour ce champ
     setFieldErrors(prev => ({ ...prev, [name]: false }));
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    
+    if (name === 'jour' && value) {
+      if (!validateDate(value)) {
+        setFieldErrors(prev => ({ ...prev, [name]: 'La date ne peut pas être antérieure à aujourd\'hui' }));
+        if (window.showNotification) {
+          window.showNotification("Date invalide : la date ne peut pas être antérieure à aujourd'hui", "error");
+        }
+      }
+    }
+    
+    if (name === 'heure' && value) {
+      if (!validateTime(value)) {
+        setFieldErrors(prev => ({ ...prev, [name]: 'L\'heure doit être entre 7h00 et 20h00' }));
+        if (window.showNotification) {
+          window.showNotification("Heure invalide : l'heure doit être entre 7h00 et 20h00", "error");
+        }
+      }
+    }
   };
 
   const validateForm = () => {
@@ -423,6 +460,21 @@ const FormulaireRendezVous = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Vérifier que la date et l'heure sélectionnées ne sont pas dans le passé
+    const selectedDateTime = new Date(`${formData.jour}T${formData.heure}`);
+    const now = new Date();
+    if (selectedDateTime <= now) {
+      setFieldErrors(prev => ({ 
+        ...prev, 
+        jour: 'La date et l\'heure ne peuvent pas être dans le passé', 
+        heure: 'La date et l\'heure ne peuvent pas être dans le passé' 
+      }));
+      if (window.showNotification) {
+        window.showNotification("La date et l'heure sélectionnées ne peuvent pas être dans le passé", "error");
+      }
+      return;
+    }
+
     // Valider le formulaire avant soumission
     if (!validateForm()) {
       return;
@@ -439,9 +491,13 @@ const FormulaireRendezVous = () => {
           },
         }
       );
-      console.log(response.data);
-      setidfacture(response.data.factureId)
-      setPopup(true)
+             console.log(response.data);
+       setidfacture(response.data.factureId)
+       setPopup(true)
+       
+       if (window.showNotification) {
+         window.showNotification("Rendez-vous créé avec succès !", "success");
+       }
     } catch (error) {
       console.error('Erreur de connexion :', error);
       console.log(token)
@@ -470,16 +526,16 @@ const FormulaireRendezVous = () => {
   let navigate = useNavigate();
 
   const handleClick = () => {
-    // Redirige vers /patient
+    if (window.showNotification) {
+      window.showNotification("Retour à la liste des patients", "info");
+    }
     navigate("/secretaire/patient");
   };
 
   const handleAnnuler = () => {
-    // Afficher une notification de succès
     if (window.showNotification) {
-      window.showNotification("annulation de la création du rendez-vous", "success");
+      window.showNotification("Annulation de la création du rendez-vous", "info");
     }
-    // Rediriger vers la liste des rendez-vous
     navigate("/secretaire/patient");
   };
 
@@ -561,54 +617,68 @@ const FormulaireRendezVous = () => {
             <FormRow>
               <FormGroup>
                 <Label htmlFor="jour">Date</Label>
-                <Input
-                  id="jour"
-                  name="jour"
-                  type='date'
-                  value={formData.jour}
-                  onChange={handleChange}
-                  min={getCurrentDate()}
-                  style={{
-                    borderColor: fieldErrors.jour ? '#e74c3c' : '#d1d5db',
-                    backgroundColor: fieldErrors.jour ? '#fdf2f2' : '#ffffff'
-                  }}
-                />
+                                 <Input
+                   id="jour"
+                   name="jour"
+                   type='date'
+                   value={formData.jour}
+                   onChange={handleChange}
+                   onBlur={handleBlur}
+                   min={new Date().toISOString().split('T')[0]}
+                   style={{
+                     borderColor: fieldErrors.jour ? '#e74c3c' : '#d1d5db',
+                     backgroundColor: fieldErrors.jour ? '#fdf2f2' : '#ffffff'
+                   }}
+                 />
+                 {fieldErrors.jour && <span style={{ color: '#e74c3c', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.jour}</span>}
+                 <span style={{ color: '#3498db', fontSize: '12px', marginTop: '4px', fontStyle: 'italic' }}>Date minimale : aujourd'hui</span>
               </FormGroup>
               <FormGroup>
                 <Label htmlFor="heure">Heure</Label>
-                <Input
-                  id="heure"
-                  name="heure"
-                  type="time"
-                  value={formData.heure}
-                  onChange={handleChange}
-                  step={1}
-                  min="07:00"
-                  max="20:00"
-                  style={{
-                    borderColor: fieldErrors.heure ? '#e74c3c' : '#d1d5db',
-                    backgroundColor: fieldErrors.heure ? '#fdf2f2' : '#ffffff'
-                  }}
-                />
+                                 <Input
+                   id="heure"
+                   name="heure"
+                   type="time"
+                   value={formData.heure}
+                   onChange={handleChange}
+                   onBlur={handleBlur}
+                   step={1}
+                   min="07:00"
+                   max="20:00"
+                   style={{
+                     borderColor: fieldErrors.heure ? '#e74c3c' : '#d1d5db',
+                     backgroundColor: fieldErrors.heure ? '#fdf2f2' : '#ffffff'
+                   }}
+                 />
+                 {fieldErrors.heure && <span style={{ color: '#e74c3c', fontSize: '12px', marginTop: '4px' }}>{fieldErrors.heure}</span>}
+                 <span style={{ color: '#3498db', fontSize: '12px', marginTop: '4px', fontStyle: 'italic' }}>Heures autorisées : 7h00 à 20h00</span>
               </FormGroup>
             </FormRow>
 
             <FormRow>
 
               <FormGroupvisible >
-                <Label htmlFor="servicemedical">Service médical</Label>
+              <Label htmlFor="serviceMedical">Service médical *</Label>
                 <Select id="servicemedical" name="serviceMedical" value={formData.serviceMedical} onChange={handleChange} >
-                  <option value="CARDIOLOGIE">CARDIOLOGIE</option>
-                  <option value="MEDECINE_GENERALE">MEDECINE_GENERALE</option>
-                  <option value="PEDIATRIE">PEDIATRIE</option>
-                  <option value="GYNECOLOGIE">GYNECOLOGIE</option>
-                  <option value="DERMATOLOGIE">DERMATOLOGIE</option>
-                  <option value="OPHTAMOLOGIE">OPHTAMOLOGIE</option>
-                  <option value="ORTHOPEDIE">ORTHOPEDIE</option>
-                  <option value="RADIOLOGIE">RADIOLOGIE</option>
-                  <option value="LABORATOIRE_ANALYSES">LABORATOIRE_ANALYSES</option>
-                  <option value="URGENCES">URGENCES</option>
-                  <option value="KINESITHERAPIE">KINESITHERAPIE</option>
+                  <option value="">Sélectionner un service</option>
+                  <option value="MEDECINE_GENERALE">Médecine Générale</option>
+                  <option value="PEDIATRIE">Pédiatrie</option>
+                  <option value="GYNECOLOGIE">Gynécologie</option>
+                  <option value="CARDIOLOGIE">Cardiologie</option>
+                  <option value="DERMATOLOGIE">Dermatologie</option>
+                  <option value="OPHTALMOLOGIE">Ophtalmologie</option>
+                  <option value="ORTHOPEDIE">Orthopédie</option>
+                  <option value="RADIOLOGIE">Radiologie</option>
+                  <option value="LABORATOIRE_ANALYSES">Laboratoire d'Analyses</option>
+                  <option value="URGENCES">Urgences</option>
+                  <option value="KINESITHERAPIE">Kinésithérapie</option>
+                  <option value="DENTISTE">Dentiste</option>
+                  <option value="PSYCHIATRIE">Psychiatrie</option>
+                  <option value="NEUROLOGIE">Neurologie</option>
+                  <option value="GASTRO_ENTEROLOGIE">Gastro-entérologie</option>
+                  <option value="PNEUMOLOGIE">Pneumologie</option>
+                  <option value="ENDOCRINOLOGIE">Endocrinologie</option>
+                  <option value="RHUMATOLOGIE">Rhumatologie</option>
 
                 </Select>
               </FormGroupvisible>
@@ -619,14 +689,29 @@ const FormulaireRendezVous = () => {
                   name="medecinId" 
                   value={formData.medecinId} 
                   onChange={handleChange}
+                  disabled={!formData.jour || !formData.heure || !formData.serviceMedical}
                   style={{
                     borderColor: fieldErrors.medecinId ? '#e74c3c' : '#d1d5db',
                     backgroundColor: fieldErrors.medecinId ? '#fdf2f2' : '#ffffff'
                   }}
                 >
-                  <option value="">Sélectionnez un medecin</option>
+                  <option value="">
+                    {!formData.jour || !formData.heure || !formData.serviceMedical 
+                      ? 'Sélectionnez d\'abord la date, heure et service' 
+                      : 'Sélectionnez un médecin'}
+                  </option>
                   {medecinsdisponible.map((medecin) => (<option key={medecin.id} value={parseInt(medecin.id)}>{medecin.nom} {medecin.prenom}</option>))}
                 </Select>
+                {!fieldErrors.medecinId && medecinsdisponible.length > 0 && (
+                  <span style={{ color: '#3498db', fontSize: '12px', marginTop: '4px', fontStyle: 'italic' }}>
+                    {medecinsdisponible.length} médecin(s) disponible(s) pour ce créneau
+                  </span>
+                )}
+                {!fieldErrors.medecinId && medecinsdisponible.length === 0 && formData.jour && formData.heure && formData.serviceMedical && (
+                  <span style={{ color: '#e67e22', fontSize: '12px', marginTop: '4px', fontStyle: 'italic' }}>
+                    Aucun médecin disponible pour ce créneau
+                  </span>
+                )}
               </FormGroup>
             </FormRow>
             <FormRow>

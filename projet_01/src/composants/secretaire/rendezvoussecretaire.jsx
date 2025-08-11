@@ -615,7 +615,7 @@ const supprimerrendezvous = async () => {
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
                         <img className='iconrecherche' src={iconrecherche}></img>
                     </div>
-                    <Link to="/secretaire/patient?focus=patient"><button className='add-button add-button-with-icon'>+ Créer un rendez-vous</button></Link>
+                    <Link to="/secretaire/patient?focus=patient"><button className='add-button add-button-with-icon'> <span>+</span> Créer un rendez-vous</button></Link>
                 </div>
                   
                 

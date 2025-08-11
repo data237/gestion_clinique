@@ -2,7 +2,7 @@ import Styled from 'styled-components'
 import { API_BASE } from '../composants/config/apiconfig'
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png'
-import logout from '../assets/open-door.svg'
+import logout from '../assets/arrow_back.svg'
 import axios from 'axios'
 import Eltmenu from './eltmenu'
 
@@ -51,15 +51,16 @@ const Image = Styled.img`
 `
 
 const Imgsvg = Styled.img`
-    width: 22px;
-    height: 22px;
+    width: 25px;  
+    height: 25px; 
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     filter: brightness(0) invert(1);
+    font-weight: 900; 
 `
 
 const BarrelatteralStyle = Styled.div`
     position: relative;
-    background: #FEFFEF;
+    background-color: #EFEFFF;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -109,7 +110,7 @@ const Button = Styled.button`
     right: 15px;
     width: calc(20vw - 30px);
     gap: 12px;
-    padding: 20px 28px;
+    padding: 18px;
     text-align: center;
     font-family: "Inter", sans-serif;
     font-weight: 600;
@@ -289,7 +290,7 @@ function Barrelatteral({children}){
                 <Button onClick={()=> handleLogout()}> 
                     <PulseEffect />
                     <LogoutContainer>
-                        <Imgsvg src={logout}></Imgsvg>
+                        <Imgsvg src={logout} ></Imgsvg>
                         <LogoutText>Déconnexion</LogoutText>
                     </LogoutContainer>
                 </Button>

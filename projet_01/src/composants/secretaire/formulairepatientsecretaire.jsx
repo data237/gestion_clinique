@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import '../../styles/add-buttons.css'
+import '../../styles/formulairepatientsecretaire.css'
 
 
 
@@ -138,6 +139,8 @@ const FormulairePatientSecretaire = () => {
 
   const idUser = localStorage.getItem('id');
     const [nomprofil, setnomprofil]= useState('')
+    const [errors, setErrors] = useState({});
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -182,65 +185,165 @@ const FormulairePatientSecretaire = () => {
 
   });
   
-  
+  // Fonction de validation
+  const validateForm = () => {
+    const newErrors = {};
 
-const handleChange = e => {
-  const { name, value } = e.target;
+    // Validation des champs obligatoires
+    if (!formData.nom.trim()) {
+      newErrors.nom = "Le nom est obligatoire";
+    } else if (formData.nom.trim().length < 2) {
+      newErrors.nom = "Le nom doit contenir au moins 2 caractères";
+    }
 
-  if (name.startsWith("dossierMedical.")) {
-    const field = name.split(".")[1];
-    setFormData(prev => ({
-      ...prev,
-      dossierMedical: {
-        ...prev.dossierMedical,
-        [field]: value
+    if (!formData.prenom.trim()) {
+      newErrors.prenom = "Le prénom est obligatoire";
+    } else if (formData.prenom.trim().length < 2) {
+      newErrors.prenom = "Le prénom doit contenir au moins 2 caractères";
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "L'email est obligatoire";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "L'email n'est pas valide";
+    }
+
+    if (!formData.dateNaissance) {
+      newErrors.dateNaissance = "La date de naissance est obligatoire";
+    } else {
+      const birthDate = new Date(formData.dateNaissance);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      if (age < 0 || age > 120) {
+        newErrors.dateNaissance = "La date de naissance n'est pas valide";
       }
-    }));
-  } else {
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  }
-};
+    }
+
+    if (!formData.telephone.trim()) {
+      newErrors.telephone = "Le téléphone est obligatoire";
+    } else if (!/^[0-9+\-\s()]{8,15}$/.test(formData.telephone)) {
+      newErrors.telephone = "Le numéro de téléphone n'est pas valide";
+    }
+
+    if (!formData.adresse.trim()) {
+      newErrors.adresse = "L'adresse est obligatoire";
+    }
+
+    if (!formData.genre) {
+      newErrors.genre = "Le genre est obligatoire";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+
+    // Effacer l'erreur du champ modifié
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
+
+    if (name.startsWith("dossierMedical.")) {
+      const field = name.split(".")[1];
+      setFormData(prev => ({
+        ...prev,
+        dossierMedical: {
+          ...prev.dossierMedical,
+          [field]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
   
   const token = localStorage.getItem('token');
 
   const handleSubmit = async(e) => {
-    console.log(formData)
     e.preventDefault();
+    
+    // Validation du formulaire
+    if (!validateForm()) {
+      if (window.showNotification) {
+        window.showNotification("Veuillez corriger les erreurs dans le formulaire", "error");
+      }
+      return;
+    }
+
+    setIsSubmitting(true);
+
     try {
-          const response = await axios.post(`${API_BASE}/patients`, formData,
-          {
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          })
-    console.log(response.data);
-    console.log(token);
+      const response = await axios.post(`${API_BASE}/patients`, formData, {
+        headers: {
+          accept: 'application/json',
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log(response.data);
+      
+      // Notification de succès
+      if (window.showNotification) {
+        window.showNotification("Patient ajouté avec succès !", "success");
+      }
+
+      // Réinitialiser le formulaire
+      setFormData({
+        nom: "",
+        prenom: "",
+        email: "",
+        dateNaissance: "",
+        telephone: "",
+        adresse: "",
+        genre: "",
+        dossierMedical: {
+          groupeSanguin: "",
+          antecedentsMedicaux: "",
+          allergies: "",
+          traitementsEnCours: "",
+          observations: "",
+        }
+      });
+
+      // Rediriger vers la liste des patients après un délai
+      setTimeout(() => {
+        navigate("/secretaire/patient");
+      }, 2000);
+
     } catch (error) {
       console.error('Erreur de connexion :', error);
-       console.log(token);
-    } finally{
-     /*setFormData({
-          nom: "",
-          prenom: "",
-          email: "",
-          dateNaissance: "",
-          telephone: "",
-          adresse: "",
-          genre: "",
-          dossierMedical: {
-            groupeSanguin: "",
-            antecedentsMedicaux: "",
-            allergies: "",
-            traitementsEnCours: "",
-            observations: "",
-            }
-        });*/
-    };
+      
+      // Notification d'erreur
+      let errorMessage = "Erreur lors de l'ajout du patient";
+      if (error.response) {
+        if (error.response.status === 400) {
+          errorMessage = "Données invalides. Veuillez vérifier les informations saisies.";
+        } else if (error.response.status === 401) {
+          errorMessage = "Session expirée. Veuillez vous reconnecter.";
+        } else if (error.response.status === 409) {
+          errorMessage = "Un patient avec cet email existe déjà.";
+        } else if (error.response.status >= 500) {
+          errorMessage = "Erreur serveur. Veuillez réessayer plus tard.";
+        }
+      } else if (error.request) {
+        errorMessage = "Erreur de connexion au serveur. Vérifiez votre connexion internet.";
+      }
+      
+      if (window.showNotification) {
+        window.showNotification(errorMessage, "error");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   
@@ -255,7 +358,7 @@ const handleChange = e => {
   const handleAnnuler = () => {
     // Afficher une notification de succès
     if (window.showNotification) {
-      window.showNotification("annulation de la création du patient", "success");
+      window.showNotification("Annulation de la création du patient", "info");
     }
     // Rediriger vers la liste des patients
     navigate("/secretaire/patient");
@@ -288,44 +391,96 @@ const handleChange = e => {
                 <Title>Informations générales</Title>
                 <FormRow>
                   <FormGroup>
-                    <Label htmlFor="nom">Nom</Label>
-                    <Input id="nom" name="nom" value={formData.nom} onChange={handleChange} />
+                    <Label htmlFor="nom">Nom <span className="required-field">*</span></Label>
+                    <Input 
+                      id="nom" 
+                      name="nom" 
+                      value={formData.nom} 
+                      onChange={handleChange}
+                      className={errors.nom ? 'error' : ''}
+                    />
+                    {errors.nom && <span className="error-message">{errors.nom}</span>}
                   </FormGroup>
                   <FormGroup>
-                    <Label htmlFor="prenom">Prénom</Label>
-                    <Input id="prenom" name="prenom" value={formData.prenom} onChange={handleChange} />
+                    <Label htmlFor="prenom">Prénom <span className="required-field">*</span></Label>
+                    <Input 
+                      id="prenom" 
+                      name="prenom" 
+                      value={formData.prenom} 
+                      onChange={handleChange}
+                      className={errors.prenom ? 'error' : ''}
+                    />
+                    {errors.prenom && <span className="error-message">{errors.prenom}</span>}
                   </FormGroup>
                 </FormRow>
 
                 <FormRow>
                   <FormGroup>
-                    <Label htmlFor="adresse">Adresse</Label>
-                    <Input id="adresse" name="adresse" value={formData.adresse} onChange={handleChange} />
+                    <Label htmlFor="adresse">Adresse <span className="required-field">*</span></Label>
+                    <Input 
+                      id="adresse" 
+                      name="adresse" 
+                      value={formData.adresse} 
+                      onChange={handleChange}
+                      className={errors.adresse ? 'error' : ''}
+                    />
+                    {errors.adresse && <span className="error-message">{errors.adresse}</span>}
                   </FormGroup>
                   <FormGroup>
-                    <Label htmlFor="email">Email</Label>
-                    <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} />
+                    <Label htmlFor="email">Email <span className="required-field">*</span></Label>
+                    <Input 
+                      id="email" 
+                      name="email" 
+                      type="email" 
+                      value={formData.email} 
+                      onChange={handleChange}
+                      className={errors.email ? 'error' : ''}
+                    />
+                    {errors.email && <span className="error-message">{errors.email}</span>}
                   </FormGroup>
                 </FormRow>
 
                 <FormRow>
                   <FormGroup>
-                    <Label htmlFor="genre">Genre</Label>
-                    <Select id="genre" name="genre" value={formData.genre} onChange={handleChange}>
+                    <Label htmlFor="genre">Genre <span className="required-field">*</span></Label>
+                    <Select 
+                      id="genre" 
+                      name="genre" 
+                      value={formData.genre} 
+                      onChange={handleChange}
+                      className={errors.genre ? 'error' : ''}
+                    >
+                      <option value="">-- Choisir --</option>
                       <option value="Femme">Femme</option>
                       <option value="Homme">Homme</option>
                     </Select>
+                    {errors.genre && <span className="error-message">{errors.genre}</span>}
                   </FormGroup>
                   <FormGroup>
-                    <Label htmlFor="dateNaissance">Date de naissance</Label>
-                    <Input id="dateNaissance" name="dateNaissance" type="date" value={formData.dateNaissance} onChange={handleChange} />
+                    <Label htmlFor="dateNaissance">Date de naissance <span className="required-field">*</span></Label>
+                    <Input 
+                      id="dateNaissance" 
+                      name="dateNaissance" 
+                      type="date" 
+                      value={formData.dateNaissance} 
+                      onChange={handleChange}
+                      className={errors.dateNaissance ? 'error' : ''}
+                    />
+                    {errors.dateNaissance && <span className="error-message">{errors.dateNaissance}</span>}
                   </FormGroup>
                 </FormRow>
                 <FormRow>
                   
                   <FormGroup>
-                    <Label htmlFor="telephone">telephone</Label>
-                    <Input id="telephone" name="telephone" value={formData.telephone} onChange={handleChange} />
+                    <Label htmlFor="telephone">Téléphone <span className="required-field">*</span></Label>
+                    <Input 
+                      id="telephone" 
+                      name="telephone" 
+                      value={formData.telephone} 
+                      onChange={handleChange}
+                      className={errors.telephone ? 'error' : ''}
+                    />
+                    {errors.telephone && <span className="error-message">{errors.telephone}</span>}
                   </FormGroup>
                 </FormRow>
                 <TraitHorizontal2></TraitHorizontal2>
@@ -346,7 +501,7 @@ const handleChange = e => {
                       </Select>
                     </FormGroup>
                     <FormGroup>
-                      <Label htmlFor="alergies">Alergies</Label>
+                      <Label htmlFor="alergies">Allergies</Label>
                       <Input id='alergies'  name="dossierMedical.allergies" value={formData.dossierMedical.allergies} onChange={handleChange} />
                     </FormGroup>
               </FormRow>
@@ -363,7 +518,7 @@ const handleChange = e => {
               </FormRow>
               <FormRow>
                 <FormGroup>
-                  <Label htmlFor='observation'>observation</Label>
+                  <Label htmlFor='observation'>Observations</Label>
                   <TextArea id='observation' name="dossierMedical.observations" value={formData.dossierMedical.observations} onChange={handleChange} />
                 </FormGroup>
               </FormRow>
@@ -373,8 +528,12 @@ const handleChange = e => {
                   <button type="button" className="cancel-button" onClick={handleAnnuler}>
                     Annuler
                   </button>
-                  <button type="submit" className="submit-button">
-                    Ajouter
+                  <button 
+                    type="submit" 
+                    className="submit-button" 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? 'Ajout en cours...' : 'Ajouter un patient'}
                   </button>
                 </ButtonRow>
             </Form>

@@ -360,7 +360,7 @@ function Utilisateur() {
                     <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici' value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
                     <img className='iconrecherche' src={iconrecherche}></img>
                 </div>
-                <Link to="/admin/utilisateur/add"><button className='add-button add-button-with-icon'>+ Ajouter un utilisateur</button></Link>
+                <Link to="/admin/utilisateur/add"><button className='add-button add-button-with-icon' > <span>+</span> Ajouter un utilisateur</button></Link>
             </div>
 
 

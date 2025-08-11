@@ -8,6 +8,8 @@ import RendezvousScretaireToday from "../composants/secretaire/rdvsecretaireday"
 import FormulaireRendezVous from "../composants/secretaire/formulairerendezvous";
 import Facture from "../composants/secretaire/facture";
 import FormulairePatientSecretaire from "../composants/secretaire/formulairepatientsecretaire";
+import AfficherDetailRendezVous from "../composants/secretaire/afficherdetailrendezvous";
+import ModifierRendezVous from "../composants/secretaire/modifierrendezvous";
 
 const Secretaireroute = () => {
     return (
@@ -18,6 +20,8 @@ const Secretaireroute = () => {
 
                 {/* Routes rendez-vous */}
                 <Route path="rendezvous" element={<Rendezvous />} />
+                <Route path="rendezvous/viewrendezvous/:id" element={<AfficherDetailRendezVous />} />
+                <Route path="rendezvous/edit/:id" element={<ModifierRendezVous />} />
 
                 {/* Routes patients */}
                 <Route path="patient" element={<PatientSecretaire />} />
