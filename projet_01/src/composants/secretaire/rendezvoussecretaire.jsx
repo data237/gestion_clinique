@@ -12,6 +12,7 @@ import iconrecherche from '../../assets/iconrecherche.png'
 import iconsupprime from '../../assets/Iconsupprime.svg'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
+import { ConfirmationModal } from '../shared/UnifiedModal';
 
 const SousDiv1Style = Styled.div`
 width: 100%;
@@ -171,73 +172,140 @@ const BarreStyle = Styled.div`
 
 // gerer les popups
 
-const Popupsuppr= Styled.div`
+// Supprimer tous les anciens composants de popup
+// const Popupsuppr= Styled.div`...`
+// const Popupstat= Styled.div`...`
+// const Containbouttonpopup = Styled.div`...`
+// const Bouttonpopup =Styled.button`...`
+// const Overlay = Styled.div`...`
 
-    display: ${props => props.$Popupsupprdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 350px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-const Popupstat= Styled.div`
-
-    display: ${props => props.$Popupstatutdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 450px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-
-const Containbouttonpopup = Styled.div`
-
-    display: flex;
-    
-    gap: 30px;
-    background-color: rgba(159, 159, 255, 1);
-`
-const Bouttonpopup =Styled.button`
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    width: 80px;
-    height: 30px;
-    border-radius: 10px;
-    background-color: white;
-`
-const Overlay = Styled.div`
-  display: ${props => props.$Overlaydisplay};
+// Remplacer les anciens styles de popups par des styles modernes et uniformes
+const ModalOverlay = Styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 998;
-`
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease-out;
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
+const ModalContainer = Styled.div`
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease-out;
+  
+  @keyframes slideIn {
+    from {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+`;
+
+const ModalHeader = Styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 0 24px;
+  border-bottom: 1px solid #e0e0e0;
+`;
+
+const ModalTitle = Styled.h3`
+  margin: 0;
+  color: #333333;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+`;
+
+const ModalClose = Styled.button`
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #f0f0f0;
+    color: #666;
+  }
+`;
+
+const ModalBody = Styled.div`
+  padding: 24px;
+`;
+
+const ModalMessage = Styled.p`
+  margin: 0 0 16px 0;
+  color: #333333;
+  line-height: 1.5;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  text-align: center;
+`;
+
+const ModalFooter = Styled.div`
+  padding: 0 24px 24px 24px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+`;
+
+const ModalButton = Styled.button`
+  background-color: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'transparent'};
+  color: ${props => props.primary ? 'white' : 'rgba(159, 159, 255, 1)'};
+  border: 1px solid rgba(159, 159, 255, 1);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  
+  &:hover {
+    background-color: ${props => props.primary ? 'rgba(139, 139, 235, 1)' : 'rgba(239, 239, 255, 1)'};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+`;
+
 function Rendezvous(){
     //const [isVisible, setisVisible] = useState(0)
       const idUser = localStorage.getItem('id');
@@ -325,7 +393,7 @@ function Rendezvous(){
                 u.jour.toLowerCase().includes(recherche) ||
                 u.patientNomComplet.toLowerCase().includes(recherche) ||
                 u.medecinNomComplet.toLowerCase().includes(recherche) ||
-                u.statut.toLowerCase().includes(recherche)
+                (u.statut === "ANNULE" ? "annulé" : "actif").includes(recherche)
             );
 
             setrendezvousFiltres(resultats);
@@ -360,36 +428,50 @@ function Rendezvous(){
     //toggle boutton
     
     
-    const toggleStatus = () => {
-        if(!statutAmodifier) return;
-           const toggle = async () => {
-                const token2 = localStorage.getItem('token');
-                try {
-                    const response = await axios.patch(`${API_BASE}/rendezvous/${statutAmodifier[0]}/status/${!statutAmodifier[1]}`,{rendezvous}, {
-                    headers: {
-                        accept: 'application/json',
-                        Authorization: `Bearer ${token2}`,
-                        'Content-Type': 'application/json',
-                    },
-                    });
-                    const user = response.data
-                     setrendezvous((prevData) =>
-                        prevData.map((item) =>
-                        item.id === statutAmodifier[0] ?  user : item
-                        )
-                    )
-                    
-                    setPopupstatut(false)
-                    setstatutAmodifier(null)
-                    console.log(response.data) ;
-                } catch (error) {
-                    console.log(error)
-                }
-                };
-                toggle()
-                //console.log(`${API_BASE}/rendezvous/${id}/status/${!status}`)
+    // Remplacer la fonction toggleStatus par annulerRendezVous
+const annulerRendezVous = () => {
+    if (!statutAmodifier) return;
+    
+    const annuler = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axios.put(`${API_BASE}/rendezvous/${statutAmodifier[0]}/cancel`, {}, {
+                headers: {
+                    accept: 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            
+            // Mettre à jour la liste des rendez-vous avec le statut "ANNULE"
+            setrendezvous((prevData) =>
+                prevData.map((item) =>
+                    item.id === statutAmodifier[0] ? { ...item, statut: "ANNULE" } : item
+                )
+            );
+            
+            setPopupstatut(false);
+            setstatutAmodifier(null);
+            
+            // Afficher un message de succès
+            if (window.showNotification) {
+                window.showNotification("Rendez-vous annulé avec succès", "success");
+            }
+            
+            console.log(response.data);
+        } catch (error) {
+            console.error('Erreur lors de l\'annulation du rendez-vous:', error);
+            
+            // Afficher un message d'erreur
+            if (window.showNotification) {
+                window.showNotification("Erreur lors de l'annulation du rendez-vous", "error");
+            }
         }
-                    
+    };
+    
+    annuler();
+};
+
     
          
     
@@ -437,54 +519,89 @@ function Rendezvous(){
 
 
 
-  const supprimerrendezvous = async () => {
-        if (!rendezvousASupprimer) return;
+  // Modifier la fonction supprimerrendezvous
+const supprimerrendezvous = async () => {
+    if (!rendezvousASupprimer) return;
 
-        const token = localStorage.getItem('token');
-        try {
-            await axios.delete(`${API_BASE}/rendezvous/${rendezvousASupprimer}`, {
+    const token = localStorage.getItem('token');
+    try {
+        await axios.delete(`${API_BASE}/rendezvous/${rendezvousASupprimer}`, {
             headers: {
                 accept: 'application/json',
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
             },
-            });
+        });
 
-            setrendezvous((prevrendezvous) =>
+        // Mettre à jour la liste des rendez-vous
+        setrendezvous((prevrendezvous) =>
             prevrendezvous.filter((u) => u.id !== rendezvousASupprimer)
-            );
+        );
 
-            setPopupsupprime(false);
-            setrendezvousASupprimer(null);
-            console.log(`rendezvous ${rendezvousASupprimer} supprimé`);
-        } catch (error) {
-            console.error('Erreur lors de la suppression :', error);
+        setPopupsupprime(false);
+        setrendezvousASupprimer(null);
+        
+        // Afficher un message de succès
+        if (window.showNotification) {
+            window.showNotification("Rendez-vous supprimé avec succès", "success");
         }
-    };
-
+        
+        console.log(`rendezvous ${rendezvousASupprimer} supprimé`);
+    } catch (error) {
+        console.error('Erreur lors de la suppression :', error);
+        
+        // Afficher un message d'erreur
+        if (window.showNotification) {
+            window.showNotification("Erreur lors de la suppression du rendez-vous", "error");
+        }
+    }
+};
 
 
   if (isloading) return <p>Chargement...</p>;
 
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
     return(<>
-            <Overlay onClick={() => setPopupsupprime(false)} $Overlaydisplay = {Popupsupprime || Popupstatut ? 'block' : 'none'}/>
-                <Popupsuppr $Popupsupprdisplay = {Popupsupprime ? 'flex' : 'none'}>
-                    <p>voulez-vous supprimer cet rendezvous ?</p>
-                    <Containbouttonpopup>
-                        <Bouttonpopup onClick={supprimerrendezvous}> oui </Bouttonpopup>
-                        <Bouttonpopup onClick={()=> setPopupsupprime(false)}> non </Bouttonpopup>
-                    </Containbouttonpopup>
-                                    
-                </Popupsuppr>
-                <Popupstat $Popupstatutdisplay = {Popupstatut ? 'flex' : 'none'}>
-                    <p>voulez-vous changez le statut de cet rendezvous ?</p>
-                    <Containbouttonpopup>
-                        <Bouttonpopup onClick={toggleStatus}> oui </Bouttonpopup>
-                        <Bouttonpopup onClick={()=> setPopupstatut(false)}> non </Bouttonpopup>
-                    </Containbouttonpopup>
-                                    
-                </Popupstat>
+    {/* Modal de suppression */}
+    <ConfirmationModal
+        isOpen={Popupsupprime}
+        onClose={() => setPopupsupprime(false)}
+        title="Confirmation de suppression"
+        message="Êtes-vous sûr de vouloir supprimer ce rendez-vous ?"
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        onConfirm={supprimerrendezvous}
+        confirmType="danger"
+    />
+
+    {/* Modal de changement de statut */}
+    <ConfirmationModal
+        isOpen={Popupstatut}
+        onClose={() => setPopupstatut(false)}
+        title="Confirmation d'annulation"
+        message="Voulez-vous annuler ce rendez-vous ?"
+        confirmText="Oui, annuler"
+        cancelText="Non"
+        onConfirm={annulerRendezVous}
+        confirmType="warning"
+    />
+
+    {/* Supprimer l'ancien Overlay et les anciens popups */}
+    {/* <Overlay onClick={() => setPopupsupprime(false)} $Overlaydisplay = {Popupsupprime || Popupstatut ? 'block' : 'none'}/>
+        <Popupsuppr $Popupsupprdisplay = {Popupsupprime ? 'flex' : 'none'}>
+            <p>voulez-vous supprimer cet rendezvous ?</p>
+            <Containbouttonpopup>
+                <Bouttonpopup onClick={supprimerrendezvous}> oui </Bouttonpopup>
+                <Bouttonpopup onClick={()=> setPopupsupprime(false)}> non </Bouttonpopup>
+            </Containbouttonpopup>
+        </Popupsuppr>
+        <Popupstat $Popupstatutdisplay={Popupstatut ? 'flex' : 'none'}>
+            <p>Voulez-vous annuler ce rendez-vous ?</p>
+            <Containbouttonpopup>
+                <Bouttonpopup onClick={annulerRendezVous}>Oui</Bouttonpopup>
+                <Bouttonpopup onClick={() => setPopupstatut(false)}>Non</Bouttonpopup>
+            </Containbouttonpopup>
+        </Popupstat> */}
             <SousDiv1Style>
                 <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil={nomprofil}> 
                     <Span1>Liste des rendez vous</Span1>
@@ -561,16 +678,23 @@ function Rendezvous(){
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.nomSalle}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.statut ? "actif" : "inactif"}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>
+    {rendezvous.statut}
+</td>
                              <td className='td bouttons'>
                                 <button
-                                    onClick={() => {setstatutAmodifier([rendezvous.id,rendezvous.statut]);
-                                        setPopupstatut(true)
+                                    onClick={() => {
+                                        setstatutAmodifier([rendezvous.id, rendezvous.statut]);
+                                        setPopupstatut(true);
                                     }}
-                                    className={`toggle-button ${rendezvous.actif ? "" : "on"}`}
-                                    >
-                                <div className={ `circle  ${rendezvous.actif  ? "" : "active"}`} ></div></button>
-                                <button onClick={()=> {setrendezvousASupprimer(rendezvous.id);setPopupsupprime(true);}}><img src={iconsupprime} className='iconsupprime'></img></button>  
+                                    className={`toggle-button ${rendezvous.statut === "ANNULE" ? "on" : ""}`}
+                                    title={rendezvous.statut === "ANNULE" ? "Rendez-vous annulé" : "Cliquer pour annuler"}
+                                >
+                                    <div className={`circle ${rendezvous.statut ? "" : "active"}`}></div>
+                                </button>
+                                <button onClick={() => {setrendezvousASupprimer(rendezvous.id);setPopupsupprime(true);}}>
+                                    <img src={iconsupprime} className='iconsupprime' alt="Supprimer"></img>
+                                </button>  
                             </td>
                             </tr>
                         ))}

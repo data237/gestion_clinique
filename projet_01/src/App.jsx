@@ -14,7 +14,7 @@ import RoleBasedRoute from './composants/rolebasedroute'
 import Medecinroute from './pages/medecinrouter'
 import Calendrier from './composants/calendar'
 import Secretaireroute from './pages/secretaireroute'
-import NotificationProvider from './composants/notification'
+import { NotificationProvider } from './composants/notification'
 import { LoadingProvider } from './composants/LoadingProvider'
 import { ConfirmationProvider } from './composants/ConfirmationProvider'
 

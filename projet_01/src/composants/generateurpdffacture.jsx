@@ -258,6 +258,19 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     border: "1px solid #1e40af"
   },
+
+  dateHeure: {
+    display: "flex",
+    textAlign: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    fontSize: 10,
+    color: "#64748b",
+    lineHeight: 1.4,
+    marginTop: 20,
+    marginBottom: -30,
+  },
   
   // Footer professionnel avec informations complètes
   footer: {
@@ -266,6 +279,7 @@ const styles = StyleSheet.create({
     borderTop: "1px solid #e2e8f0",
     textAlign: "center"
   },
+
   footerText: {
     fontSize: 8,
     color: "#64748b",
@@ -329,6 +343,23 @@ export default function ReceiptPDF({
   factureId,
   logo
 }) {
+  // Fonction pour récupérer la date actuelle
+  const getCurrentDate = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Fonction pour récupérer l'heure actuelle
+  const getCurrentTime = () => {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  };
+
   // Formater la date
   const formatDate = (dateStr) => {
     if (!dateStr) return "—";
@@ -444,6 +475,14 @@ export default function ReceiptPDF({
             </View>
             </View>
 
+          <View style={styles.dateHeure}>
+            <Text >
+              date émission : {formatDate(getCurrentDate())}
+            </Text> 
+            <Text >
+              heure émission : {formatTime(getCurrentTime())}
+            </Text>
+          </View>
           {/* Footer professionnel avec informations complètes */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>
@@ -457,7 +496,7 @@ export default function ReceiptPDF({
             <View style={styles.footerInfo}>
               <View style={styles.footerInfoItem}>
                 <Text style={styles.footerInfoTitle}>Horaires</Text>
-                <Text style={styles.footerInfoValue}>7j/7, 8h-18h</Text>
+                <Text style={styles.footerInfoValue}>7j/7, 7h-20h</Text>
               </View>
               <View style={styles.footerInfoItem}>
                 <Text style={styles.footerInfoTitle}>Adresse</Text>

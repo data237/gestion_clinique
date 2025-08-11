@@ -8,16 +8,18 @@ import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import FormulaireFacture from './formulairefacture';
 import '../../styles/add-buttons.css'
+import { ConfirmationModal } from '../shared/UnifiedModal';
+import { InfoModal } from '../shared/UnifiedModal';
 
 
 const SousDiv1Style = Styled.div`
  width: 99%;
 
 `
-const Span2= Styled.span`
+const Span2 = Styled.span`
     display: ${props => props.$Spandisplay2};
 `
-const Span1= Styled.span`
+const Span1 = Styled.span`
     cursor: pointer;
 `
 const Span3 = Styled.span`
@@ -57,7 +59,7 @@ const FormContainer = Styled.div`
 `;
 
 const Title = Styled.h2`
-  margin-bottom: 0px;
+  margin-bottom: -15px;
   font-size: 24px;
   font-weight: 400;
   color: rgba(102, 102, 102, 1);
@@ -167,6 +169,7 @@ const ButtonRow = Styled.div`
   justify-content: space-between;
   gap: 10px;
   margin-top: 20px;
+  margin: 25px;
 `;
 
 // Button styling is now handled by add-buttons.css
@@ -181,7 +184,7 @@ const Overlay = Styled.div`
   background-color: rgba(0,0,0,0.8);
   z-index: 998;
 `
-const Popupsuppr= Styled.div`
+const Popupsuppr = Styled.div`
 
     display: ${props => props.$Popupsupprdisplay};
     position: fixed;
@@ -192,158 +195,275 @@ const Popupsuppr= Styled.div`
 `
 const FormulaireRendezVous = () => {
 
-    const idUser = localStorage.getItem('id');
-    const { nompatient } = useParams();
-    const [nomprofil, setnomprofil]= useState('')
-    const [idfacture, setidfacture] = useState(0)
-    const [Popup, setPopup] = useState(false)
+  const idUser = localStorage.getItem('id');
+  const { nompatient } = useParams();
+  const [nomprofil, setnomprofil] = useState('')
+  const [idfacture, setidfacture] = useState(0)
+  const [Popup, setPopup] = useState(false)
+  const [validationPopup, setValidationPopup] = useState(false)
+  const [validationMessage, setValidationMessage] = useState('')
+  const [fieldErrors, setFieldErrors] = useState({})
 
-    const [patient, setpatient] = useState(null);
-    //const [nommedecin, setnommedecin] = useState('mabou')
-    const [medecinsdisponible, setmedecindisponible] = useState([])
-    //const [medecinid, setmedecinid] = useState(null)
-    const [erreur, setErreur] = useState(null);
-    const [isloading, setisloading] = useState(true);
+  const [patient, setpatient] = useState(null);
+  //const [nommedecin, setnommedecin] = useState('mabou')
+  const [medecinsdisponible, setmedecindisponible] = useState([])
+  //const [medecinid, setmedecinid] = useState(null)
+  const [erreur, setErreur] = useState(null);
+  const [isloading, setisloading] = useState(true);
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-           const nompatient =  async ()=> {
-                try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                
-              if (response) {
-                 setnomprofil(response.data.nom)
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération des patients:', error);
-                
-            } finally {
-              console.log('fin')
+  // Fonction pour obtenir la date du jour au format YYYY-MM-DD
+  const getCurrentDate = () => {
+    const now = new Date();
+    const hours = now.getHours();
+
+    // Si l'heure actuelle est entre 20h01 et 23h59, retourner la date du lendemain
+    if (hours >= 20) {
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const year = tomorrow.getFullYear();
+      const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+      const day = String(tomorrow.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
+    // Sinon retourner la date d'aujourd'hui (pour 0h00 à 19h59)
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // Fonction pour obtenir l'heure actuelle au format HH:MM
+  const getCurrentTime = () => {
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    // Si l'heure actuelle est entre 20h01 et 6h59, retourner 7h00
+    if (hours >= 20 || hours < 7) {
+      return `07:00`;
+    }
+
+    // Sinon retourner l'heure actuelle
+    const hoursStr = String(hours).padStart(2, '0');
+    return `${hoursStr}:${minutes}`;
+  };
+
+  // Fonction pour valider l'heure (entre 7h00 et 20h00)
+  const validateTime = (time) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    const totalMinutes = hours * 60 + minutes;
+    const minMinutes = 7 * 60; // 7h00
+    const maxMinutes = 20 * 60; // 20h00
+    return totalMinutes >= minMinutes && totalMinutes <= maxMinutes;
+  };
+
+  // Fonction pour valider la date (pas de date antérieure à aujourd'hui)
+  const validateDate = (date) => {
+    const selectedDate = new Date(date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return selectedDate >= today;
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const nompatient = async () => {
+      try {
+        const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             }
+          },);
+
+        if (response) {
+          setnomprofil(response.data.nom)
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des patients:', error);
+
+      } finally {
+        console.log('fin')
+      }
+    }
+    nompatient()
+  }, [idUser]);
+
+
+  const [formData, setFormData] = useState({
+    patientId: "",
+    heure: getCurrentTime(),
+    jour: getCurrentDate(),
+    note: "",
+    serviceMedical: "URGENCES",
+    medecinId: "",
+  });
+
+
+
+  useEffect(() => {
+
+    const fetchpatients = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await axios.get(`${API_BASE}/patients/nom/${nompatient}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             }
-            nompatient()
-    }, [idUser]);
+          });
+
+        const patientTrouve = response.data[0];
+
+        if (patientTrouve) {
+          setpatient(patientTrouve);
+          setFormData((prev) => ({
+            ...prev,
+            patientId: patientTrouve.id,
+          }));
+        } else {
+          setErreur('Aucun patient trouvé');
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des patients:', error);
+        setErreur('Erreur lors du chargement');
+      } finally {
+        setisloading(false);
+      }
+
+    };
+    fetchpatients();
+  }, [nompatient]);
 
 
-    const [formData, setFormData] = useState({
-        patientId: "",
-        heure: "00:00:00",
-        jour: "2025-07-03",
-        note: "",
-        serviceMedical: "CARDIOLOGIE",
-        medecinId: 2,
-        });
+  useEffect(() => {
 
-   
-        
-      useEffect(()=>{
-         
-         const fetchpatients = async () => {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await axios.get(`${API_BASE}/patients/nom/${nompatient}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }});
-                
-               const patientTrouve = response.data[0];
-
-                if (patientTrouve) {
-                  setpatient(patientTrouve);
-                  setFormData((prev) => ({
-                    ...prev,
-                    patientId: patientTrouve.id,
-                  }));
-                } else {
-                  setErreur('Aucun patient trouvé');
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération des patients:', error);
-                setErreur('Erreur lors du chargement');
-            } finally {
-                setisloading(false);
+    const fetchmedecins = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await axios.get(`${API_BASE}/utilisateurs/available/${formData.serviceMedical}?jour=${formData.jour}&heure=${formData.heure}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             }
-    
-        };
-            fetchpatients();
-        },[nompatient]);
+          });
+        const medecins = response.data
+        setmedecindisponible(medecins)
+        console.log(response)
+      } catch (error) {
+        console.error('Erreur lors de la récupération des medecins disponibles:', error);
+        setErreur('Erreur lors du chargement');
+      } finally {
+        setisloading(false);
+      }
+
+    };
+    fetchmedecins();
+  }, [formData]);
 
 
-         useEffect(()=>{
-         
-         const fetchmedecins = async () => {
-            const token = localStorage.getItem('token');
-            try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/available/${formData.serviceMedical}?jour=${formData.jour}&heure=${formData.heure}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }});
-                    const medecins = response.data
-                    setmedecindisponible(medecins)
-              console.log(response)
-            } catch (error) {
-                console.error('Erreur lors de la récupération des medecins disponibles:', error);
-                setErreur('Erreur lors du chargement');
-            } finally {
-                setisloading(false);
-            }
-    
-        };
-            fetchmedecins();
-        },[formData]);
-  
- 
-    
-  
+
+
 
   const handleChange = e => {
     const { name, value } = e.target;
+
+    // Mettre à jour le formulaire sans validation bloquante
     setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Réinitialiser les erreurs pour ce champ
+    setFieldErrors(prev => ({ ...prev, [name]: false }));
   };
 
+  const validateForm = () => {
+    const errors = {};
+    let hasErrors = false;
 
-  const handleSubmit = async(e) => {
-    const token = localStorage.getItem('token');
+    // Validation de la date
+    if (!validateDate(formData.jour)) {
+      errors.jour = true;
+      hasErrors = true;
+    }
+
+    // Validation de l'heure
+    if (!validateTime(formData.heure)) {
+      errors.heure = true;
+      hasErrors = true;
+    }
+
+    // Validation obligatoire du médecin
+    if (!formData.medecinId || formData.medecinId === "") {
+      errors.medecinId = true;
+      hasErrors = true;
+    }
+
+    setFieldErrors(errors);
+
+    if (hasErrors) {
+      let errorMessage = 'Veuillez corriger les erreurs dans le formulaire :\n';
+      if (errors.jour) errorMessage += '- La date ne peut pas être antérieure à aujourd\'hui\n';
+      if (errors.heure) errorMessage += '- L\'heure doit être comprise entre 7h00 et 20h00\n';
+      if (errors.medecinId) errorMessage += '- Vous devez sélectionner un médecin';
+      
+      setValidationMessage(errorMessage);
+      setValidationPopup(true);
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Valider le formulaire avant soumission
+    if (!validateForm()) {
+      return;
+    }
+
+    const token = localStorage.getItem('token');
     try {
-        const response = await axios.post(`${API_BASE}/rendezvous/createRendezVous`, formData,
-      {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log(response.data);
-    setidfacture(response.data.factureId)
-    setPopup(true)
-      } catch (error) {
+      const response = await axios.post(`${API_BASE}/rendezvous/createRendezVous`, formData,
+        {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(response.data);
+      setidfacture(response.data.factureId)
+      setPopup(true)
+    } catch (error) {
       console.error('Erreur de connexion :', error);
       console.log(token)
-    } finally{
-     /*setFormData({
-          nom: "",
-          prenom: "",
-          email: "",
-          dateNaissance: "",
-          telephone: "",
-          adresse: "",
-          genre: "m",
-          password: "",
-          serviceMedicalName: "",
-          actif: true,
-          role: ""
-        });*/
+      
+      // Afficher un message d'erreur à l'utilisateur
+      if (window.showNotification) {
+        window.showNotification("Erreur lors de la création du rendez-vous. Veuillez réessayer.", "error");
+      }
+    } finally {
+      /*setFormData({
+           nom: "",
+           prenom: "",
+           email: "",
+           dateNaissance: "",
+           telephone: "",
+           adresse: "",
+           genre: "m",
+           password: "",
+           serviceMedicalName: "",
+           actif: true,
+           role: ""
+         });*/
     };
     console.log(formData)
   };
@@ -354,127 +474,178 @@ const FormulaireRendezVous = () => {
     navigate("/secretaire/patient");
   };
 
-   if (!patient) {
-  return <p style={{ textAlign: 'center' }}>Chargement...</p>;
+  const handleAnnuler = () => {
+    // Afficher une notification de succès
+    if (window.showNotification) {
+      window.showNotification("annulation de la création du rendez-vous", "success");
+    }
+    // Rediriger vers la liste des rendez-vous
+    navigate("/secretaire/patient");
+  };
+
+  if (!patient) {
+    return <p style={{ textAlign: 'center' }}>Chargement...</p>;
   }
   if (isloading) return <p>Chargement...</p>;
 
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
   return (
     <>
-          <Overlay onClick={() => setPopup(false)} $Overlaydisplay = { Popup ? 'block' : 'none'}/>
-          <Popupsuppr $Popupsupprdisplay = {Popup ? 'block' : 'none'}>
-            <FormulaireFacture id={idfacture} onClick1={()=> setPopup(false)}/>
-          </Popupsuppr>
-        <SousDiv1Style>
-        <Barrehorizontal1 titrepage="Gestion des patients" imgprofil1={imgprofil} nomprofil={nomprofil}> 
-            <Span1 onClick={handleClick}>Liste des patients</Span1>
-            <Span2 > {">"} Creer un rendez-vous </Span2>
+      <Overlay onClick={() => setPopup(false)} $Overlaydisplay={Popup ? 'block' : 'none'} />
+      <Popupsuppr $Popupsupprdisplay={Popup ? 'block' : 'none'}>
+        <FormulaireFacture id={idfacture} onClick1={() => setPopup(false)} />
+      </Popupsuppr>
+
+      {/* Modal de validation */}
+      <InfoModal
+          isOpen={validationPopup}
+          onClose={() => setValidationPopup(false)}
+          title="Erreurs de validation"
+          message={validationMessage}
+          buttonText="OK"
+      />
+
+      <SousDiv1Style>
+        <Barrehorizontal1 titrepage="Gestion des patients" imgprofil1={imgprofil} nomprofil={nomprofil}>
+          <Span1 onClick={handleClick}>Liste des patients</Span1>
+          <Span2 > {">"} Creer un rendez-vous </Span2>
         </Barrehorizontal1>
-        </SousDiv1Style>
-        <Afficheformulaireadd>
-            <Form onSubmit={handleSubmit}>
-                <FormContainer>
-                    <Title>Info du patient</Title>
-                    <TraitHorizontal></TraitHorizontal>
-                    <FormRow>
-                        <FormGroup>
-                            <Label htmlFor="nom">Nom</Label>
-                            <Input id="nom" name="nom" value={patient.nom} readOnly/>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="prenom">Prénom</Label>
-                            <Input id="prenom" name="prenom" value={patient.prenom} readOnly/>
-                        </FormGroup>
-                    </FormRow>
+      </SousDiv1Style>
+      <Afficheformulaireadd>
+        <Form onSubmit={handleSubmit}>
+          <FormContainer>
+            <Title>Info du patient</Title>
+            <TraitHorizontal></TraitHorizontal>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="nom">Nom</Label>
+                <Input id="nom" name="nom" value={patient.nom} readOnly />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="prenom">Prénom</Label>
+                <Input id="prenom" name="prenom" value={patient.prenom} readOnly />
+              </FormGroup>
+            </FormRow>
 
-                    <FormRow>
-                    <FormGroup>
-                        <Label htmlFor="adresse">Adresse</Label>
-                        <Input id="adresse" name="adresse" value={patient.adresse} readOnly/>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label htmlFor="email">Email</Label>
-                        <Input id="email" name="email" type="email" value={patient.email} readOnly/>
-                    </FormGroup>
-                    </FormRow>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="adresse">Adresse</Label>
+                <Input id="adresse" name="adresse" value={patient.adresse} readOnly />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type="email" value={patient.email} readOnly />
+              </FormGroup>
+            </FormRow>
 
-                    <FormRow>
-                        <FormGroup>
-                            <Label htmlFor="genre">Genre</Label>
-                            <Input id="genre" name="genre" value={patient.genre}  readOnly>
-                        </Input>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="dateNaissance">Date de naissance</Label>
-                            <Input id="dateNaissance" name="dateNaissance" type="date" value={patient.dateNaissance} readOnly/>
-                        </FormGroup>
-                    </FormRow>
-                    <FormRow>
-                    <FormGroup>
-                        <Label htmlFor="telephone">telephone</Label>
-                        <Input id="telephone" name="telephone" value={patient.telephone} readOnly />
-                    </FormGroup>
-                    </FormRow>
-            
-                    <Title>Info du rendez-vous</Title>
-                    <TraitHorizontal></TraitHorizontal>
-                    <FormRow>
-                        <FormGroup>
-                            <Label htmlFor="jour">Date</Label>
-                            <Input id="jour" name="jour"  type='date' value={formData.jour}  onChange={handleChange}>
-                        </Input>
-                        </FormGroup>
-                        <FormGroup>
-                            <Label htmlFor="heure">Heure</Label>
-                            <Input id="heure" name="heure" type="time" value={formData.heure}  onChange={handleChange} step={1}/>
-                        </FormGroup>
-                    </FormRow>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="genre">Genre</Label>
+                <Input id="genre" name="genre" value={patient.genre} readOnly>
+                </Input>
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="dateNaissance">Date de naissance</Label>
+                <Input id="dateNaissance" name="dateNaissance" type="date" value={patient.dateNaissance} readOnly />
+              </FormGroup>
+            </FormRow>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="telephone">telephone</Label>
+                <Input id="telephone" name="telephone" value={patient.telephone} readOnly />
+              </FormGroup>
+            </FormRow>
 
-                    <FormRow>
-                        
-                        <FormGroupvisible >
-                            <Label htmlFor="servicemedical">Service médical</Label>
-                            <Select id="servicemedical" name="serviceMedical" value={formData.serviceMedical} onChange={handleChange} >
-                                <option value="CARDIOLOGIE">CARDIOLOGIE</option>
-                                <option value="MEDECINE_GENERALE">MEDECINE_GENERALE</option>
-                                <option value="PEDIATRIE">PEDIATRIE</option>
-                                <option value="GYNECOLOGIE">GYNECOLOGIE</option>
-                                <option value="DERMATOLOGIE">DERMATOLOGIE</option>
-                                <option value="OPHTAMOLOGIE">OPHTAMOLOGIE</option>
-                                <option value="ORTHOPEDIE">ORTHOPEDIE</option>
-                                <option value="RADIOLOGIE">RADIOLOGIE</option>
-                                <option value="LABORATOIRE_ANALYSES">LABORATOIRE_ANALYSES</option>
-                                <option value="URGENCES">URGENCES</option>
-                                <option value="KINESITHERAPIE">KINESITHERAPIE</option>
-                                
-                            </Select>
-                        </FormGroupvisible>
-                        <FormGroup>
-                            <Label htmlFor="medecin">Medecin</Label>
-                            <Select id="medecin" name="medecinId" value={formData.medecinId} onChange={handleChange}>
-                              <option value="">Sélectionnez un medecin</option>
-                              {medecinsdisponible.map((medecin)=>(<option key={medecin.id} value={parseInt(medecin.id)}>{medecin.nom} {medecin.prenom}</option>))}
-                            </Select>
-                        </FormGroup>
-                    </FormRow>
-                    <FormRow>
-                        <FormGroup>
-                          <Label htmlFor="note">Note</Label>
-                          <TextArea id='note' name="note" value={formData.note} onChange={handleChange} />
-                        </FormGroup>
-                    </FormRow>
-                </FormContainer>
-                <ButtonRow>
-                  <button type="button" className="cancel-button" onClick={() => setFormData({ patientId: '', medecinId: '', dateRendezVous: '', heureRendezVous: '', motif: '', statut: 'En attente' })}>
-                    Annuler
-                  </button>
-                  <button type="submit" className="submit-button">
-                    Créer un rendez-vous
-                  </button>
-                </ButtonRow>
-            </Form>
-        </Afficheformulaireadd>
+            <Title>Info du rendez-vous</Title>
+            <TraitHorizontal></TraitHorizontal>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="jour">Date</Label>
+                <Input
+                  id="jour"
+                  name="jour"
+                  type='date'
+                  value={formData.jour}
+                  onChange={handleChange}
+                  min={getCurrentDate()}
+                  style={{
+                    borderColor: fieldErrors.jour ? '#e74c3c' : '#d1d5db',
+                    backgroundColor: fieldErrors.jour ? '#fdf2f2' : '#ffffff'
+                  }}
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="heure">Heure</Label>
+                <Input
+                  id="heure"
+                  name="heure"
+                  type="time"
+                  value={formData.heure}
+                  onChange={handleChange}
+                  step={1}
+                  min="07:00"
+                  max="20:00"
+                  style={{
+                    borderColor: fieldErrors.heure ? '#e74c3c' : '#d1d5db',
+                    backgroundColor: fieldErrors.heure ? '#fdf2f2' : '#ffffff'
+                  }}
+                />
+              </FormGroup>
+            </FormRow>
+
+            <FormRow>
+
+              <FormGroupvisible >
+                <Label htmlFor="servicemedical">Service médical</Label>
+                <Select id="servicemedical" name="serviceMedical" value={formData.serviceMedical} onChange={handleChange} >
+                  <option value="CARDIOLOGIE">CARDIOLOGIE</option>
+                  <option value="MEDECINE_GENERALE">MEDECINE_GENERALE</option>
+                  <option value="PEDIATRIE">PEDIATRIE</option>
+                  <option value="GYNECOLOGIE">GYNECOLOGIE</option>
+                  <option value="DERMATOLOGIE">DERMATOLOGIE</option>
+                  <option value="OPHTAMOLOGIE">OPHTAMOLOGIE</option>
+                  <option value="ORTHOPEDIE">ORTHOPEDIE</option>
+                  <option value="RADIOLOGIE">RADIOLOGIE</option>
+                  <option value="LABORATOIRE_ANALYSES">LABORATOIRE_ANALYSES</option>
+                  <option value="URGENCES">URGENCES</option>
+                  <option value="KINESITHERAPIE">KINESITHERAPIE</option>
+
+                </Select>
+              </FormGroupvisible>
+              <FormGroup>
+                <Label htmlFor="medecin">Medecin</Label>
+                <Select 
+                  id="medecin" 
+                  name="medecinId" 
+                  value={formData.medecinId} 
+                  onChange={handleChange}
+                  style={{
+                    borderColor: fieldErrors.medecinId ? '#e74c3c' : '#d1d5db',
+                    backgroundColor: fieldErrors.medecinId ? '#fdf2f2' : '#ffffff'
+                  }}
+                >
+                  <option value="">Sélectionnez un medecin</option>
+                  {medecinsdisponible.map((medecin) => (<option key={medecin.id} value={parseInt(medecin.id)}>{medecin.nom} {medecin.prenom}</option>))}
+                </Select>
+              </FormGroup>
+            </FormRow>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="note">Note</Label>
+                <TextArea id='note' name="note" value={formData.note} onChange={handleChange} />
+              </FormGroup>
+            </FormRow>
+          </FormContainer>
+          <ButtonRow>
+            <button type="button" className="cancel-button" onClick={handleAnnuler}>
+              Annuler
+            </button>
+            <button type="submit" className="submit-button">
+              Créer un rendez-vous
+            </button>
+          </ButtonRow>
+        </Form>
+      </Afficheformulaireadd>
     </>
   );
 };

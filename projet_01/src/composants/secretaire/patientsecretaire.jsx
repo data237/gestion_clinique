@@ -14,6 +14,7 @@ import iconrecherche from '../../assets/iconrecherche.png'
 import iconsupprime from '../../assets/Iconsupprime.svg'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
+import { ConfirmationModal } from '../shared/UnifiedModal';
 
 
 const SousDiv1Style = Styled.div`
@@ -169,53 +170,22 @@ const BarreStyle = Styled.div`
 
 // gerer les popups
 
-const Popupsuppr= Styled.div`
+// Supprimer tous les anciens composants de popup
+// const Popupsuppr= Styled.div`...`
+// const Popupstat= Styled.div`...`
+// const Containbouttonpopup = Styled.div`...`
+// const Bouttonpopup =Styled.button`...`
+// const Overlay = Styled.div`...`
+// const ModalOverlay = Styled.div`...`
+// const ModalContainer = Styled.div`...`
+// const ModalHeader = Styled.div`...`
+// const ModalTitle = Styled.h3`...`
+// const ModalClose = Styled.button`...`
+// const ModalBody = Styled.div`...`
+// const ModalMessage = Styled.p`...`
+// const ModalFooter = Styled.div`...`
+// const ModalButton = Styled.button`...`
 
-    display: ${props => props.$Popupdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 350px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-
-const Containbouttonpopup = Styled.div`
-
-    display: flex;
-    
-    gap: 30px;
-    background-color: rgba(159, 159, 255, 1);
-`
-const Bouttonpopup =Styled.button`
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    width: 80px;
-    height: 30px;
-    border-radius: 10px;
-    background-color: white;
-`
-const Overlay = Styled.div`
-  display: ${props => props.$Overlaydisplay};
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 998;
-`
 function PatientSecretaire(){
 
       const idUser = localStorage.getItem('id');
@@ -353,7 +323,7 @@ function PatientSecretaire(){
     
     
    
-    
+
     
     
         //toggle boutton
@@ -398,16 +368,27 @@ function PatientSecretaire(){
 
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
     return(<>
-            <Overlay onClick={() => setPopupsupprime(false)} $Overlaydisplay = {Popupsupprime ? 'block' : 'none'}/>
-            
-            <Popupsuppr $Popupdisplay = {Popupsupprime ? 'flex' : 'none'}>
-                <p>voulez-vous supprimer ce patient ?</p>
-                <Containbouttonpopup>
-                    <Bouttonpopup onClick={supprimerPatient}> oui </Bouttonpopup>
-                    <Bouttonpopup onClick={()=> setPopupsupprime(false)}> non </Bouttonpopup>
-                </Containbouttonpopup>
-                                    
-            </Popupsuppr>
+    {/* Modal de suppression */}
+    <ConfirmationModal
+        isOpen={Popupsupprime}
+        onClose={() => setPopupsupprime(false)}
+        title="Confirmation de suppression"
+        message="Êtes-vous sûr de vouloir supprimer ce patient ?"
+        confirmText="Supprimer"
+        cancelText="Annuler"
+        onConfirm={supprimerPatient}
+        confirmType="danger"
+    />
+
+    {/* Supprimer l'ancien code de popup */}
+    {/* <Overlay onClick={() => setPopupsupprime(false)} $Overlaydisplay = {Popupsupprime ? 'block' : 'none'}/>
+        <Popupsuppr $Popupdisplay = {Popupsupprime ? 'flex' : 'none'}>
+            <p>voulez-vous supprimer cet patient ?</p>
+            <Containbouttonpopup>
+                <Bouttonpopup onClick={supprimerPatient}> oui </Bouttonpopup>
+                <Bouttonpopup onClick={()=> setPopupsupprime(false)}> non </Bouttonpopup>
+            </Containbouttonpopup>
+        </Popupsuppr> */}
             <SousDiv1Style>
                 <Barrehorizontal1 titrepage="Gestion des patients" imgprofil1={imgmedecin} nomprofil={nomprofil}>
                     <Span1>Liste des patients</Span1>

@@ -10,17 +10,59 @@ const NotificationContainer = styled.div`
 `;
 
 const NotificationItem = styled.div`
-  background-color: ${props => props.type === 'success' ? '#d4edda' : '#f8d7da'};
-  color: ${props => props.type === 'success' ? '#155724' : '#721c24'};
-  border: 1px solid ${props => props.type === 'success' ? '#c3e6cb' : '#f5c6cb'};
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: ${props => {
+    switch (props.type) {
+      case 'success':
+        return '#d4edda';
+      case 'error':
+        return '#f8d7da';
+      case 'warning':
+        return '#fff3cd';
+      case 'info':
+        return '#d1ecf1';
+      default:
+        return '#e2e3e5';
+    }
+  }};
+  color: ${props => {
+    switch (props.type) {
+      case 'success':
+        return '#155724';
+      case 'error':
+        return '#721c24';
+      case 'warning':
+        return '#856404';
+      case 'info':
+        return '#0c5460';
+      default:
+        return '#383d41';
+    }
+  }};
+  border: 1px solid ${props => {
+    switch (props.type) {
+      case 'success':
+        return '#c3e6cb';
+      case 'error':
+        return '#f5c6cb';
+      case 'warning':
+        return '#ffeaa7';
+      case 'info':
+        return '#bee5eb';
+      default:
+        return '#d6d8db';
+    }
+  }};
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   display: flex;
   justify-content: space-between;
   align-items: center;
   animation: slideIn 0.3s ease-out;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
   
   @keyframes slideIn {
     from {
@@ -41,11 +83,18 @@ const CloseButton = styled.button`
   cursor: pointer;
   color: inherit;
   padding: 0;
-  margin-left: 10px;
+  margin-left: 16px;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
   
   &:hover {
-    opacity: 0.7;
+    opacity: 1;
   }
+`;
+
+const NotificationIcon = styled.span`
+  margin-right: 12px;
+  font-size: 16px;
 `;
 
 const Notification = ({ message, type = 'info', duration = 5000, onClose }) => {
@@ -56,7 +105,7 @@ const Notification = ({ message, type = 'info', duration = 5000, onClose }) => {
       setIsVisible(false);
       setTimeout(() => {
         onClose();
-      }, 600);
+      }, 300);
     }, duration);
 
     return () => clearTimeout(timer);
@@ -66,14 +115,32 @@ const Notification = ({ message, type = 'info', duration = 5000, onClose }) => {
     setIsVisible(false);
     setTimeout(() => {
       onClose();
-    }, 600);
+    }, 300);
+  };
+
+  const getIcon = () => {
+    switch (type) {
+      case 'success':
+        return '✓';
+      case 'error':
+        return '✕';
+      case 'warning':
+        return '⚠';
+      case 'info':
+        return 'ℹ';
+      default:
+        return '•';
+    }
   };
 
   if (!isVisible) return null;
 
   return (
     <NotificationItem type={type}>
-      <span>{message}</span>
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <NotificationIcon>{getIcon()}</NotificationIcon>
+        <span>{message}</span>
+      </div>
       <CloseButton onClick={handleClose}>&times;</CloseButton>
     </NotificationItem>
   );
@@ -91,8 +158,13 @@ const NotificationProvider = ({ children }) => {
     setNotifications(prev => prev.filter(notification => notification.id !== id));
   };
 
-  // Exposer la fonction addNotification globalement
-  window.showNotification = addNotification;
+  // Exposer la fonction globalement
+  useEffect(() => {
+    window.showNotification = addNotification;
+    return () => {
+      delete window.showNotification;
+    };
+  }, []);
 
   return (
     <>
@@ -112,5 +184,5 @@ const NotificationProvider = ({ children }) => {
   );
 };
 
-export { NotificationProvider, Notification };
+export { Notification, NotificationProvider };
 export default NotificationProvider; 

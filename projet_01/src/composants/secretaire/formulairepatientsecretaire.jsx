@@ -19,6 +19,7 @@ const FormContainer = Styled.div`
   font-family: sans-serif;
   border: 1px solid rgba(217, 217, 217, 1);
   
+
   &::before {
     content: '';
     position: absolute;
@@ -130,7 +131,7 @@ const ButtonRow = Styled.div`
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  margin-top: 20px;
+  margin: 20px;
 `;
 
 const FormulairePatientSecretaire = () => {
@@ -251,6 +252,14 @@ const handleChange = e => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };*/
   
+  const handleAnnuler = () => {
+    // Afficher une notification de succès
+    if (window.showNotification) {
+      window.showNotification("annulation de la création du patient", "success");
+    }
+    // Rediriger vers la liste des patients
+    navigate("/secretaire/patient");
+  };
 
  
 
@@ -361,7 +370,7 @@ const handleChange = e => {
                 
             </FormContainer>
                 <ButtonRow>
-                  <button type="button" className="cancel-button" onClick={() => setFormData({ nom: '', prenom: '', adresse: '', email: '', genre: 'Femme', dateNaissance: '', telephone: '', groupeSanguin: '' })}>
+                  <button type="button" className="cancel-button" onClick={handleAnnuler}>
                     Annuler
                   </button>
                   <button type="submit" className="submit-button">

@@ -461,8 +461,8 @@ function Facture(){
                         <thead>
                         <tr>
                             
-                            <th className='th'>Jour</th>
-                            <th className='th'>Heure</th>
+                            <th className='th'>Jour de création</th>
+                            <th className='th'>Heure de création</th>
                             <th className='th'>Service medical</th>
                             <th className='th'>Nom du patient</th>
                             <th className='th'>Montant</th>

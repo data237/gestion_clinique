@@ -11,6 +11,7 @@ import imgprofil from '../../assets/photoDoc.png'
 import iconrecherche from '../../assets/iconrecherche.png'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate, useParams  } from 'react-router-dom';
+import { ConfirmationModal } from '../shared/UnifiedModal';
 
 const SousDiv1Style = Styled.div`
   width: 100%;
@@ -172,73 +173,7 @@ const BarreStyle = Styled.div`
 
 // gerer les popups
 
-const Popupsuppr= Styled.div`
 
-    display: ${props => props.$Popupsupprdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 350px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-const Popupstat= Styled.div`
-
-    display: ${props => props.$Popupstatutdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 450px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-
-const Containbouttonpopup = Styled.div`
-
-    display: flex;
-    
-    gap: 30px;
-    background-color: rgba(159, 159, 255, 1);
-`
-const Bouttonpopup =Styled.button`
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    width: 80px;
-    height: 30px;
-    border-radius: 10px;
-    background-color: white;
-`
-const Overlay = Styled.div`
-  display: ${props => props.$Overlaydisplay};
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 998;
-`
 function RendezvousScretaireToday(){
     //const [isVisible, setisVisible] = useState(0)
       const idUser = localStorage.getItem('id');

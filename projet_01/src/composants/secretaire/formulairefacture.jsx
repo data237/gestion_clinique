@@ -1,5 +1,6 @@
 // src/components/forms/FormulaireFacture.jsx
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { API_BASE } from '../../composants/config/apiconfig';
 import axios from 'axios';
 import Styled from 'styled-components';
@@ -14,16 +15,20 @@ import logoPath from '../../assets/logo.png'; // met ton logo ici (optionnel, lo
 // === styled-components (copie de ton code) ===
 // ... (Garde tout ton styled-components tel quel)
 // Pour la clarté je réutilise tes définitions ci-dessous — colle les tiennes exactement
-const Affichedetailuser = Styled.div`display: flex; justify-content: center; align-items: center;`;
+const Affichedetailuser = Styled.div`
+  display: flex; justify-content: 
+  center; align-items: center; 
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;`;
+
 const FormContainer = Styled.div`
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 40px;
+  padding: 10px 30px;
   border-radius: 20px;
   font-family: 'Inter', sans-serif;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   &::before {
     content: '';
@@ -89,9 +94,81 @@ const Select = Styled.select`
 `;
 const ButtonRow = Styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 10px;
+  padding-bottom: 15px;
+`;
+
+const Overlay = Styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+`;
+
+const Popup = Styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  text-align: center;
+  min-width: 300px;
+`;
+
+const Loader = Styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 1001;
+  text-align: center;
+  min-width: 300px;
+`;
+
+const ButtonGroup = Styled.div`
+  display: flex;
+  gap: 15px;
+  justify-content: center;
   margin-top: 20px;
+`;
+
+const PopupButton = Styled.button`
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &.confirm {
+    background: #10b981;
+    color: white;
+    
+    &:hover {
+      background: #059669;
+    }
+  }
+  
+  &.cancel {
+    background: #ef4444;
+    color: white;
+    
+    &:hover {
+      background: #dc2626;
+    }
+  }
 `;
 
 // Button styling is now handled by add-buttons.css
@@ -99,10 +176,13 @@ const ButtonRow = Styled.div`
 // === fin styled-components ===
 
 const FormulaireFacture = ({ id, onClick1 }) => {
+  const navigate = useNavigate();
   const [facture, setfacture] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showValidationPopup, setShowValidationPopup] = useState(false);
+  const [showLoader, setShowLoader] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchfactures = async () => {
       const token = localStorage.getItem('token');
       try {
@@ -121,9 +201,75 @@ const FormulaireFacture = ({ id, onClick1 }) => {
     if (id) fetchfactures();
   }, [id]);
 
+
+
   const handleChange = e => {
     const { name, value } = e.target;
     setfacture(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAnnuler = () => {
+    // Afficher une notification de succès
+    if (window.showNotification) {
+      window.showNotification("annulation du paiement", "success");
+    }
+    // Rediriger vers la liste des factures
+    navigate("/secretaire/facture");
+    // Gérer le focus après la navigation
+    setTimeout(() => {
+      const firstFocusableElement = document.querySelector('button, input, select, a, [tabindex]:not([tabindex="-1"])');
+      if (firstFocusableElement) {
+        firstFocusableElement.focus();
+      }
+    }, 100);
+  };
+
+  const handleGenererFacture = () => {
+    setShowValidationPopup(true);
+  };
+
+  const handleValidationConfirm = async () => {
+    setShowValidationPopup(false);
+    setShowLoader(true);
+    
+    try {
+      // Appeler la fonction de génération PDF existante
+      await handleSubmit(new Event('submit'));
+      
+      // Afficher une notification de succès
+      if (window.showNotification) {
+        window.showNotification("Facture générée avec succès", "success");
+      }
+      // Rediriger vers la liste des rendez-vous
+      navigate("/secretaire/rendezvous");
+      // Gérer le focus après la navigation
+      setTimeout(() => {
+        const firstFocusableElement = document.querySelector('button, input, select, a, [tabindex]:not([tabindex="-1"])');
+        if (firstFocusableElement) {
+          firstFocusableElement.focus();
+        }
+      }, 100);
+    } catch (error) {
+      console.error('Erreur lors de la génération:', error);
+      if (window.showNotification) {
+        window.showNotification("Erreur lors de la génération de la facture", "error");
+      }
+    } finally {
+      setShowLoader(false);
+    }
+  };
+
+  const handleValidationCancel = () => {
+    setShowValidationPopup(false);
+    // Rediriger vers la liste des factures
+    navigate("/secretaire/facture");
+    // Gérer le focus après la navigation
+    setTimeout(() => {
+      const firstFocusableElement = document.querySelector('button, input, select, a, [tabindex]:not([tabindex="-1"])');
+      if (firstFocusableElement) {
+        firstFocusableElement.focus();
+      }
+    }, 100);
   };
 
   // helper: convert an image URL to data url (to avoid CORS issues with react-pdf)
@@ -199,9 +345,13 @@ const FormulaireFacture = ({ id, onClick1 }) => {
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+
+      // 6) Ne pas fermer le popup automatiquement, laisser handleValidationConfirm gérer le flow
+      // onClick1();
+
     } catch (error) {
       console.error('Erreur lors de la soumission / génération PDF :', error);
-      alert('Une erreur est survenue. Voir la console.');
+      throw error; // Propager l'erreur pour la gestion dans handleValidationConfirm
     } finally {
       setLoading(false);
     }
@@ -226,20 +376,20 @@ const FormulaireFacture = ({ id, onClick1 }) => {
           </Title>
 
           <TraitHorizontal />
-                      <FormRow>
-              <FormGroup>
-                <Label htmlFor="nom">👤 Nom du Patient</Label>
-                <Input id="nom" value={facture.patientNomComplet} readOnly />
-              </FormGroup>
-              <FormGroup>
-                <Label htmlFor="date">📅 Date d'Émission</Label>
-                <Input id="date" value={facture.dateEmission.split("T")[0]} readOnly />
-              </FormGroup>
-            </FormRow>
+          <FormRow>
+            <FormGroup>
+              <Label htmlFor="nom">👤 Nom du Patient</Label>
+              <Input id="nom" value={facture.patientNomComplet} readOnly />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="date">📅 Date de création</Label>
+              <Input id="date" value={facture.dateEmission.split("T")[0]} readOnly />
+            </FormGroup>
+          </FormRow>
 
           <FormRow>
             <FormGroup>
-              <Label htmlFor="heure">Heure Emission</Label>
+              <Label htmlFor="heure">Heure de création</Label>
               <Input id="heure" value={facture.dateEmission.split("T")[1].split(".")[0]} readOnly />
             </FormGroup>
             <FormGroup>
@@ -248,33 +398,77 @@ const FormulaireFacture = ({ id, onClick1 }) => {
             </FormGroup>
           </FormRow>
 
-                      <FormRow>
-              <FormGroup>
-                <Label htmlFor="montant">💰 Montant (XAF)</Label>
-                <Input id="montant" name="montant" value={facture.montant} readOnly />
-              </FormGroup>
-              <FormGroup>
-                <Label htmlFor="modepaiement">💳 Mode de Paiement</Label>
-                <Select id="modepaiement" name="modePaiement" value={facture.modePaiement} onChange={handleChange}>
-                  <option value="ESPECES">💵 Espèces</option>
-                  <option value="CARTE_BANCAIRE">💳 Carte Bancaire</option>
-                  <option value="VIREMENT">🏦 Virement</option>
-                  <option value="CHEQUE">📄 Chèque</option>
-                  <option value="MOBILE_MONEY">📱 Mobile Money</option>
-                </Select>
-              </FormGroup>
-            </FormRow>
+          <FormRow>
+            <FormGroup>
+              <Label htmlFor="montant">💰 Montant (XAF)</Label>
+              <Input id="montant" name="montant" value={facture.montant} readOnly />
+            </FormGroup>
+            <FormGroup>
+              <Label htmlFor="modepaiement">💳 Mode de Paiement</Label>
+              <Select id="modepaiement" name="modePaiement" value={facture.modePaiement} onChange={handleChange}>
+                <option value="ESPECES">💵 Espèces</option>
+                <option value="CARTE_BANCAIRE">💳 Carte Bancaire</option>
+                <option value="VIREMENT">🏦 Virement</option>
+                <option value="CHEQUE">📄 Chèque</option>
+                <option value="MOBILE_MONEY">📱 Mobile Money</option>
+              </Select>
+            </FormGroup>
+          </FormRow>
         </FormContainer>
 
         <ButtonRow>
-          <button type="button" className="cancel-button" onClick={onClick1}>
+          <button type="button" className="cancel-button" onClick={handleAnnuler}>
             Annuler
           </button>
-          <button type="submit" className="submit-button" disabled={loading} onClick={onClick1}>
-            {loading ? "Génération..." : "Generer la facture"}
+          <button type="button" className="submit-button" onClick={handleGenererFacture} disabled={loading}>
+            {loading ? "Génération..." : "Payer et générer la facture"}
           </button>
         </ButtonRow>
       </Form>
+      
+      {/* Popup de validation */}
+      {showValidationPopup && (
+        <Overlay>
+          <Popup>
+            <h3 style={{ color: '#1e40af', marginBottom: '15px' }}>Confirmation</h3>
+            <p style={{ marginBottom: '20px' }}>Voulez-vous payer et générer cette facture ?</p>
+            <ButtonGroup>
+              <PopupButton className="confirm" onClick={handleValidationConfirm}>
+                Oui
+              </PopupButton>
+              <PopupButton className="cancel" onClick={handleValidationCancel}>
+                Non
+              </PopupButton>
+            </ButtonGroup>
+          </Popup>
+        </Overlay>
+      )}
+
+      {/* Loader de génération */}
+      {showLoader && (
+        <>
+          <Overlay />
+          <Loader>
+            <h3 style={{ color: '#1e40af', marginBottom: '15px' }}>Génération en cours</h3>
+            <p style={{ marginBottom: '20px' }}>Génération de la facture...</p>
+            <div style={{ 
+              width: '40px', 
+              height: '40px', 
+              border: '4px solid #e5e7eb', 
+              borderTop: '4px solid #1e40af', 
+              borderRadius: '50%', 
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto'
+            }}></div>
+            <style>{`
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            `}</style>
+          </Loader>
+        </>
+      )}
     </Affichedetailuser>
   );
 };

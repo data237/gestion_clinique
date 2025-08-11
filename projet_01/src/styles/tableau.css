@@ -29,23 +29,26 @@ thead{
 }
 
 .th{
-    height: 55px;
+    height: 45px; /* Réduit de 55px à 45px */
     text-align: left;
     background-color: #667eea;
-    padding-left: 15px;
+    padding-left: 12px; /* Réduit de 15px à 12px */
+    padding-right: 8px; /* Ajouté pour équilibrer */
     border-left: 1px solid #ffffff;
     color: #ffffff;
     font-weight: 500;
+    font-size: 0.9em; /* Réduit la taille de la police */
     position: sticky;
     top: 0;
     z-index: 10;
 }
 
 .td{
-    height: 55px;
+    height: 45px; /* Réduit de 55px à 45px */
     text-align: left;
-    font-size: 1.2em;
-    padding-left: 15px;
+    font-size: 0.95em; /* Réduit de 1.2em à 0.95em */
+    padding-left: 12px; /* Réduit de 15px à 12px */
+    padding-right: 8px; /* Ajouté pour équilibrer */
     border-bottom: 1px solid #f0f0f0;
     background-color: #ffffff;
     color: #333333;
@@ -74,21 +77,22 @@ thead{
     flex-wrap: wrap;
 }
 
+/* Réduire la taille des boutons d'action */
 .bouttons button {
     background: #ffffff;
     border: 1px solid #d1d5db;
     border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 4px 8px; /* Réduit de 6px 12px à 4px 8px */
+    font-size: 11px; /* Réduit de 12px à 11px */
     font-weight: 500;
     color: #333333;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
-    gap: 6px;
-    min-width: 32px;
-    height: 32px;
+    gap: 4px; /* Réduit de 6px à 4px */
+    min-width: 28px; /* Réduit de 32px à 28px */
+    height: 28px; /* Réduit de 32px à 28px */
     justify-content: center;
     position: relative;
     overflow: hidden;
@@ -129,9 +133,10 @@ thead{
     outline-offset: 2px;
 }
 
+/* Réduire la taille de l'icône de suppression */
 .iconsupprime{
-    width: 16px;
-    height: 16px;
+    width: 14px; /* Réduit de 16px à 14px */
+    height: 14px; /* Réduit de 16px à 14px */
     transition: transform 0.3s ease;
 }
 
@@ -139,12 +144,13 @@ thead{
     transform: scale(1.1);
 }
 
+/* Réduire la taille du bouton toggle */
 .toggle-button {
     position: relative;
-    width: 50px;
-    height: 24px;
+    width: 44px; /* Réduit de 50px à 44px */
+    height: 22px; /* Réduit de 24px à 22px */
     background-color: #d1d5db;
-    border-radius: 12px;
+    border-radius: 11px; /* Réduit de 12px à 11px */
     cursor: pointer;
     transition: background-color 0.3s ease;
     border: none;
@@ -157,10 +163,10 @@ thead{
 
 .toggle-button .circle {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 20px;
-    height: 20px;
+    top: 1px; /* Réduit de 2px à 1px */
+    left: 1px; /* Réduit de 2px à 1px */
+    width: 18px; /* Réduit de 20px à 18px */
+    height: 18px; /* Réduit de 20px à 18px */
     background-color: #ffffff;
     border-radius: 50%;
     transition: transform 0.3s ease;
@@ -168,7 +174,7 @@ thead{
 }
 
 .toggle-button .active {
-    transform: translateX(26px);
+    transform: translateX(22px); /* Réduit de 26px à 22px */
 }
 
 .toggle-button:hover {
@@ -186,11 +192,12 @@ thead{
     align-items: center;
 }
 
+/* Réduire la taille des boutons de pagination */
 .buttonPS {
-    padding: 8px 16px;
+    padding: 6px 12px; /* Réduit de 8px 16px à 6px 12px */
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
-    font-size: 14px;
+    font-size: 13px; /* Réduit de 14px à 13px */
     background-color: #ffffff;
     color: #333333;
     border: 1px solid #d1d5db;
@@ -226,8 +233,8 @@ input, textarea, select {
     color: #333333;
     border: 1px solid #d1d5db;
     border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 6px 10px; /* Réduit de 8px 12px à 6px 10px */
+    font-size: 13px; /* Réduit de 14px à 13px */
     font-family: 'Inter', sans-serif;
 }
 
@@ -241,26 +248,26 @@ input::placeholder, textarea::placeholder {
     color: #9ca3af;
 }
 
-/* Styles pour les titres de tableaux */
+/* Réduire la taille du titre du tableau */
 .nomtable {
     font-family: "Inter", sans-serif;
     font-weight: 700;
-    font-size: 1.5em;
+    font-size: 1.3em; /* Réduit de 1.5em à 1.3em */
     color: #333333;
 }
 
-/* Styles pour les numéros de page */
+/* Réduire la taille des numéros de page */
 .page-number {
     background-color: #ffffff;
     color: #333333;
     border: 1px solid #d1d5db;
-    padding: 8px 12px;
+    padding: 6px 10px; /* Réduit de 8px 12px à 6px 10px */
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 13px; /* Réduit de 14px à 13px */
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-width: 36px;
+    min-width: 32px; /* Réduit de 36px à 32px */
     text-align: center;
 }
 

@@ -11,6 +11,7 @@ import imgprofil from '../../assets/photoDoc.png'
 import iconrecherche from '../../assets/iconrecherche.png'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
+import { ConfirmationModal } from '../shared/UnifiedModal';
 
 const SousDiv1Style = Styled.div`
   width: 100%;
@@ -168,78 +169,7 @@ const BarreStyle = Styled.div`
 `
 //
 
-// gerer les popups
-
-const Popupsuppr= Styled.div`
-
-    display: ${props => props.$Popupsupprdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 350px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-const Popupstat= Styled.div`
-
-    display: ${props => props.$Popupstatutdisplay};
-    flex-direction: column;
-    justify-content:center;
-    align-items: center;
-    font-family: "Inter", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    color: white;
-    width: 450px;
-    height: 100px;
-    border-radius: 10px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    z-index: 10000;
-    gap: 20px;
-    background-color: rgba(159, 159, 255, 1);
-`
-
-const Containbouttonpopup = Styled.div`
-
-    display: flex;
-    padding: 32px;
-    
-    border-radius: 16px;
-    gap: 30px;
-    background-color: white;
-`
-const Bouttonpopup =Styled.button`
-    font-family: "Roboto", sans-serif;
-    font-weight: 400;
-    font-size: 1em;
-    min-width: 150px;
-    padding: 16px;
-    border-radius: 16px;
-    border: 1px solid rgba(159, 159, 255, 1);
-    color: rgba(159, 159, 255, 1);
-`
-const Overlay = Styled.div`
-  display: ${props => props.$Overlaydisplay};
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.5);
-  z-index: 998;
-`
+// gerer les popups - Utilisation du système unifié
 function RendezvousMedecin(){
     //const [isVisible, setisVisible] = useState(0)
      // const idUser = localStorage.getItem('id');
@@ -431,17 +361,7 @@ function RendezvousMedecin(){
 
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
     return(<>
-            <Overlay onClick={() => setPopup(false)} $Overlaydisplay = {Popup  ? 'block' : 'none'}/>
-            <Popupsuppr $Popupsupprdisplay = {Popup ? 'flex' : 'none'}>
-                
-                <Containbouttonpopup>
-                    <Bouttonpopup onClick={()=> consultations(rdvaouvrir)}> Faire une Consultation </Bouttonpopup>
-                    <Bouttonpopup onClick={()=> dossierMedical(rdvaouvrir)}> voir le Dossier medical </Bouttonpopup>
-                    
-                </Containbouttonpopup>
-                                
-            </Popupsuppr>
-                
+            
             <SousDiv1Style>
                 <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil='bahebeck'> 
                     <Span1>Liste des rendez vous</Span1>

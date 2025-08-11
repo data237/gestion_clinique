@@ -101,6 +101,21 @@ function PageLogin() {
         localStorage.removeItem('rememberedEmail');
       }
 
+      // Appeler l'endpoint pour annuler les vieux rendez-vous
+      try {
+        await axios.post(`${API_BASE}/rendezvous/cancel-old`, {}, {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        console.log('Vieux rendez-vous annulés avec succès');
+      } catch (cancelError) {
+        console.error('Erreur lors de l\'annulation des vieux rendez-vous:', cancelError);
+        // Ne pas bloquer la connexion si cet appel échoue
+      }
+
       // Notification de succès
       if (window.showNotification) {
         window.showNotification('Connexion réussie !', 'success', 3000);
