@@ -1,13 +1,30 @@
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
-  page: {
-    padding: 40,
-    fontFamily: 'Helvetica',
-  },
+    page: { 
+        padding: 25, 
+        fontFamily: "Helvetica",
+        backgroundColor: "#ffffff",
+        fontSize: 10
+      },
+      container: { 
+        flex: 1,
+        backgroundColor: "#ffffff",
+        border: "2px solid #1e40af",
+        borderRadius: 8,
+        padding: 20
+      },
   header: {
-    marginBottom: 20,
-    textAlign: 'center',
+    backgroundColor: "#f8fafc",
+    padding: 15,
+    borderBottom: "2px solid #1e40af",
+    marginBottom: 15,
+    borderRadius: 8,
+    position: "relative",
+    overflow: "hidden",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
   },
   hospitalName: {
     fontSize: 18,
@@ -43,6 +60,7 @@ const styles = StyleSheet.create({
 const PrescriptionPDF = ({ prescription }) => (
   <Document>
     <Page size="A4" style={styles.page}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.hospitalName}>HOSPITAL NAME</Text>
         <Text style={styles.doctorInfo}>
@@ -80,6 +98,7 @@ const PrescriptionPDF = ({ prescription }) => (
 
       <View style={styles.signature}>
         <Text>Signature du médecin: _________________________</Text>
+      </View>
       </View>
     </Page>
   </Document>

@@ -212,7 +212,7 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
   if (!isOpen || !consultationData) return null;
 
   return (
-    <div 
+    <div
       style={{
         position: 'fixed',
         top: 0,
@@ -228,7 +228,7 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
       }}
       onClick={onClose}
     >
-      <div 
+      <div
         style={{
           background: 'white',
           borderRadius: '16px',
@@ -257,7 +257,7 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
           }}>
             ✅ Consultation créée avec succès !
           </h3>
-          <button 
+          <button
             onClick={onClose}
             style={{
               background: 'none',
@@ -277,7 +277,7 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
             &times;
           </button>
         </div>
-        
+
         <div style={{ padding: '24px' }}>
           <div style={{
             backgroundColor: '#f0f9ff',
@@ -317,14 +317,14 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
             </div>
           )}
         </div>
-        
+
         <div style={{
           padding: '0 24px 24px 24px',
           display: 'flex',
           flexDirection: 'column',
           gap: '16px'
         }}>
-          <button 
+          <button
             onClick={onGeneratePDF}
             disabled={isLoading || !prescriptionData}
             style={{
@@ -338,7 +338,7 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
               fontFamily: 'Inter, sans-serif',
               cursor: prescriptionData && !isLoading ? 'pointer' : 'not-allowed',
               transition: 'all 0.2s ease',
-          width: '100%'
+              width: '100%'
             }}
             onMouseEnter={(e) => {
               if (prescriptionData && !isLoading) {
@@ -358,7 +358,7 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
             {isLoading ? '⏳ Génération en cours...' : '📄 Générer le PDF de la prescription'}
           </button>
 
-          <button 
+          <button
             onClick={onClose}
             style={{
               backgroundColor: 'transparent',
@@ -392,7 +392,7 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
 
 const FormulaireConsultation = () => {
   const { showConfirmation } = useConfirmation();
-  
+
   const idUser = localStorage.getItem('id');
   const [nomprofil, setnomprofil] = useState('')
   // const [idprescription, setidprescription] = useState(null)
@@ -427,7 +427,7 @@ const FormulaireConsultation = () => {
   }, [idUser]);
 
 
-    const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState({
     motifs: "",
     tensionArterielle: "",
     temperature: 0.1,
@@ -437,13 +437,13 @@ const FormulaireConsultation = () => {
     diagnostic: "",
     rendezVousId: idrdv,
     prescriptions: [
-        {
+      {
         typePrescription: "",
         medicaments: "",
         instructions: "",
         dureePrescription: "",
         quantite: 9007199254740991
-        }
+      }
     ]
   });
 
@@ -466,7 +466,7 @@ const FormulaireConsultation = () => {
     if (champsNumeriques.includes(name)) {
       // Permettre la saisie de chiffres, virgules, points et espaces
       const cleanValue = value.replace(/[^0-9.,\s]/g, '');
-      
+
       // Si le champ est vide, stocker 0.1 (valeur par défaut)
       if (!cleanValue.trim()) {
         setFormData(prev => ({
@@ -475,7 +475,7 @@ const FormulaireConsultation = () => {
         }));
         return;
       }
-      
+
       // Stocker la valeur nettoyée telle quelle (sera validée lors de la soumission)
       setFormData(prev => ({
         ...prev,
@@ -513,7 +513,7 @@ const FormulaireConsultation = () => {
         }));
         return;
       }
-      
+
       // Champ non numérique
       setFormData(prev => ({
         ...prev,
@@ -548,7 +548,7 @@ const FormulaireConsultation = () => {
           'Content-Type': 'application/json',
         }
       });
-      
+
       if (response.status === 200) {
         setConsultationData(response.data);
         // Récupérer aussi les données de prescription
@@ -570,7 +570,7 @@ const FormulaireConsultation = () => {
           'Content-Type': 'application/json',
         }
       });
-      
+
       if (response.status === 200 && response.data.length > 0) {
         setPrescriptionData(response.data[0]); // Prendre la première prescription
       }
@@ -582,7 +582,7 @@ const FormulaireConsultation = () => {
   // Fonction pour générer le PDF de la prescription
   const generatePrescriptionPDF = async () => {
     if (!prescriptionData) return;
-    
+
     setIsLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -593,7 +593,7 @@ const FormulaireConsultation = () => {
         },
         responseType: 'blob'
       });
-      
+
       if (response.status === 200) {
         // Créer un lien de téléchargement
         const blob = new Blob([response.data], { type: 'application/pdf' });
@@ -605,7 +605,7 @@ const FormulaireConsultation = () => {
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
-        
+
         if (window.showNotification) {
           window.showNotification('PDF de prescription généré avec succès !', 'success');
         }
@@ -736,7 +736,7 @@ const FormulaireConsultation = () => {
       onConfirm: async () => {
         try {
           const token = localStorage.getItem('token');
-          
+
           // Créer un objet avec les données validées
           const validatedData = {
             ...formData,
@@ -744,7 +744,7 @@ const FormulaireConsultation = () => {
             poids: poids,
             taille: taille
           };
-          
+
           const response = await axios.post(`${API_BASE}/consultations/start/${idrdv}`, validatedData, {
             headers: {
               accept: 'application/json',
@@ -757,10 +757,10 @@ const FormulaireConsultation = () => {
             if (window.showNotification) {
               window.showNotification('Consultation créée avec succès !', 'success');
             }
-            
+
             // Récupérer l'ID de la consultation créée depuis la réponse
             const consultationId = response.data.id || response.data.consultationId;
-            
+
             if (consultationId) {
               // Récupérer les données complètes de la consultation
               await fetchConsultationData(consultationId);
@@ -843,71 +843,71 @@ const FormulaireConsultation = () => {
       <Afficheformulaireadd>
         <Form onSubmit={handleSubmit}>
           <FormContainer>
-                         <Title>Créer une consultation</Title>
-             <TraitHorizontal></TraitHorizontal>
-             
-             <div style={{
-                 backgroundColor: '#f3f4f6',
-                 padding: '16px',
-                 borderRadius: '8px',
-                 marginBottom: '20px',
-                 border: '1px solid #e5e7eb'
-             }}>
-                 <p style={{
-                     margin: 0,
-                     color: '#374151',
-                     fontSize: '14px',
-                     fontFamily: 'Inter, sans-serif'
-                 }}>
-                     <strong>Note :</strong> Les champs marqués d'un * sont obligatoires. 
-                     Assurez-vous de remplir au minimum les motifs de consultation et le diagnostic.
-                     <br/>
-                     <strong>Unités :</strong> Taille en cm, Poids en kg, Température en °C.
-                 </p>
-             </div>
+            <Title>Créer une consultation</Title>
+            <TraitHorizontal></TraitHorizontal>
+
+            <div style={{
+              backgroundColor: '#f3f4f6',
+              padding: '16px',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              border: '1px solid #e5e7eb'
+            }}>
+              <p style={{
+                margin: 0,
+                color: '#374151',
+                fontSize: '14px',
+                fontFamily: 'Inter, sans-serif'
+              }}>
+                <strong>Note :</strong> Les champs marqués d'un * sont obligatoires.
+                Assurez-vous de remplir au minimum les motifs de consultation et le diagnostic.
+                <br />
+                <strong>Unités :</strong> Taille en cm, Poids en kg, Température en °C.
+              </p>
+            </div>
 
 
             <FormRow>
 
-                             <FormGroup>
-                 <Label htmlFor="taille">Taille * (en cm)</Label>
-                 <Input
-                   id="taille"
-                   name="taille"
-                   type='text'
-                   value={formData.taille <= 0.1 ? '' : formData.taille}
-                   onChange={handleChange}
-                   placeholder="Ex: 175 (pour 1m75)"
-                   style={{
-                     borderColor: formData.taille <= 0.1 ? '#ef4444' : '#d1d5db'
-                   }}
-                 />
-                 {formData.taille <= 0.1 && (
-                   <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
-                     La taille doit être supérieure à 0
-                   </small>
-                 )}
-               </FormGroup>
+              <FormGroup>
+                <Label htmlFor="taille">Taille * (en cm)</Label>
+                <Input
+                  id="taille"
+                  name="taille"
+                  type='text'
+                  value={formData.taille <= 0.1 ? '' : formData.taille}
+                  onChange={handleChange}
+                  placeholder="Ex: 175 (pour 1m75)"
+                  style={{
+                    borderColor: formData.taille <= 0.1 ? '#ef4444' : '#d1d5db'
+                  }}
+                />
+                {formData.taille <= 0.1 && (
+                  <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    La taille doit être supérieure à 0
+                  </small>
+                )}
+              </FormGroup>
 
-               <FormGroup>
-                 <Label htmlFor="poids">Poids * (en kg)</Label>
-                 <Input
-                   id="poids"
-                   name="poids"
-                   type='text'
-                   value={formData.poids <= 0.1 ? '' : formData.poids}
-                   onChange={handleChange}
-                   placeholder="Ex: 70.5"
-                   style={{
-                     borderColor: formData.poids <= 0.1 ? '#ef4444' : '#d1d5db'
-                   }}
-                 />
-                 {formData.poids <= 0.1 && (
-                   <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
-                     Le poids doit être supérieur à 0
-                   </small>
-                 )}
-               </FormGroup>
+              <FormGroup>
+                <Label htmlFor="poids">Poids * (en kg)</Label>
+                <Input
+                  id="poids"
+                  name="poids"
+                  type='text'
+                  value={formData.poids <= 0.1 ? '' : formData.poids}
+                  onChange={handleChange}
+                  placeholder="Ex: 70.5"
+                  style={{
+                    borderColor: formData.poids <= 0.1 ? '#ef4444' : '#d1d5db'
+                  }}
+                />
+                {formData.poids <= 0.1 && (
+                  <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    Le poids doit être supérieur à 0
+                  </small>
+                )}
+              </FormGroup>
 
 
 
@@ -916,151 +916,152 @@ const FormulaireConsultation = () => {
 
 
             <FormRow>
-                             <FormGroup>
-                 <Label htmlFor="temperature">Temperature * (en °C)</Label>
-                 <Input
-                   id="temperature"
-                   name="temperature"
-                   type='text'
-                   value={formData.temperature <= 0.1 ? '' : formData.temperature}
-                   onChange={handleChange}
-                   placeholder="Ex: 37.2"
-                   style={{
-                     borderColor: formData.temperature <= 0.1 ? '#ef4444' : '#d1d5db'
-                   }}
-                 />
-                 {formData.temperature <= 0.1 && (
-                   <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
-                     La température doit être supérieure à 0
-                   </small>
-                 )}
-               </FormGroup>
-               <FormGroup>
-                 <Label htmlFor="motifs">Motifs *</Label>
-                 <TextArea
-                   id='motifs'
-                   name="motifs"
-                   value={formData.motifs}
-                   onChange={handleChange}
-                   placeholder="Ex: Fièvre, maux de tête, fatigue..."
-                   style={{
-                     borderColor: !formData.motifs.trim() ? '#ef4444' : '#d1d5db'
-                   }}
-                 />
-                 {!formData.motifs.trim() && (
-                   <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
-                     Ce champ est obligatoire
-                   </small>
-                 )}
-               </FormGroup>
-
+              <FormGroup>
+                <Label htmlFor="temperature">Temperature * (en °C)</Label>
+                <Input
+                  id="temperature"
+                  name="temperature"
+                  type='text'
+                  value={formData.temperature <= 0.1 ? '' : formData.temperature}
+                  onChange={handleChange}
+                  placeholder="Ex: 37.2"
+                  style={{
+                    borderColor: formData.temperature <= 0.1 ? '#ef4444' : '#d1d5db'
+                  }}
+                />
+                {formData.temperature <= 0.1 && (
+                  <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    La température doit être supérieure à 0
+                  </small>
+                )}
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="tensionArterielle">Tension Arterielle</Label>
+                <TextArea
+                  id='tensionArterielle'
+                  name="tensionArterielle"
+                  value={formData.tensionArterielle}
+                  onChange={handleChange}
+                  placeholder="Ex: Paracétamol 500mg, 3x/jour"
+                />
+              </FormGroup>
             </FormRow>
-                         <FormRow>
-               <FormGroup>
-                 <Label htmlFor="tensionArterielle">Traitements en cours</Label>
-                 <TextArea 
-                   id='tensionArterielle' 
-                   name="tensionArterielle" 
-                   value={formData.tensionArterielle} 
-                   onChange={handleChange}
-                   placeholder="Ex: Paracétamol 500mg, 3x/jour"
-                 />
-               </FormGroup>
-               <FormGroup>
-                 <Label htmlFor="diagnostic">Diagnostic *</Label>
-                 <TextArea
-                   id='diagnostic'
-                   name="diagnostic"
-                   value={formData.diagnostic}
-                   onChange={handleChange}
-                   placeholder="Ex: Grippe saisonnière, infection respiratoire..."
-                   style={{
-                     borderColor: !formData.diagnostic.trim() ? '#ef4444' : '#d1d5db'
-                   }}
-                 />
-                 {!formData.diagnostic.trim() && (
-                   <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
-                     Ce champ est obligatoire
-                   </small>
-                 )}
-               </FormGroup>
-             </FormRow>
-             <FormGroup>
-               <Label htmlFor="compteRendu">Compte rendu</Label>
-               <TextArea 
-                 id='compteRendu' 
-                 name="compteRendu" 
-                 value={formData.compteRendu} 
-                 onChange={handleChange}
-                 placeholder="Ex: Patient présente des symptômes grippaux classiques..."
-                 style={{
+            <FormRow>
+
+              <FormGroup>
+                <Label htmlFor="motifs">Motifs *</Label>
+                <TextArea
+                  id='motifs'
+                  name="motifs"
+                  value={formData.motifs}
+                  onChange={handleChange}
+                  placeholder="Ex: Fièvre, maux de tête, fatigue..."
+                  style={{
+                    borderColor: !formData.motifs.trim() ? '#ef4444' : '#d1d5db'
+                  }}
+                />
+                {!formData.motifs.trim() && (
+                  <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    Ce champ est obligatoire
+                  </small>
+                )}
+              </FormGroup>
+
+              <FormGroup>
+                <Label htmlFor="diagnostic">Diagnostic *</Label>
+                <TextArea
+                  id='diagnostic'
+                  name="diagnostic"
+                  value={formData.diagnostic}
+                  onChange={handleChange}
+                  placeholder="Ex: Grippe saisonnière, infection respiratoire..."
+                  style={{
+                    borderColor: !formData.diagnostic.trim() ? '#ef4444' : '#d1d5db'
+                  }}
+                />
+                {!formData.diagnostic.trim() && (
+                  <small style={{ color: '#ef4444', fontSize: '12px', marginTop: '4px' }}>
+                    Ce champ est obligatoire
+                  </small>
+                )}
+              </FormGroup>
+            </FormRow>
+            <FormGroup>
+              <Label htmlFor="compteRendu">Compte rendu</Label>
+              <TextArea
+                id='compteRendu'
+                name="compteRendu"
+                value={formData.compteRendu}
+                onChange={handleChange}
+                placeholder="Ex: Patient présente des symptômes grippaux classiques..."
+                style={{
                   width: '100%'
-                 }}
-               />
-             </FormGroup>
+                }}
+              />
+            </FormGroup>
 
             <Title>Prescription</Title>
             <TraitHorizontal2></TraitHorizontal2>
-                         <FormRow>
-               <FormGroup>
-                 <Label htmlFor="typePrescription">Type prescription</Label>
-                 <TextArea 
-                   id='typePrescription' 
-                   name="prescriptions[0].typePrescription" 
-                   value={formData.prescriptions[0].typePrescription} 
-                   onChange={handleChange}
-                   placeholder="Ex: Antibiotique, antalgique, anti-inflammatoire..."
-                 />
-               </FormGroup>
-               <FormGroup>
-                 <Label htmlFor="medicaments">Medicaments</Label>
-                 <TextArea 
-                   id='medicaments' 
-                   name="prescriptions[0].medicaments" 
-                   value={formData.prescriptions[0].medicaments} 
-                   onChange={handleChange}
-                   placeholder="Ex: Amoxicilline 1g, 2x/jour"
-                 />
-               </FormGroup>
-             </FormRow>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="typePrescription">Type prescription</Label>
+                <TextArea
+                  id='typePrescription'
+                  name="prescriptions[0].typePrescription"
+                  value={formData.prescriptions[0].typePrescription}
+                  onChange={handleChange}
+                  placeholder="Ex: Antibiotique, antalgique, anti-inflammatoire..."
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="medicaments">Medicaments</Label>
+                <TextArea
+                  id='medicaments'
+                  name="prescriptions[0].medicaments"
+                  value={formData.prescriptions[0].medicaments}
+                  onChange={handleChange}
+                  placeholder="Ex: Amoxicilline 1g, 2x/jour"
+                />
+              </FormGroup>
+            </FormRow>
 
-                         <FormRow>
-               <FormGroup>
-                 <Label htmlFor="quantite">Quantite</Label>
-                 <Input 
-                   id="quantite" 
-                   name="prescriptions[0].quantite" 
-                   type='text' 
-                   value={formData.prescriptions[0].quantite === 9007199254740991 ? '' : formData.prescriptions[0].quantite} 
-                   onChange={handleChange}
-                   placeholder="Ex: 20 comprimés"
-                 />
-               </FormGroup>
-               <FormGroup>
-                 <Label htmlFor="dureePrescription">Duree prescription</Label>
-                 <TextArea 
-                   id='dureePrescription' 
-                   name="prescriptions[0].dureePrescription" 
-                   value={formData.prescriptions[0].dureePrescription} 
-                   onChange={handleChange}
-                   placeholder="Ex: 7 jours, 2 semaines..."
-                 />
-               </FormGroup>
-             </FormRow>
+            <FormRow>
+              <FormGroup>
+                <Label htmlFor="quantite">Quantite</Label>
+                <Input
+                  id="quantite"
+                  name="prescriptions[0].quantite"
+                  type='text'
+                  value={formData.prescriptions[0].quantite === 9007199254740991 ? '' : formData.prescriptions[0].quantite}
+                  onChange={handleChange}
+                  placeholder="Ex: 20 comprimés"
+                />
+              </FormGroup>
+              <FormGroup>
+                <Label htmlFor="dureePrescription">Duree prescription</Label>
+                <TextArea
+                  id='dureePrescription'
+                  name="prescriptions[0].dureePrescription"
+                  value={formData.prescriptions[0].dureePrescription}
+                  onChange={handleChange}
+                  placeholder="Ex: 7 jours, 2 semaines..."
+                />
+              </FormGroup>
+            </FormRow>
 
-             <FormGroup>
-               <Label htmlFor="instructions">Instructions</Label>
-               <TextArea 
-                 id='instructions' 
-                 name="prescriptions[0].instructions" 
-                 value={formData.prescriptions[0].instructions} 
-                 onChange={handleChange}
-                 placeholder="Ex: Prendre avant les repas, éviter l'alcool..."
-                 style={{
+            <FormGroup>
+              <Label htmlFor="instructions">Instructions</Label>
+              <TextArea
+                id='instructions'
+                name="prescriptions[0].instructions"
+                value={formData.prescriptions[0].instructions}
+                onChange={handleChange}
+                placeholder="Ex: Prendre avant les repas, éviter l'alcool..."
+                style={{
                   width: '100%'
-                 }}
-               />
-             </FormGroup>
+                }}
+              />
+            </FormGroup>
           </FormContainer>
           <ButtonRow>
             <button type="button" className='cancel-button' onClick={handleClick}>
@@ -1070,11 +1071,11 @@ const FormulaireConsultation = () => {
               Créer la consultation
             </button>
           </ButtonRow>
-                    </Form>
-          </Afficheformulaireadd>
+        </Form>
+      </Afficheformulaireadd>
 
-          {/* Styles CSS pour les animations du modal */}
-          <style>{`
+      {/* Styles CSS pour les animations du modal */}
+      <style>{`
             @keyframes fadeIn {
               from { opacity: 0; }
               to { opacity: 1; }
@@ -1092,17 +1093,17 @@ const FormulaireConsultation = () => {
             }
           `}</style>
 
-          {/* Modal de succès pour afficher les informations de la consultation */}
-          <ConsultationSuccessModal
-            isOpen={showSuccessPopup}
-            onClose={handleCloseSuccessPopup}
-            consultationData={consultationData}
-            prescriptionData={prescriptionData}
-            onGeneratePDF={generatePrescriptionPDF}
-            isLoading={isLoading}
-          />
-        </>
-      );
-    };
-    
-    export default FormulaireConsultation;
+      {/* Modal de succès pour afficher les informations de la consultation */}
+      <ConsultationSuccessModal
+        isOpen={showSuccessPopup}
+        onClose={handleCloseSuccessPopup}
+        consultationData={consultationData}
+        prescriptionData={prescriptionData}
+        onGeneratePDF={generatePrescriptionPDF}
+        isLoading={isLoading}
+      />
+    </>
+  );
+};
+
+export default FormulaireConsultation;
