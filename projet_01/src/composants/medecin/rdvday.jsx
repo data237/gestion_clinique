@@ -427,7 +427,7 @@ function RendezvousMedecinToday(){
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.nomSalle}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.statut ? "actif" : "inactif"}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.statut}</td>
                             
                             </tr>
                         ))}
