@@ -9,6 +9,8 @@ import imgprofil from '../../assets/photoDoc.png'
 import FormulairePrescription from './formulaireprescription';
 import '../../styles/add-buttons.css'
 import { useConfirmation } from '../ConfirmationProvider';
+import { PDFDownloadLink, pdf } from '@react-pdf/renderer';
+import PrescriptionPDF from '../generateurPdfPrescription';
 
 
 const FormContainer = Styled.div`
@@ -208,7 +210,7 @@ const Overlay = Styled.div`
 `
 
 // Composant Modal pour afficher les informations de la consultation créée
-const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescriptionData, onGeneratePDF, isLoading }) => {
+const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescriptionData, onGeneratePDF, isLoading, autoGeneratePDF, setAutoGeneratePDF }) => {
   if (!isOpen || !consultationData) return null;
 
   return (
@@ -355,10 +357,43 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
               }
             }}
           >
-            {isLoading ? '⏳ Génération en cours...' : '📄 Générer le PDF de la prescription'}
+                        {isLoading ? '⏳ Génération en cours...' : '📄 Générer le PDF de la prescription'}
           </button>
 
-          <button
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '12px',
+            backgroundColor: '#f8fafc',
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0'
+          }}>
+            <input
+              type="checkbox"
+              id="autoGeneratePDF"
+              checked={autoGeneratePDF}
+              onChange={(e) => setAutoGeneratePDF(e.target.checked)}
+              style={{
+                width: '16px',
+                height: '16px',
+                cursor: 'pointer'
+              }}
+            />
+            <label 
+              htmlFor="autoGeneratePDF"
+              style={{
+                fontSize: '14px',
+                color: '#374151',
+                cursor: 'pointer',
+                userSelect: 'none'
+              }}
+            >
+              Générer automatiquement le PDF lors de la fermeture
+            </label>
+          </div>
+
+          <button 
             onClick={onClose}
             style={{
               backgroundColor: 'transparent',
@@ -426,6 +461,32 @@ const FormulaireConsultation = () => {
     nomutilisateur()
   }, [idUser]);
 
+  // Récupérer les informations du rendez-vous pour obtenir le service médical
+  useEffect(() => {
+    const fetchRendezVousInfo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(`${API_BASE}/rendez-vous/${idrdv}`, {
+          headers: {
+            accept: 'application/json',
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          }
+        });
+        
+        if (response.data && response.data.serviceMedical) {
+          setServiceMedical(response.data.serviceMedical.nom || response.data.serviceMedical);
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des informations du rendez-vous:', error);
+      }
+    };
+
+    if (idrdv) {
+      fetchRendezVousInfo();
+    }
+  }, [idrdv]);
+
 
   const [formData, setFormData] = useState({
     motifs: "",
@@ -447,11 +508,15 @@ const FormulaireConsultation = () => {
     ]
   });
 
+  // État pour stocker le service médical
+  const [serviceMedical, setServiceMedical] = useState("");
+
   // États pour le popup de confirmation
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [consultationData, setConsultationData] = useState(null);
   const [prescriptionData, setPrescriptionData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [autoGeneratePDF, setAutoGeneratePDF] = useState(true); // Option pour génération automatique
 
 
 
@@ -579,36 +644,45 @@ const FormulaireConsultation = () => {
     }
   };
 
-  // Fonction pour générer le PDF de la prescription
+    // Fonction pour générer le PDF de la prescription
   const generatePrescriptionPDF = async () => {
     if (!prescriptionData) return;
-
+    
     setIsLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE}/prescriptions/download-pdf/${prescriptionData.id}`, {
-        headers: {
-          accept: 'application/pdf',
-          Authorization: `Bearer ${token}`,
-        },
-        responseType: 'blob'
-      });
-
-      if (response.status === 200) {
-        // Créer un lien de téléchargement
-        const blob = new Blob([response.data], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `prescription_${prescriptionData.id}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-
-        if (window.showNotification) {
-          window.showNotification('PDF de prescription généré avec succès !', 'success');
-        }
+      // Créer les données complètes pour le PDF en combinant consultation et prescription
+      const pdfData = {
+        ...prescriptionData,
+        // Ajouter les informations de consultation si disponibles
+        consultationDescription: consultationData?.compteRendu || consultationData?.diagnostic || '',
+        // Ajouter les informations du médecin depuis le profil
+        medecinNomComplet: nomprofil || 'Dr. Médecin',
+        // Ajouter les informations du patient depuis la consultation
+        patientNomComplet: consultationData?.patientNomComplet || 'Patient',
+        // Ajouter la date de la consultation
+        dateConsultation: consultationData?.dateCreation || new Date().toLocaleDateString('fr-FR'),
+        // Ajouter le service médical depuis le localStorage
+        serviceMedical: localStorage.getItem('serviceMedical') || '—'
+      };
+      
+      // Générer le PDF côté client
+      const pdfBlob = await pdf(<PrescriptionPDF prescription={pdfData} />).toBlob();
+      
+      // Créer un lien de téléchargement
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `prescription_${prescriptionData.id || 'consultation'}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      // Vider le service médical du localStorage après la génération
+      localStorage.removeItem('serviceMedical');
+      
+      if (window.showNotification) {
+        window.showNotification('PDF de prescription généré avec succès !', 'success');
       }
     } catch (error) {
       console.error('Erreur lors de la génération du PDF:', error);
@@ -621,12 +695,18 @@ const FormulaireConsultation = () => {
   };
 
   // Fonction pour fermer le popup et retourner à la liste
-  const handleCloseSuccessPopup = () => {
+  const handleCloseSuccessPopup = async () => {
     setShowSuccessPopup(false);
-    // Générer automatiquement le PDF si disponible
-    if (prescriptionData) {
-      generatePrescriptionPDF();
+    
+    // Générer automatiquement le PDF si l'option est activée et si une prescription existe
+    if (autoGeneratePDF && prescriptionData) {
+      try {
+        await generatePrescriptionPDF();
+      } catch (error) {
+        console.log('Génération automatique du PDF terminée');
+      }
     }
+    
     // Rediriger vers la liste des rendez-vous
     navigate("/medecin/rendezvous");
   };
@@ -756,6 +836,11 @@ const FormulaireConsultation = () => {
           if (response.status === 200 || response.status === 201) {
             if (window.showNotification) {
               window.showNotification('Consultation créée avec succès !', 'success');
+            }
+
+            // Stocker le service médical dans le localStorage pour la prescription
+            if (serviceMedical) {
+              localStorage.setItem('serviceMedical', serviceMedical);
             }
 
             // Récupérer l'ID de la consultation créée depuis la réponse
@@ -1093,15 +1178,17 @@ const FormulaireConsultation = () => {
             }
           `}</style>
 
-      {/* Modal de succès pour afficher les informations de la consultation */}
-      <ConsultationSuccessModal
-        isOpen={showSuccessPopup}
-        onClose={handleCloseSuccessPopup}
-        consultationData={consultationData}
-        prescriptionData={prescriptionData}
-        onGeneratePDF={generatePrescriptionPDF}
-        isLoading={isLoading}
-      />
+                {/* Modal de succès pour afficher les informations de la consultation */}
+          <ConsultationSuccessModal
+            isOpen={showSuccessPopup}
+            onClose={handleCloseSuccessPopup}
+            consultationData={consultationData}
+            prescriptionData={prescriptionData}
+            onGeneratePDF={generatePrescriptionPDF}
+            isLoading={isLoading}
+            autoGeneratePDF={autoGeneratePDF}
+            setAutoGeneratePDF={setAutoGeneratePDF}
+          />
     </>
   );
 };
