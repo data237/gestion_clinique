@@ -1,110 +1,158 @@
-//import axios from 'axios';
-import React from 'react';
-import { useState } from 'react';
-import { API_BASE } from '../../composants/config/apiconfig'
-import { Link, useNavigate } from 'react-router-dom';
-import Styled from 'styled-components'
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Styled from 'styled-components';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
-import '../../styles/calendar.css'; // pour le style personnalisé
+import axios from 'axios';
+import { API_BASE } from '../../composants/config/apiconfig';
+import '../../styles/calendar.css';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
-import imgprofil from '../../assets/photoDoc.png'
-
+import imgprofil from '../../assets/photoDoc.png';
+import '../../styles/Zonedaffichage.css'
 
 const SousDiv1Style = Styled.div`
- width: 99%;
- 
-`
-const Span1= Styled.span`
+    width: 95%;
+`;
+
+const Span1 = Styled.span`
     cursor: pointer;
-`
+`;
+
 const CalendarContainer = Styled.div`
- width: 100%;
-  height: 85vh;
-padding-bottom: 25px;
-margin-top: -30px;
-`
+    width: 100%;
+    height: 85vh;
+    padding-bottom: 25px;
+    margin-top: -30px;
+`;
+
 const Calendar = () => {
+    const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false);
+    const [events, setEvents] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
 
-    const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false)
-   
-     const nbr = 10
-     const navigate = useNavigate();
-    
-      const handleClick = (today) => {
+    useEffect(() => {
+        const fetchRendezvous = async () => {
+            const token = localStorage.getItem('token');
+            const id = localStorage.getItem('id');
+
+            if (!token || !id) {
+                console.error('Token ou ID manquant');
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = today.getMonth() + 1;
+
+                const apiUrl = `${API_BASE}/rendezvous/utilisateurs/${id}/confirmed/month/${year}/${month}`;
+                console.log('Appel API:', apiUrl);
+
+                const response = await axios.get(apiUrl, {
+                    headers: {
+                        accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                console.log('Réponse API:', response.data);
+
+                if (response.data && Array.isArray(response.data)) {
+                    const dailyCounts = {};
+
+                    response.data.forEach(rdv => {
+                        const date = rdv.jour;
+                        if (date) {
+                            dailyCounts[date] = (dailyCounts[date] || 0) + 1;
+                        }
+                    });
+
+                    const calendarEvents = Object.keys(dailyCounts).map(date => ({
+                        title: `${dailyCounts[date]} RDV`,
+                        start: date,
+                        backgroundColor: '#4CAF50',
+                        borderColor: '#4CAF50',
+                        textColor: '#fff',
+                    }));
+
+                    setEvents(calendarEvents);
+                }
+            } catch (err) {
+                console.error('Erreur API:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchRendezvous();
+    }, []);
+
+    const handleClick = (today) => {
+        console.log('Date cliquée:', today.dateStr);
         navigate(`/medecin/calendrier/${today.dateStr}`);
-      };
-  const events = [
-    { title: `${nbr} rendez-vous`, start: '2025-07-24' },
-    { title: 'Conference', start: '2025-03-02', end: '2025-03-03' },
-    { title: '10:30a Meeting', start: '2025-03-03T10:30:00' },
-    { title: '12p Lunch', start: '2025-03-03T12:00:00' },
-    { title: '7a Birthday Party', start: '2025-03-04T07:00:00' },
-    { title: 'Long Event', start: '2025-03-07', end: '2025-03-10' },
-    { title: '4p Repeating Event', start: '2025-03-09T16:00:00', groupId: 'repeats' },
-    { title: '4p Repeating Event', start: '2025-03-16T16:00:00', groupId: 'repeats' },
-    { title: 'Click for Google', url: 'https://google.com/', start: '2025-03-28' },
-  ];
+    };
 
+    if (isLoading) {
+        return <p>Chargement du calendrier...</p>;
+    }
 
- 
-  return (
-    <>
-    
-   <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil='bahebeck'> 
-                    <Span1 onClick={()=> setrendezvousdayvisible(false)}>Liste des evenements</Span1>
+    return (
+        <>
+            <SousDiv1Style>
+                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil='bahebeck'>
+                    <Span1 onClick={() => setrendezvousdayvisible(false)}>Liste des evenements</Span1>
                 </Barrehorizontal1>
             </SousDiv1Style>
-   
+
             <div className='zonedaffichage' $zonedaffichagedisplay={rendezvousdayvisible ? 'none' : 'block'}
-        style={{
-          height: '78vh',
-          marginRight: '30px',
-        }}
-      >
+                style={{
+                    height: '78vh',
+                    marginRight: '30px',
+                }}
+            >
+                <div className='numero'>
+                    <div>
+                        <h2 className='nomtable'>Evenements</h2>
+                    </div>
+                </div>
 
+                <div className='conteneurbarre'>
+                    <div className='barre'></div>
+                </div>
 
-        <div className='numero'
-
-        >
-          <div>
-            <h2 className='nomtable'> Evenements </h2>
-          </div>
-
-        </div>
-                           
-                            
-                       
-        <div className='conteneurbarre'
-        >
-          <div className='barre'></div>
-        </div>
-        <CalendarContainer>
-            <FullCalendar
-            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
-            initialView="dayGridMonth"
-            locales={[frLocale]}
-            locale="fr"
-            headerToolbar={{
-            left: 'prev,next ,today',
-            right: 'title',
-            
-            }}
-            events={events}
-            height="100%"
-            width="100%"
-            dateClick={handleClick}
-        />
-        </CalendarContainer>
-      </div>
-      {/*right: 'dayGridMonth',timeGridWeek,timeGridDay' */}
-     
-     </>
-  );
+                <CalendarContainer>
+                    <FullCalendar
+                        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+                        initialView="dayGridMonth"
+                        locales={[frLocale]}
+                        locale="fr"
+                        headerToolbar={{
+                            left: 'prev,next today',
+                            center: 'title',
+                            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                        }}
+                        buttonText={{
+                            today: 'Aujourd\'hui',
+                            month: 'Mois',
+                            week: 'Semaine',
+                            day: 'Jour'
+                        }}
+                        events={events}
+                        height="100%"
+                        dateClick={handleClick}
+                        eventDisplay="block"
+                        dayMaxEvents={false}
+                    />
+                </CalendarContainer>
+            </div>
+        </>
+    );
 };
 
-export default Calendar;
+export default Calendar; 

@@ -7,6 +7,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
+import Pagination from '../shared/Pagination';
 import imgprofil from '../../assets/photoDoc.png'
 import iconrecherche from '../../assets/iconrecherche.png'
 import iconburger from '../../assets/iconburger.png'
@@ -360,16 +361,13 @@ function RendezvousMedecin(){
     const [rdvaouvrir, setrdvaouvrir] = useState(null)
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [rendezvousPerPage] = useState(10);
     const [isloading, setisloading] = useState(true);
     const [rendezvous, setrendezvous] = useState([]);
     const [rendezvousFiltres, setrendezvousFiltres] = useState([]);
-  
     const [erreur, setErreur] = useState(null);
 
 
-    const rendezvousPerPage = 8;
-
-    
     useEffect(()=>{
          
          const fetchrendezvous = async () => {
@@ -421,69 +419,22 @@ function RendezvousMedecin(){
             setrendezvousFiltres(resultats);
     }, [valeurrecherche, rendezvous]);
 
-
-
-
-
-    const [pagesToShow, setpagesToShow] = useState([]);
-    const totalPages = Math.ceil(rendezvous.length / rendezvousPerPage);
-
+    // Réinitialiser la page courante quand les filtres changent
     useEffect(() => {
-            if (totalPages >= 6) {
-            setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
-            } else {
-            const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
-            setpagesToShow(fullList);
-            }
-            }, [rendezvous.length, totalPages]);
+        setCurrentPage(1);
+    }, [valeurrecherche]);
 
-            //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
-
-            const handleClick = (page) => {
-                if (page !== "..." && page !== currentPage) {
-                setCurrentPage(page);
-                }
-            }
-
-
-
-    //toggle boutton
-    
-    
-   
-                    
-    
-         
-    
-
-
-
-
-    const modification = (numeropage) => {
-    let nouvelleListe = [...pagesToShow] // copie de l'ancien tableau
-
-    if (numeropage > 2 && numeropage < totalPages - 2) {
-        nouvelleListe[0] = numeropage - 2
-        nouvelleListe[1] = numeropage - 1
-        nouvelleListe[2] = numeropage
-        nouvelleListe[3] = '...'
-    } else if (numeropage === totalPages - 2) {
-        nouvelleListe[0] = numeropage - 3
-        nouvelleListe[1] = numeropage - 2
-        nouvelleListe[2] = numeropage - 1
-        nouvelleListe[3] = numeropage
-    } else {
-        // Peut-être une autre logique ici ?
-    }
-    console.log(pagesToShow)
-    setpagesToShow(nouvelleListe)
-    }
-
+    // Calcul de la pagination
+    const totalPages = Math.ceil(rendezvousFiltres.length / rendezvousPerPage);
     const indexOfLastrendezvous = currentPage * rendezvousPerPage;
     const indexOfFirstrendezvous = indexOfLastrendezvous - rendezvousPerPage;
-    //const currentrendezvous = rendezvous.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
     const currentrendezvous = rendezvousFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
     
+    // Fonction de modification pour la pagination (utilisée par le composant Pagination)
+    const modification = (numeropage) => {
+        // Cette fonction peut être utilisée pour des actions supplémentaires lors du changement de page
+        console.log('Changement de page vers:', numeropage);
+    };
 
     //
 
@@ -597,23 +548,14 @@ function RendezvousMedecin(){
                                 <h2 className='nomtable'> Utilisateurs </h2>
                             </div>
                             <div className='divbutton'>
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
-                                <div>
-                                        {pagesToShow.map((page, idx) => (
-                                            <ButtonStyle
-                                            key={idx}
-                                            onClick={() => handleClick(page)}
-                                            $buttonbackgroundColor = {page === currentPage ? 'rgba(65, 65, 255, 1)' : ''}
-                                            $buttonColor = {page === currentPage ? 'white' : ''}
-                                            disabled={page === "..."}
-                                            >
-                                            {page}
-                                            </ButtonStyle>
-                                        ))}
-                                </div>
-                                
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
-                                disabled={currentPage === totalPages}>Suivant</button>
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    onPageChange={setCurrentPage}
+                                    onModification={modification}
+                                    itemsPerPage={rendezvousPerPage}
+                                    totalItems={rendezvousFiltres.length}
+                                />
                             </div>
                             
                     </div>

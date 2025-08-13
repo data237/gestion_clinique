@@ -14,7 +14,6 @@ import RoleBasedRoute from './composants/rolebasedroute'
 import Medecinroute from './pages/medecinrouter'
 import Calendrier from './composants/calendar'
 import Secretaireroute from './pages/secretaireroute'
-import PreviewPrescription from './composants/PreviewPrescription'
 import { NotificationProvider } from './composants/notification'
 import { LoadingProvider } from './composants/LoadingProvider'
 import { ConfirmationProvider } from './composants/ConfirmationProvider'
@@ -29,7 +28,6 @@ function App() {
               <Route path="/" element={<PageLogin />} />
               <Route path="/calendar" element={<Calendrier />} />
               <Route path="/pagemedecin" element={<PageMedecin />} />
-              <Route path="/preview-prescription" element={<PreviewPrescription />} />
               <Route element={<ProtectedRoute />}>
                 {/* Routes protégées avec contrôle de rôle */}
                 <Route element={<RoleBasedRoute allowedRoles={['ROLE_ADMIN']} />}>

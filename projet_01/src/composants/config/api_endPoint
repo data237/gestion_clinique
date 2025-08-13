@@ -3875,6 +3875,86 @@
         }
       }
     },
+    "/Api/V1/clinique/rendezvous/utilisateurs/{idUtilisateur}/confirmed/month/{year}/{month}": {
+      "get": {
+        "tags": [
+          "Gestion des Rendez-vous"
+        ],
+        "summary": "Obtenir les rendez-vous confirmés d'un utilisateur pour un mois donné",
+        "description": "Récupère tous les rendez-vous confirmés pour un utilisateur spécifique dans un mois et une année donnés.",
+        "operationId": "getConfirmedRendezVousByMonth",
+        "parameters": [
+          {
+            "name": "idUtilisateur",
+            "in": "path",
+            "description": "ID de l'utilisateur",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "year",
+            "in": "path",
+            "description": "Année des rendez-vous",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "description": "Mois des rendez-vous (1-12)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des rendez-vous confirmés",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RendezVousResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Utilisateur non trouvé",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RendezVousResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur interne du serveur",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RendezVousResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Api/V1/clinique/rendezvous/statut/{statut}": {
       "get": {
         "tags": [
@@ -6758,6 +6838,9 @@
           "allergies": {
             "type": "string"
           },
+          "dernierTraitement": {
+            "type": "string"
+          },
           "observations": {
             "type": "string"
           },
@@ -6775,9 +6858,6 @@
             "items": {
               "$ref": "#/components/schemas/Prescription"
             }
-          },
-          "dernierTraitement": {
-            "type": "string"
           }
         }
       },

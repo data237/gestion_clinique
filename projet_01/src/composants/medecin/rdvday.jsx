@@ -186,21 +186,38 @@ function RendezvousMedecinToday(){
 
     const { today } = useParams();
     const rendezvousPerPage = 8;
-    console.log(today)
+    console.log('=== RDVDAY COMPONENT ===');
+    console.log('Paramètre today reçu:', today);
+    console.log('Type de today:', typeof today);
+    console.log('URL complète:', window.location.href);
     
     useEffect(()=>{
-         
-         const fetchrendezvous = async () => {
+        console.log('=== FETCHING RENDEZ-VOUS ===');
+        console.log('Date utilisée pour l\'API:', today);
+        
+        const fetchrendezvous = async () => {
             const token = localStorage.getItem('token');
             const id = localStorage.getItem('id');
+            
+            if (!token || !id) {
+                console.error('Token ou ID manquant');
+                setErreur('Authentification échouée. Veuillez vous reconnecter.');
+                setisloading(false);
+                return;
+            }
+            
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${id}/rendez-vous/confirmed/${today}`,
+                const apiUrl = `${API_BASE}/utilisateurs/${id}/rendez-vous/confirmed/${today}`;
+                console.log('Appel API avec URL:', apiUrl);
+                
+                const response = await axios.get(apiUrl,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                     }},);
-                console.log(token);
+                console.log('Réponse API:', response);
+                console.log('Données reçues:', response.data);
               if (response && response.data) {
                 setrendezvous(response.data);
                setrendezvousFiltres(response.data);
@@ -262,15 +279,7 @@ function RendezvousMedecinToday(){
 
 
     //toggle boutton
-    
-    
-    
-                    
-    
-         
-    
-
-
+   
 
 
     const modification = (numeropage) => {
@@ -310,11 +319,6 @@ function RendezvousMedecinToday(){
   const handleRowClick = (rendezvous) => {
     navigate(`/secretaire/rendezvous/viewrendezvous/${rendezvous.id}`);
   };
-
-
-
-  
-
 
 
   if (isloading) return <p>Chargement...</p>;

@@ -60,28 +60,83 @@ const CalendarSecretaire = () => {
     nomutilisateur()
   }, [idUser]);
 
-  const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false)
 
-  const nbr = 10
+
+
+
+
+  const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false);
+  const [events, setEvents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
+  useEffect(() => {
+      const fetchRendezvous = async () => {
+          const token = localStorage.getItem('token');
+          const id = localStorage.getItem('id');
+
+          if (!token || !id) {
+              console.error('Token ou ID manquant');
+              setIsLoading(false);
+              return;
+          }
+
+          try {
+              const today = new Date();
+              const year = today.getFullYear();
+              const month = today.getMonth() + 1;
+
+              const apiUrl = `${API_BASE}/rendezvous/month/${year}/${month}`;
+              console.log('Appel API:', apiUrl);
+
+              const response = await axios.get(apiUrl, {
+                  headers: {
+                      accept: 'application/json',
+                      Authorization: `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                  },
+              });
+
+              console.log('Réponse API:', response.data);
+
+              if (response.data && Array.isArray(response.data)) {
+                  const dailyCounts = {};
+
+                  response.data.forEach(rdv => {
+                      const date = rdv.jour;
+                      if (date) {
+                          dailyCounts[date] = (dailyCounts[date] || 0) + 1;
+                      }
+                  });
+
+                  const calendarEvents = Object.keys(dailyCounts).map(date => ({
+                      title: `${dailyCounts[date]} RDV`,
+                      start: date,
+                      backgroundColor: '#4CAF50',
+                      borderColor: '#4CAF50',
+                      textColor: '#fff',
+                  }));
+
+                  setEvents(calendarEvents);
+              }
+          } catch (err) {
+              console.error('Erreur API:', err);
+          } finally {
+              setIsLoading(false);
+          }
+      };
+
+      fetchRendezvous();
+  }, []);
 
   const handleClick = (today) => {
     console.log("Date cliquée :", today.dateStr);
     navigate(`/secretaire/calendrier/${today.dateStr}`);
   };
-  const events = [
-    { title: `${nbr} rendez-vous`, start: '2025-07-24' },
-    { title: 'Conference', start: '2025-03-02', end: '2025-03-03' },
-    { title: '10:30a Meeting', start: '2025-03-03T10:30:00' },
-    { title: '12p Lunch', start: '2025-03-03T12:00:00' },
-    { title: '7a Birthday Party', start: '2025-03-04T07:00:00' },
-    { title: 'Long Event', start: '2025-03-07', end: '2025-03-10' },
-    { title: '4p Repeating Event', start: '2025-03-09T16:00:00', groupId: 'repeats' },
-    { title: '4p Repeating Event', start: '2025-03-16T16:00:00', groupId: 'repeats' },
-    { title: 'Click for Google', url: 'https://google.com/', start: '2025-03-28' },
-  ];
 
-
+  if (isLoading) {
+      return <p>Chargement du calendrier...</p>;
+  }
 
   return (
     <>
@@ -121,18 +176,25 @@ const CalendarSecretaire = () => {
             locales={[frLocale]}
             locale="fr"
             headerToolbar={{
-              left: 'prev,next ,today',
-              right: 'title',
-
-            }}
-            events={events}
-            height="100%"
-            width="100%"
-            dateClick={handleClick}
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          }}
+          buttonText={{
+            today: 'Aujourd\'hui',
+            month: 'Mois',
+            week: 'Semaine',
+            day: 'Jour'
+        }}
+        events={events}
+        height="100%"
+        dateClick={handleClick}
+        eventDisplay="block"
+        dayMaxEvents={false}
           />
         </CalendarContainer>
       </div>
-      {/*right: 'dayGridMonth',timeGridWeek,timeGridDay' */}
+      
 
     </>
   );

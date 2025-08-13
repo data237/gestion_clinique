@@ -22,6 +22,8 @@ const DossierMedical = () => {
     const [popupOpen, setPopupOpen] = useState(false);
     const [consultationDetails, setConsultationDetails] = useState(null);
     const [consultationLoading, setConsultationLoading] = useState(false);
+    const [showAllConsultations, setShowAllConsultations] = useState(false);
+    const [consultationsPerPage] = useState(3);
 
     useEffect(() => {
         const fetchDossierMedical = async () => {
@@ -53,15 +55,18 @@ const DossierMedical = () => {
                 if (dossierResponse.data) {
                     console.log('Données du dossier médical reçues:', dossierResponse.data);
                     setDossierMedical(dossierResponse.data);
+                    window.showNotification('Dossier médical chargé avec succès', 'success');
                 } else {
                     console.log('Aucune donnée de dossier médical reçue');
                     setError('Aucun dossier médical trouvé');
+                    window.showNotification('Aucun dossier médical trouvé pour ce patient', 'warning');
                 }
                 setLoading(false);
             } catch (err) {
                 console.error('Erreur lors du chargement du dossier médical:', err);
                 console.error('Détails de l\'erreur:', err.response?.data || err.message);
                 setError("Erreur lors du chargement du dossier médical");
+                window.showNotification('Erreur lors du chargement du dossier médical', 'error');
                 setLoading(false);
             }
         };
@@ -87,10 +92,11 @@ const DossierMedical = () => {
                 setConsultationDetails(response.data);
                 setSelectedConsultation(consultationId);
                 setPopupOpen(true);
+                window.showNotification('Détails de la consultation chargés avec succès', 'success');
             }
         } catch (err) {
             console.error('Erreur lors du chargement des détails de la consultation:', err);
-            alert('Erreur lors du chargement des détails de la consultation');
+            window.showNotification('Erreur lors du chargement des détails de la consultation', 'error');
         } finally {
             setConsultationLoading(false);
         }
@@ -100,6 +106,38 @@ const DossierMedical = () => {
         setPopupOpen(false);
         setSelectedConsultation(null);
         setConsultationDetails(null);
+        window.showNotification('Popup de consultation fermé', 'info');
+    };
+
+    // Fonction pour trier les consultations par date décroissante (plus récentes en premier)
+    const getSortedConsultations = () => {
+        if (!dossierMedical?.consultations) return [];
+        
+        return dossierMedical.consultations.sort((a, b) => {
+            const dateA = new Date(a.creationDate || a.dateConsultation);
+            const dateB = new Date(b.creationDate || b.dateConsultation);
+            return dateB - dateA; // Ordre décroissant
+        });
+    };
+
+    // Fonction pour obtenir les consultations à afficher
+    const getConsultationsToShow = () => {
+        const sortedConsultations = getSortedConsultations();
+        if (showAllConsultations) {
+            return sortedConsultations;
+        }
+        return sortedConsultations.slice(0, consultationsPerPage);
+    };
+
+    // Fonction pour basculer l'affichage
+    const toggleConsultationsDisplay = () => {
+        setShowAllConsultations(!showAllConsultations);
+        // Message de confirmation
+        if (!showAllConsultations) {
+            window.showNotification(`Affichage de toutes les consultations (${dossierMedical?.consultations?.length || 0} au total)`, 'success');
+        } else {
+            window.showNotification('Affichage limité aux 3 consultations les plus récentes', 'info');
+        }
     };
 
     console.log('Rendu du composant - Loading:', loading, 'Error:', error, 'DossierMedical:', dossierMedical);
@@ -139,6 +177,7 @@ const DossierMedical = () => {
     return (
         <div className="zone-affichage">
             <div className="dossier-medical-container">
+                {/* Message de notification */}
                 {/* En-tête */}
                 <div className="dossier-medical-header">
                     <h1 className="dossier-medical-title">
@@ -225,18 +264,18 @@ const DossierMedical = () => {
                         </ul>
                     </div>
 
-                    <div className="box-shadow">
+                    <div className="box-shadow  Anciennes-consultations">
                         <h3>Anciennes consultations:</h3>
                         <div className="consultations-grid">
                             {dossierMedical?.consultations && dossierMedical.consultations.length > 0 ? (
-                                dossierMedical.consultations.map((consultation, index) => (
+                                getConsultationsToShow().map((consultation, index) => (
                                     <div 
                                         key={index} 
                                         className="consultation-card"
                                         onClick={() => fetchConsultationDetails(consultation.id)}
                                     >
                                         <div className="consultation-date">
-                                            {new Date(consultation.dateConsultation).toLocaleDateString('fr-FR', {
+                                            {new Date(consultation.creationDate || consultation.dateConsultation).toLocaleDateString('fr-FR', {
                                                 year: 'numeric',
                                                 month: 'long',
                                                 day: 'numeric'
@@ -261,6 +300,18 @@ const DossierMedical = () => {
                                 </div>
                             )}
                         </div>
+                        
+                        {/* Bouton "Voir plus" ou "Voir moins" */}
+                        {dossierMedical?.consultations && dossierMedical.consultations.length > consultationsPerPage && (
+                            <div className="consultations-toggle">
+                                <button 
+                                    className="btn-toggle-consultations"
+                                    onClick={toggleConsultationsDisplay}
+                                >
+                                    {showAllConsultations ? 'Voir moins' : `Voir plus (${dossierMedical.consultations.length - consultationsPerPage} autres)`}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -268,14 +319,24 @@ const DossierMedical = () => {
                 <div className="action-buttons">
                     <button
                         className="btn-primary"
-                        onClick={() => navigate(`/medecin/rendezvous/consultation/${patientId}`)}
+                        onClick={() => {
+                            window.showNotification('Redirection vers le formulaire de consultation...', 'info');
+                            setTimeout(() => {
+                                navigate(`/medecin/rendezvous/consultation/${patientId}`);
+                            }, 1000);
+                        }}
                     >
                         Créer une consultation
                     </button>
                     
                     <button
                         className="btn-secondary"
-                        onClick={() => navigate('/medecin/rendezvous')}
+                        onClick={() => {
+                            window.showNotification('Retour à la liste des rendez-vous...', 'info');
+                            setTimeout(() => {
+                                navigate('/medecin/rendezvous');
+                            }, 1000);
+                        }}
                     >
                         Retour aux rendez-vous
                     </button>
