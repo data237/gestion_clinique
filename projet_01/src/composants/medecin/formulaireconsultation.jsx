@@ -236,7 +236,7 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
           borderRadius: '16px',
           width: '90%',
           maxWidth: '600px',
-          maxHeight: '80vh',
+          maxHeight: '85vh',
           overflow: 'auto',
           boxShadow: '0 10px 30px rgba(0, 0, 0, 0.2)',
           animation: 'slideIn 0.3s ease-out'
@@ -288,15 +288,20 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
             marginBottom: '20px',
             border: '1px solid #0ea5e9'
           }}>
-            <h4 style={{ margin: '0 0 12px 0', color: '#0c4a6e' }}>Informations de la consultation</h4>
+            <h4 style={{ margin: '0 0 12px 0', color: '#0c4a6e', fontSize: '1.3rem' }}>Informations de la consultation</h4>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '14px' }}>
-              <div><strong>ID:</strong> {consultationData.id}</div>
-              <div><strong>Date:</strong> {new Date().toLocaleDateString('fr-FR')}</div>
-              <div><strong>Motifs:</strong> {consultationData.motifs}</div>
-              <div><strong>Diagnostic:</strong> {consultationData.diagnostic}</div>
+              <div><strong>Date:</strong> {new Date(consultationData.creationDate).toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}</div>
               <div><strong>Température:</strong> {consultationData.temperature}°C</div>
               <div><strong>Poids:</strong> {consultationData.poids} kg</div>
-              <div><strong>Taille:</strong> {consultationData.taille} cm</div>
+              <div><strong>Taille:</strong> {consultationData.taille} cm</div> 
+              <div><strong>Tension Arterielle:</strong> {consultationData.tensionArterielle} mmHg</div>
+              <div><strong>Motifs:</strong> {consultationData.motifs}</div>
+              <div><strong>Diagnostic:</strong> {consultationData.diagnostic}</div>
+              <div><strong>Compte Rendu:</strong> {consultationData.compteRendu}</div>
             </div>
           </div>
 
@@ -308,13 +313,13 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
               marginBottom: '20px',
               border: '1px solid #22c55e'
             }}>
-              <h4 style={{ margin: '0 0 12px 0', color: '#166534' }}>Prescription créée</h4>
+              <h4 style={{ margin: '0 0 12px 0', color: '#166534', fontSize: '1.3rem' }}>Prescription créée</h4>
               <div style={{ fontSize: '14px' }}>
                 <div><strong>Type:</strong> {prescriptionData.typePrescription}</div>
                 <div><strong>Médicaments:</strong> {prescriptionData.medicaments}</div>
+                <div><strong>Quantité:</strong> {prescriptionData.quantite}</div>
                 <div><strong>Instructions:</strong> {prescriptionData.instructions}</div>
                 <div><strong>Durée:</strong> {prescriptionData.dureePrescription}</div>
-                <div><strong>Quantité:</strong> {prescriptionData.quantite}</div>
               </div>
             </div>
           )}
@@ -1030,7 +1035,7 @@ const FormulaireConsultation = () => {
                   name="tensionArterielle"
                   value={formData.tensionArterielle}
                   onChange={handleChange}
-                  placeholder="Ex: Paracétamol 500mg, 3x/jour"
+                  placeholder="Ex: 120/80 mmHg"
                 />
               </FormGroup>
             </FormRow>

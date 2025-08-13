@@ -521,14 +521,13 @@ function RendezvousMedecin(){
     if (rdvaouvrir) {
       console.log('Structure complète du rendez-vous:', JSON.stringify(rdvaouvrir, null, 2));
       
-      // Essayer d'utiliser l'ID du patient s'il est disponible
+      // Utiliser directement l'ID du patient qui est disponible dans les données
       if (rdvaouvrir.patientId) {
         console.log('Utilisation de l\'ID du patient:', rdvaouvrir.patientId);
         navigate(`/medecin/rendezvous/dossiermedical/${rdvaouvrir.patientId}`);
       } else {
         console.log('ID du patient non disponible, utilisation de l\'ID du rendez-vous:', rdvaouvrir.id);
-        // Si l'ID du patient n'est pas disponible, utiliser l'ID du rendez-vous
-        // et le composant DossierMedical devra gérer cette situation
+        // Fallback sur l'ID du rendez-vous si patientId n'est pas disponible
         navigate(`/medecin/rendezvous/dossiermedical/${rdvaouvrir.id}`);
       }
     }

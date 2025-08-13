@@ -190,7 +190,7 @@ const DossierMedical = () => {
                         <h3>Allergies:</h3>
                         <ul className="info-list box">
                             {dossierMedical?.allergies ? (
-                                <li className="no-data">{dossierMedical.allergies}</li>
+                                <li>{dossierMedical.allergies}</li>
                             ) : (
                                 <li className="no-data">Aucune allergie connue</li>
                             )}
@@ -200,8 +200,8 @@ const DossierMedical = () => {
                     <div>
                         <h3>Antécédents médicaux:</h3>
                         <ul className="info-list box">
-                            {dossierMedical?.antecedents ? (
-                                <li>{dossierMedical.antecedents}</li>
+                            {dossierMedical?.antecedentsMedicaux ? (
+                                <li>{dossierMedical.antecedentsMedicaux}</li>
                             ) : (
                                 <li className="no-data">Aucun antécédent médical</li>
                             )}
@@ -302,8 +302,8 @@ const DossierMedical = () => {
                                 <h3>Informations générales</h3>
                                 <div className="popup-info-grid">
                                     <div>
-                                        <strong>Date:</strong>
-                                        <span> {new Date(consultationDetails.dateConsultation).toLocaleDateString('fr-FR', {
+                                        <strong>Date consultation:</strong>
+                                        <span> {new Date(consultationDetails.creationDate).toLocaleDateString('fr-FR', {
                                             year: 'numeric',
                                             month: 'long',
                                             day: 'numeric',
@@ -311,6 +311,19 @@ const DossierMedical = () => {
                                             minute: '2-digit'
                                         })}</span>
                                     </div>
+                                    <div>
+                                        <strong>Médecin traitant :</strong>
+                                        <span> Dr. {consultationDetails.medecinNomComplet}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Observations et examens */}
+                            
+                                <div className="popup-section">
+                                    <h3>Consultation</h3>
+                                
+                                    <div className="popup-info-grid">
                                     {consultationDetails.motifs && (
                                         <div>
                                             <strong>Motifs:</strong>
@@ -323,18 +336,15 @@ const DossierMedical = () => {
                                             <span> {consultationDetails.diagnostic}</span>
                                         </div>
                                     )}
+                                     {consultationDetails.compteRendu && (
+                                        <div>
+                                            <strong>Compte Rendu:</strong>
+                                            <span> {consultationDetails.compteRendu}</span>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-
-                            {/* Observations et examens */}
-                            {consultationDetails.observations && (
-                                <div className="popup-section">
-                                    <h3>Observations et examens</h3>
-                                    <div className="popup-text">
-                                        {consultationDetails.observations}
-                                    </div>
                                 </div>
-                            )}
+                         
 
                             {/* Prescriptions */}
                             {consultationDetails.prescriptions && consultationDetails.prescriptions.length > 0 && (
@@ -343,13 +353,18 @@ const DossierMedical = () => {
                                     <ul className="popup-list">
                                         {consultationDetails.prescriptions.map((prescription, index) => (
                                             <li key={index}>
-                                                <strong>{prescription.medicament}</strong>
-                                                {prescription.posologie && (
-                                                    <span> - {prescription.posologie}</span>
+                                                <span style={{fontWeight: 'bold', color: '#0c4a6e'}}>{prescription.typePrescription} : </span>
+                                                {prescription.quantite && (
+                                                    <span> ({prescription.quantite} paquet(s)) </span>
                                                 )}
-                                                {prescription.duree && (
-                                                    <span> ({prescription.duree})</span>
+                                                <strong style={{fontWeight: 'bold', color: '#0c4a6e'}}>{prescription.medicaments}</strong>
+                                                {prescription.instructions && (
+                                                    <span> - {prescription.instructions}</span>
                                                 )}
+                                                {prescription.dureePrescription && (
+                                                    <span> (en {prescription.dureePrescription})</span>
+                                                )}
+                                                
                                             </li>
                                         ))}
                                     </ul>

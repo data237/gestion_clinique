@@ -29,33 +29,6 @@ margin-top: -30px;
 `
 const Calendar = () => {
 
-    //const idUser = localStorage.getItem('id');
-    //const [nomprofil, setnomprofil]= useState('')
-
-    /*useEffect(() => {
-        const token = localStorage.getItem('token');
-           const nomutilisateur =  async ()=> {
-                try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
-              if (response) {
-                 setnomprofil(response.data.nom)
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération des utilisateurs:', error);
-                
-            } finally {
-              console.log('fin')
-            }
-            }
-            nomutilisateur()
-    }, [idUser]);*/
-
     const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false)
    
      const nbr = 10
