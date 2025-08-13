@@ -705,6 +705,9 @@ const FormulaireConsultation = () => {
       } catch (error) {
         console.log('Génération automatique du PDF terminée');
       }
+    } else {
+      // Si pas de génération automatique, vider quand même le localStorage
+      localStorage.removeItem('serviceMedical');
     }
     
     // Rediriger vers la liste des rendez-vous

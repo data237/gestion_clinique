@@ -11,6 +11,7 @@ const PreviewPrescription = () => {
     medecinNomComplet: "Dr. Jean Dupont",
     patientNomComplet: "Marie Martin",
     typePrescription: "Médicament",
+    serviceMedical: "Médecine Générale",
     medicaments: "Paracétamol 500mg",
     quantite: "20 comprimés",
     dureePrescription: "5 jours",

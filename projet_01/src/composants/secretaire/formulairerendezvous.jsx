@@ -584,28 +584,37 @@ const FormulaireRendezVous = () => {
             </FormRow>
 
             <FormRow>
+              
               <FormGroup>
-                <Label htmlFor="adresse">Adresse</Label>
-                <Input id="adresse" name="adresse" value={patient.adresse} readOnly />
+                <Label htmlFor="dateNaissance">Date de naissance</Label>
+                <Input id="dateNaissance" name="dateNaissance" type="date" value={patient.dateNaissance} readOnly />
               </FormGroup>
               <FormGroup>
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" value={patient.email} readOnly />
+                <Label htmlFor="age">Age</Label>
+                <Input id="age" name="age" value={patient.age + " ans"} readOnly>
+                </Input>
               </FormGroup>
             </FormRow>
 
             <FormRow>
-              <FormGroup>
+            <FormGroup>
                 <Label htmlFor="genre">Genre</Label>
                 <Input id="genre" name="genre" value={patient.genre} readOnly>
                 </Input>
               </FormGroup>
               <FormGroup>
-                <Label htmlFor="dateNaissance">Date de naissance</Label>
-                <Input id="dateNaissance" name="dateNaissance" type="date" value={patient.dateNaissance} readOnly />
+                <Label htmlFor="adresse">Adresse</Label>
+                <Input id="adresse" name="adresse" value={patient.adresse} readOnly />
               </FormGroup>
+              
             </FormRow>
+
+            
             <FormRow>
+            <FormGroup>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" name="email" type="email" value={patient.email} readOnly />
+              </FormGroup>
               <FormGroup>
                 <Label htmlFor="telephone">telephone</Label>
                 <Input id="telephone" name="telephone" value={patient.telephone} readOnly />

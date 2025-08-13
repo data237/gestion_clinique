@@ -29,16 +29,16 @@
       "description": "API pour la gestion des utilisateurs du système"
     },
     {
-      "name": "Gestion des Messages",
-      "description": "API pour la gestion des messages entre utilisateurs"
-    },
-    {
       "name": "Gestion des Prescriptions",
       "description": "API pour la gestion des prescriptions médicales"
     },
     {
       "name": "Gestion des Salles",
       "description": "API pour la gestion des salles d'hôpital"
+    },
+    {
+      "name": "Gestion des Messages",
+      "description": "API pour la gestion des messages entre utilisateurs"
     },
     {
       "name": "AUTHENTIFICATION",
@@ -1184,166 +1184,6 @@
         }
       }
     },
-    "/Api/V1/clinique/messages/{idMessage}": {
-      "get": {
-        "tags": [
-          "Gestion des Messages"
-        ],
-        "summary": "Obtenir un message par son ID",
-        "description": "Récupère les détails d'un message spécifique.",
-        "operationId": "findMessageById",
-        "parameters": [
-          {
-            "name": "idMessage",
-            "in": "path",
-            "description": "ID du message à récupérer",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            },
-            "example": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Message trouvé",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Message non trouvé",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Erreur interne du serveur",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Gestion des Messages"
-        ],
-        "summary": "Mettre à jour un message",
-        "description": "Met à jour le contenu ou le statut 'lu' d'un message existant.",
-        "operationId": "updateMessage",
-        "parameters": [
-          {
-            "name": "idMessage",
-            "in": "path",
-            "description": "ID du message à mettre à jour",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            },
-            "example": 1
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MessageRequestDto"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Message mis à jour avec succès",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Données du message invalides",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Message non trouvé",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Erreur interne du serveur",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Gestion des Messages"
-        ],
-        "summary": "Supprimer un message",
-        "description": "Supprime définitivement un message du système.",
-        "operationId": "deleteMessageById",
-        "parameters": [
-          {
-            "name": "idMessage",
-            "in": "path",
-            "description": "ID du message à supprimer",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            },
-            "example": 1
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Message supprimé avec succès"
-          },
-          "404": {
-            "description": "Message non trouvé"
-          },
-          "500": {
-            "description": "Erreur interne du serveur"
-          }
-        }
-      }
-    },
     "/Api/V1/clinique/factures/update/{idFacture}": {
       "put": {
         "tags": [
@@ -2017,107 +1857,29 @@
         }
       }
     },
-    "/Api/V1/clinique/messages": {
-      "get": {
-        "tags": [
-          "Gestion des Messages"
-        ],
-        "summary": "Lister tous les messages",
-        "description": "Récupère une liste de tous les messages enregistrés dans le système.",
-        "operationId": "findAllMessages",
-        "responses": {
-          "200": {
-            "description": "Liste des messages retournée",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "204": {
-            "description": "Aucun message trouvé",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageResponseDto"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Erreur interne du serveur",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageResponseDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
+    "/Api/V1/clinique/messagerie/groupes": {
       "post": {
         "tags": [
-          "Gestion des Messages"
+          "groupe-controller"
         ],
-        "summary": "Envoyer un nouveau message",
-        "description": "Crée et envoie un message d'un utilisateur à un autre.",
-        "operationId": "saveMessage",
+        "operationId": "creerGroupe",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/MessageRequestDto"
+                "$ref": "#/components/schemas/GroupeRequestDto"
               }
             }
           },
           "required": true
         },
         "responses": {
-          "201": {
-            "description": "Message envoyé avec succès",
+          "200": {
+            "description": "OK",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Données du message invalides ou incomplètes (expéditeur/destinataire non trouvés)",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Expéditeur ou destinataire non trouvé",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Erreur interne du serveur",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
+                  "$ref": "#/components/schemas/GroupeResponseDto"
                 }
               }
             }
@@ -2684,61 +2446,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UtilisateurResponseDto"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Api/V1/clinique/messages/mark-as-read/{messageId}": {
-      "patch": {
-        "tags": [
-          "Gestion des Messages"
-        ],
-        "summary": "Marquer un message comme lu",
-        "description": "Met à jour le statut 'lu' d'un message spécifique à 'true'.",
-        "operationId": "markMessageAsRead",
-        "parameters": [
-          {
-            "name": "messageId",
-            "in": "path",
-            "description": "ID du message à marquer comme lu",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            },
-            "example": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Message marqué comme lu avec succès",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Message non trouvé",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Erreur interne du serveur",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/MessageResponseDto"
                 }
               }
             }
@@ -4430,8 +4137,7 @@
             "description": "Heure du rendez-vous (HH:mm:ss)",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "date-time"
+              "type": "string"
             },
             "example": "14:30:00"
           },
@@ -4701,39 +4407,6 @@
                     "$ref": "#/components/schemas/PrescriptionResponseDto"
                   }
                 }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Api/V1/clinique/prescriptions/download-pdf/{prescriptionId}": {
-      "get": {
-        "tags": [
-          "Gestion des Prescriptions"
-        ],
-        "summary": "Télécharger l'ordonnance au format PDF",
-        "description": "Génère et télécharge l'ordonnance spécifiée au format PDF.",
-        "operationId": "downloadPrescriptionPdf",
-        "parameters": [
-          {
-            "name": "prescriptionId",
-            "in": "path",
-            "description": "ID de l'ordonnance à télécharger en PDF",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            },
-            "example": 1
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Erreur interne du serveur lors de la génération du PDF",
-            "content": {
-              "application/pdf": {
-
               }
             }
           }
@@ -5062,19 +4735,19 @@
         }
       }
     },
-    "/Api/V1/clinique/messages/sender/{senderId}": {
+    "/Api/V1/clinique/messagerie/chat.{id}": {
       "get": {
         "tags": [
           "Gestion des Messages"
         ],
-        "summary": "Obtenir les messages envoyés par un utilisateur",
-        "description": "Récupère tous les messages dont l'utilisateur spécifié est l'expéditeur.",
-        "operationId": "findMessagesBySenderId",
+        "summary": "Récupérer un message par ID",
+        "description": "Endpoint REST pour récupérer un message spécifique",
+        "operationId": "getMessageById",
         "parameters": [
           {
-            "name": "senderId",
+            "name": "id",
             "in": "path",
-            "description": "ID de l'expéditeur",
+            "description": "ID du message",
             "required": true,
             "schema": {
               "type": "integer",
@@ -5085,124 +4758,21 @@
         ],
         "responses": {
           "200": {
-            "description": "Messages trouvés",
+            "description": "Message trouvé",
             "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/MessageResponseDto"
                 }
               }
             }
           },
-          "204": {
-            "description": "Aucun message trouvé pour cet expéditeur",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageResponseDto"
-                  }
-                }
-              }
-            }
-          },
           "404": {
-            "description": "Expéditeur non trouvé",
+            "description": "Message non trouvé",
             "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageResponseDto"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Erreur interne du serveur",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageResponseDto"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Api/V1/clinique/messages/receiver/{receiverId}": {
-      "get": {
-        "tags": [
-          "Gestion des Messages"
-        ],
-        "summary": "Obtenir les messages reçus par un utilisateur",
-        "description": "Récupère tous les messages dont l'utilisateur spécifié est le destinataire.",
-        "operationId": "findMessagesByReceiverId",
-        "parameters": [
-          {
-            "name": "receiverId",
-            "in": "path",
-            "description": "ID du destinataire",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            },
-            "example": 2
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Messages trouvés",
-            "content": {
-              "application/json": {
+              "*/*": {
                 "schema": {
                   "$ref": "#/components/schemas/MessageResponseDto"
-                }
-              }
-            }
-          },
-          "204": {
-            "description": "Aucun message trouvé pour ce destinataire",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageResponseDto"
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Destinataire non trouvé",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageResponseDto"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Erreur interne du serveur",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/MessageResponseDto"
-                  }
                 }
               }
             }
@@ -5679,39 +5249,6 @@
         }
       }
     },
-    "/Api/V1/clinique/factures/download-pdf/{factureId}": {
-      "get": {
-        "tags": [
-          "Gestion des Factures"
-        ],
-        "summary": "Télécharger la facture au format PDF",
-        "description": "Génère et télécharge la facture spécifiée au format PDF.",
-        "operationId": "downloadFacturePdf",
-        "parameters": [
-          {
-            "name": "factureId",
-            "in": "path",
-            "description": "ID de la facture à télécharger en PDF",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            },
-            "example": 1
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": "Erreur interne du serveur lors de la génération du PDF",
-            "content": {
-              "application/pdf": {
-
-              }
-            }
-          }
-        }
-      }
-    },
     "/Api/V1/clinique/dossierMedical/{idDossierMedical}/patient": {
       "get": {
         "tags": [
@@ -6156,12 +5693,16 @@
           "prenom": {
             "type": "string"
           },
-          "email": {
-            "type": "string"
-          },
           "dateNaissance": {
             "type": "string",
             "format": "date"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string"
           },
           "telephone": {
             "type": "string"
@@ -6630,7 +6171,7 @@
             "type": "integer",
             "format": "int64"
           },
-          "consultationDescription": {
+          "motifConsultation": {
             "type": "string"
           },
           "consultationId": {
@@ -6653,15 +6194,15 @@
           "allergies": {
             "type": "string"
           },
-          "traitementsEnCours": {
-            "type": "string"
-          },
           "observations": {
             "type": "string"
           },
           "patientId": {
             "type": "integer",
             "format": "int64"
+          },
+          "dernierTraitement": {
+            "type": "string"
           }
         }
       },
@@ -6727,12 +6268,16 @@
           "prenom": {
             "type": "string"
           },
-          "email": {
-            "type": "string"
-          },
           "dateNaissance": {
             "type": "string",
             "format": "date"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string"
           },
           "telephone": {
             "type": "string"
@@ -6742,60 +6287,6 @@
           },
           "genre": {
             "type": "string"
-          }
-        }
-      },
-      "MessageRequestDto": {
-        "type": "object",
-        "description": "DTO du message à envoyer",
-        "properties": {
-          "contenu": {
-            "type": "string",
-            "minLength": 1
-          },
-          "lu": {
-            "type": "boolean"
-          },
-          "expediteurId": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "destinataireId": {
-            "type": "integer",
-            "format": "int64"
-          }
-        },
-        "required": [
-          "destinataireId",
-          "expediteurId"
-        ]
-      },
-      "MessageResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "modificationDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "contenu": {
-            "type": "string"
-          },
-          "lu": {
-            "type": "boolean"
-          },
-          "expediteur": {
-            "$ref": "#/components/schemas/UtilisateurResponseDto"
-          },
-          "destinataire": {
-            "$ref": "#/components/schemas/UtilisateurResponseDto"
           }
         }
       },
@@ -6907,16 +6398,6 @@
             "type": "string",
             "format": "date-time"
           },
-          "motifs": {
-            "type": "string"
-          },
-          "tensionArterielle": {
-            "type": "string"
-          },
-          "temperature": {
-            "type": "number",
-            "format": "float"
-          },
           "poids": {
             "type": "number",
             "format": "float"
@@ -6925,10 +6406,20 @@
             "type": "number",
             "format": "float"
           },
-          "compteRendu": {
+          "tensionArterielle": {
+            "type": "string"
+          },
+          "temperature": {
+            "type": "number",
+            "format": "float"
+          },
+          "motifs": {
             "type": "string"
           },
           "diagnostic": {
+            "type": "string"
+          },
+          "compteRendu": {
             "type": "string"
           },
           "medecinNomComplet": {
@@ -6963,18 +6454,8 @@
             "type": "string",
             "format": "date-time"
           },
-          "patientNomComplet": {
-            "type": "string"
-          },
-          "patientTelephone": {
-            "type": "string"
-          },
-          "patientDateNaissance": {
-            "type": "string",
-            "format": "date"
-          },
-          "patientGenre": {
-            "type": "string"
+          "patient": {
+            "$ref": "#/components/schemas/PatientResponseDto"
           },
           "groupeSanguin": {
             "type": "string"
@@ -6985,9 +6466,6 @@
           "allergies": {
             "type": "string"
           },
-          "traitementsEnCours": {
-            "type": "string"
-          },
           "observations": {
             "type": "string"
           },
@@ -6996,6 +6474,9 @@
             "items": {
               "$ref": "#/components/schemas/ConsultationResponseDto"
             }
+          },
+          "dernierTraitement": {
+            "type": "string"
           }
         }
       },
@@ -7047,6 +6528,60 @@
           "taille",
           "temperature"
         ]
+      },
+      "GroupeRequestDto": {
+        "type": "object",
+        "properties": {
+          "nom": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "idCreateur": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "idsMembres": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "GroupeResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modificationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nom": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createur": {
+            "$ref": "#/components/schemas/UtilisateurResponseDto"
+          },
+          "membres": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UtilisateurResponseDto"
+            }
+          }
+        }
       },
       "LoginRequest": {
         "type": "object",
@@ -7155,16 +6690,6 @@
             "type": "string",
             "format": "date-time"
           },
-          "motifs": {
-            "type": "string"
-          },
-          "tensionArterielle": {
-            "type": "string"
-          },
-          "temperature": {
-            "type": "number",
-            "format": "float"
-          },
           "poids": {
             "type": "number",
             "format": "float"
@@ -7172,6 +6697,16 @@
           "taille": {
             "type": "number",
             "format": "float"
+          },
+          "temperature": {
+            "type": "number",
+            "format": "float"
+          },
+          "tensionArterielle": {
+            "type": "string"
+          },
+          "motifs": {
+            "type": "string"
           },
           "compteRendu": {
             "type": "string"
@@ -7223,9 +6758,6 @@
           "allergies": {
             "type": "string"
           },
-          "traitementsEnCours": {
-            "type": "string"
-          },
           "observations": {
             "type": "string"
           },
@@ -7243,6 +6775,9 @@
             "items": {
               "$ref": "#/components/schemas/Prescription"
             }
+          },
+          "dernierTraitement": {
+            "type": "string"
           }
         }
       },
@@ -7299,6 +6834,38 @@
           }
         }
       },
+      "Groupe": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modificationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "nom": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createur": {
+            "$ref": "#/components/schemas/Utilisateur"
+          },
+          "membres": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Utilisateur"
+            }
+          }
+        }
+      },
       "HistoriqueAction": {
         "type": "object",
         "properties": {
@@ -7352,6 +6919,9 @@
           },
           "destinataire": {
             "$ref": "#/components/schemas/Utilisateur"
+          },
+          "groupe": {
+            "$ref": "#/components/schemas/Groupe"
           }
         }
       },
@@ -7376,12 +6946,16 @@
           "prenom": {
             "type": "string"
           },
-          "email": {
-            "type": "string"
-          },
           "dateNaissance": {
             "type": "string",
             "format": "date"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string"
           },
           "telephone": {
             "type": "string"
@@ -7643,12 +7217,16 @@
           "prenom": {
             "type": "string"
           },
-          "email": {
-            "type": "string"
-          },
           "dateNaissance": {
             "type": "string",
             "format": "date"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "email": {
+            "type": "string"
           },
           "telephone": {
             "type": "string"
@@ -7907,6 +7485,38 @@
           "revenu": {
             "type": "number",
             "format": "double"
+          }
+        }
+      },
+      "MessageResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "modificationDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "contenu": {
+            "type": "string"
+          },
+          "lu": {
+            "type": "boolean"
+          },
+          "expediteur": {
+            "$ref": "#/components/schemas/UtilisateurResponseDto"
+          },
+          "destinataire": {
+            "$ref": "#/components/schemas/UtilisateurResponseDto"
+          },
+          "groupe": {
+            "$ref": "#/components/schemas/GroupeResponseDto"
           }
         }
       }

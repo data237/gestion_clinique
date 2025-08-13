@@ -21,37 +21,11 @@ const SousDiv1Style = Styled.div`
 const Span1= Styled.span`
     cursor: pointer;
 `
-const ZonedaffichageStyle = Styled.div`
-    width: 99%;
-    height: 78vh;
-    display: ${props => props.$zonedaffichagedisplay};
-    flex-direction: column;
-    gap: 15px;
-    background-color: rgba(239, 239, 255, 1);
-    border-radius: 10px;
-`
-const Rendezvousday = Styled.div`
-  width: 99%;
-  height: 78vh;
-  display: ${props => props.$Rendezvousdaydisplay};
-  flex-direction: column;
-  gap: 15px;
-  background-color: rgba(239, 239, 255, 1);
-  border-radius: 10px;
-`
-const NomtableStyle = Styled.p`
-    font-family: "Inter", sans-serif;
-    font-weight: 700;
-    font-size: 1.5em;
-    padding: 10px 20px;
-`
-const BarreStyle = Styled.div`
-    width: 100%;
-    height: 5px;
-    border-radius: 2.5px;
-    background-color: rgba(159, 159, 255, 1);
-    padding-left:  20px;
-
+const CalendarContainer = Styled.div`
+ width: 100%;
+  height: 85vh;
+padding-bottom: 25px;
+margin-top: -30px;
 `
 const Calendar = () => {
 
@@ -113,17 +87,30 @@ const Calendar = () => {
                 </Barrehorizontal1>
             </SousDiv1Style>
    
-      <ZonedaffichageStyle $zonedaffichagedisplay = {rendezvousdayvisible? 'none' : 'block'}>
-        
-            <div>
-                <NomtableStyle> Evenements </NomtableStyle>
-            </div>
+            <div className='zonedaffichage' $zonedaffichagedisplay={rendezvousdayvisible ? 'none' : 'block'}
+        style={{
+          height: '78vh',
+          marginRight: '30px',
+        }}
+      >
+
+
+        <div className='numero'
+
+        >
+          <div>
+            <h2 className='nomtable'> Evenements </h2>
+          </div>
+
+        </div>
                            
                             
                        
-            <div style={{ margin: '20px 20px' }}>
-                <BarreStyle></BarreStyle>
-            </div>
+        <div className='conteneurbarre'
+        >
+          <div className='barre'></div>
+        </div>
+        <CalendarContainer>
             <FullCalendar
             plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
             initialView="dayGridMonth"
@@ -135,10 +122,12 @@ const Calendar = () => {
             
             }}
             events={events}
-            height="auto"
+            height="100%"
+            width="100%"
             dateClick={handleClick}
         />
-      </ZonedaffichageStyle>
+        </CalendarContainer>
+      </div>
       {/*right: 'dayGridMonth',timeGridWeek,timeGridDay' */}
      
      </>

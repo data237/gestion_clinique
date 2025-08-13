@@ -175,33 +175,6 @@ const BarreStyle = Styled.div`
 
 
 function RendezvousMedecinToday(){
-    //const [isVisible, setisVisible] = useState(0)
-    //  const idUser = localStorage.getItem('id');
-   // const [nomprofil, setnomprofil]= useState('')
-
-    /*useEffect(() => {
-        const token = localStorage.getItem('token');
-           const nomutilisateur =  async ()=> {
-                try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
-              if (response) {
-                 setnomprofil(response.data.nom)
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération des utilisateurs:', error);
-                
-            } finally {
-              console.log('fin')
-            }
-            }
-            nomutilisateur()
-    }, [idUser]);*/
 
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -247,7 +220,7 @@ function RendezvousMedecinToday(){
         
     useEffect(() => {
             if (!valeurrecherche.trim()) {
-                setrendezvousFiltres(rendezvous); // Si rien à chercher, on affiche tout
+                setrendezvousFiltres(rendezvous); 
                 return;
             }
 
@@ -279,7 +252,6 @@ function RendezvousMedecinToday(){
             }
             }, [rendezvous.length, totalPages]);
 
-            //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
 
             const handleClick = (page) => {
                 if (page !== "..." && page !== currentPage) {

@@ -33,12 +33,12 @@ const styles = StyleSheet.create({
         gap: 180,
         marginBottom: 15,
         marginTop: -18
-      },
-      logo: { 
-        width: 200, 
-        height: "auto", 
+    },
+    logo: {
+        width: 200,
+        height: "auto",
 
-      },
+    },
     clinicDetails: {
         fontSize: 10,
         color: "#64748b",
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     prescriptionTitle: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: "bold",
         color: "#1e40af",
         marginBottom: 3,
@@ -77,18 +77,18 @@ const styles = StyleSheet.create({
         backgroundColor: "#f8fafc",
         padding: 8,
         borderRadius: 3,
-        marginBottom: 8,
+        marginBottom: 10,
         border: "1px solid #e2e8f0"
     },
     sectionTitle: {
-        fontSize: 12,
+        fontSize: 13,
         fontWeight: "bold",
         color: "#1e40af",
         marginBottom: 6,
         textTransform: "uppercase",
         letterSpacing: 0.3,
         borderBottom: "1px solid #1e40af",
-        paddingBottom: 2
+        paddingBottom: 4
     },
     doctorInfo: {
         flexDirection: "row",
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     doctorName: {
-        fontSize: 11,
+        fontSize: 16,
         color: "#1e293b",
         fontWeight: "bold"
     },
@@ -136,10 +136,10 @@ const styles = StyleSheet.create({
         letterSpacing: 0.2
     },
     patientValue: {
-        fontSize: 8,
+        fontSize: 12,
         color: "#1e293b",
         fontWeight: "bold",
-        padding: "2px 5px",
+        padding: "3px 5px",
         backgroundColor: "#f8fafc",
         borderRadius: 2,
         border: "1px solid #e2e8f0"
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
         marginBottom: 6
     },
     medicationHeaderText: {
-        fontSize: 8,
+        fontSize: 10,
         fontWeight: "bold",
         color: "#ffffff",
         textTransform: "uppercase",
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
         border: "1px solid #e2e8f0"
     },
     medicationName: {
-        fontSize: 9,
+        fontSize: 12,
         color: "#1e293b",
         fontWeight: "bold",
         marginBottom: 3
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     medicationDetail: {
-        fontSize: 7,
+        fontSize: 10,
         color: "#64748b"
     },
     instructions: {
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
         borderTop: "1px solid #e2e8f0"
     },
     instructionText: {
-        fontSize: 8,
+        fontSize: 10,
         color: "#1e293b",
         lineHeight: 1.2
     },
@@ -221,14 +221,14 @@ const styles = StyleSheet.create({
         marginBottom: 5
     },
     consultationLabel: {
-        fontSize: 7,
+        fontSize: 10,
         color: "#1e40af",
         fontWeight: "medium",
         marginBottom: 1,
         textTransform: "uppercase"
     },
     consultationValue: {
-        fontSize: 8,
+        fontSize: 10,
         color: "#1e293b",
         fontWeight: "bold",
         padding: "2px 5px",
@@ -245,16 +245,14 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         border: "1px solid #e2e8f0"
     },
-    signatureLine: {
-        borderBottom: "2px solid #1e40af",
-        marginTop: 12,
-        marginBottom: 3
-    },
+ 
     signatureText: {
-        fontSize: 8,
+        fontSize: 10,
         color: "#1e40af",
         fontWeight: "bold",
-        textAlign: "center"
+        textAlign: "center",
+        paddingTop: 30,
+
     },
 
     // Date et heure d'émission simplifiées
@@ -262,10 +260,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        fontSize: 7,
+        fontSize: 10,
         color: "#64748b",
         marginTop: 12,
-        marginBottom: 12,
         paddingTop: 8,
         borderTop: "1px solid #e2e8f0"
     },
@@ -278,22 +275,22 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     footerText: {
-        fontSize: 6,
+        fontSize: 8,
         color: "#64748b",
         lineHeight: 1.2,
         marginBottom: 6
     },
     footerContact: {
-        fontSize: 7,
+        fontSize: 8,
         color: "#1e40af",
         fontWeight: "medium",
-        marginBottom: 4
+        marginBottom: 3
     },
     footerInfo: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginTop: 6,
-        paddingTop: 6,
+        marginTop: 3,
+        paddingTop: 3,
         borderTop: "1px solid #e2e8f0"
     },
     footerInfoItem: {
@@ -301,13 +298,13 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     footerInfoTitle: {
-        fontSize: 6,
+        fontSize: 9,
         color: "#64748b",
         fontWeight: "medium",
         marginBottom: 1
     },
     footerInfoValue: {
-        fontSize: 7,
+        fontSize: 9,
         color: "#1e293b",
         fontWeight: "bold"
     }
@@ -374,32 +371,28 @@ const PrescriptionPDF = ({ prescription }) => {
                         <Text style={styles.sectionTitle}>Médecin Prescripteur</Text>
                         <View style={styles.doctorInfo}>
                             <Text style={styles.doctorName}>
-                                Dr. {prescription.medecinNomComplet || 'Médecin'}
+                                {prescription.medecinNomComplet || 'Médecin'}
                             </Text>
                             <Text style={styles.doctorBadge}>
-                                {prescription.medecinNomComplet || 'Médecin'}
+                                {prescription.serviceMedical || 'Médecin'}
                             </Text>
                         </View>
                     </View>
 
-                              {/* Section patient */}
-          <View style={styles.patientSection}>
-            <Text style={styles.sectionTitle}>Informations Patient</Text>
-            <View style={styles.patientGrid}>
-              <View style={styles.patientItem}>
-                <Text style={styles.patientLabel}>Nom et Prénom</Text>
-                <Text style={styles.patientValue}>{prescription.patientNomComplet || "—"}</Text>
-              </View>
-              <View style={styles.patientItem}>
-                <Text style={styles.patientLabel}>Type de Prescription</Text>
-                <Text style={styles.patientValue}>{prescription.typePrescription || "—"}</Text>
-              </View>
-              <View style={styles.patientItem}>
-                <Text style={styles.patientLabel}>Service Médical</Text>
-                <Text style={styles.patientValue}>{prescription.serviceMedical || "—"}</Text>
-              </View>
-            </View>
-          </View>
+                    {/* Section patient */}
+                    <View style={styles.patientSection}>
+                        <Text style={styles.sectionTitle}>Informations Patient</Text>
+                        <View style={styles.patientGrid}>
+                            <View style={styles.patientItem}>
+                                <Text style={styles.patientLabel}>Nom et Prénom</Text>
+                                <Text style={styles.patientValue}>{prescription.patientNomComplet || "—"}</Text>
+                            </View>
+                            <View style={styles.patientItem}>
+                                <Text style={styles.patientLabel}>Type de Prescription</Text>
+                                <Text style={styles.patientValue}>{prescription.typePrescription || "—"}</Text>
+                            </View>
+                        </View>
+                    </View>
 
                     {/* Section médicaments et instructions fusionnées */}
                     <View style={styles.prescriptionSection}>
@@ -453,7 +446,6 @@ const PrescriptionPDF = ({ prescription }) => {
                     {/* Section signature */}
                     <View style={styles.signatureSection}>
                         <Text style={styles.sectionTitle}>Validation Médicale</Text>
-                        <View style={styles.signatureLine} />
                         <Text style={styles.signatureText}>
                             Signature et Cachet du Médecin
                         </Text>

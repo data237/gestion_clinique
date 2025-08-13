@@ -14,6 +14,7 @@ import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
 import { useLoading } from '../LoadingProvider';
 import { useConfirmation } from '../ConfirmationProvider';
+import Pagination from '../shared/Pagination';
 
 const SousDiv1Style = Styled.div`
     padding-right: 32px;
@@ -37,30 +38,7 @@ const Span1 = Styled.span`
 
 
 
-const ButtonStyle = Styled.button`
-    width: 25px;
-    height: 25px;
-    
-    font-family: Roboto;
-    font-weight: 300;
-    font-size: 0.8em;
-    background-color: ${props => props.$buttonbackgroundColor};
-    color: ${props => props.$buttonColor};
-    border-radius: 5px;
-    gap: 0px;
-     &:hover{
-        cursor: pointer;
-        background-color: rgba(65, 65, 255, 1);
-        border-radius: 5px;
-    }
-    &:focus{
-        cursor: pointer;
-        background-color: rgba(65, 65, 255, 1);
-        color: white;
-        border-radius: 5px;
-    }
-    
-`
+
 
 
 // Suppression des anciens popups - remplacés par le système Modal
@@ -190,25 +168,16 @@ function Utilisateur() {
 
 
 
-    const [pagesToShow, setpagesToShow] = useState([]);
     const totalPages = Math.ceil(utilisateursFiltres.length / utilisateursPerPage);
-
-    useEffect(() => {
-        if (totalPages >= 6) {
-            setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
-        } else {
-            const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
-            setpagesToShow(fullList);
-        }
-    }, [utilisateursFiltres.length, totalPages]);
-
-    //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
-
-    const handleClick = (page) => {
-        if (page !== "..." && page !== currentPage) {
-            setCurrentPage(page);
-        }
-    }
+    
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+    
+    const handleModification = (page) => {
+        // Logique de modification si nécessaire
+        console.log('Page modifiée:', page);
+    };
 
 
 
@@ -274,25 +243,7 @@ function Utilisateur() {
 
 
 
-    const modification = (numeropage) => {
-        let nouvelleListe = [...pagesToShow] // copie de l'ancien tableau
 
-        if (numeropage > 2 && numeropage < totalPages - 2) {
-            nouvelleListe[0] = numeropage - 2
-            nouvelleListe[1] = numeropage - 1
-            nouvelleListe[2] = numeropage
-            nouvelleListe[3] = '...'
-        } else if (numeropage === totalPages - 2) {
-            nouvelleListe[0] = numeropage - 3
-            nouvelleListe[1] = numeropage - 2
-            nouvelleListe[2] = numeropage - 1
-            nouvelleListe[3] = numeropage
-        } else {
-            // Peut-être une autre logique ici ?
-        }
-        console.log(pagesToShow)
-        setpagesToShow(nouvelleListe)
-    }
 
     const indexOfLastutilisateur = currentPage * utilisateursPerPage;
     const indexOfFirstutilisateur = indexOfLastutilisateur - utilisateursPerPage;
@@ -370,23 +321,14 @@ function Utilisateur() {
                         <h2 className='nomtable'> Utilisateurs </h2>
                     </div>
                     <div className='divbutton'>
-                        <button className='buttonPS' onClick={() => { setCurrentPage(currentPage - 1); modification(currentPage - 1) }} disabled={currentPage === 1}>Précédent</button>
-                        <div>
-                            {pagesToShow.map((page, idx) => (
-                                <ButtonStyle
-                                    key={idx}
-                                    onClick={() => handleClick(page)}
-                                    $buttonbackgroundColor={page === currentPage ? 'rgba(65, 65, 255, 1)' : ''}
-                                    $buttonColor={page === currentPage ? 'white' : ''}
-                                    disabled={page === "..."}
-                                >
-                                    {page}
-                                </ButtonStyle>
-                            ))}
-                        </div>
-
-                        <button className='buttonPS' onClick={() => { setCurrentPage(currentPage + 1); modification(currentPage + 1) }}
-                            disabled={currentPage === totalPages}>Suivant</button>
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                            onModification={handleModification}
+                            itemsPerPage={utilisateursPerPage}
+                            totalItems={utilisateursFiltres.length}
+                        />
                     </div>
 
                 </div>

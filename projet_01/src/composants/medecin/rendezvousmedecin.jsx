@@ -353,34 +353,6 @@ const BarreStyle = Styled.div`
 function RendezvousMedecin(){
     const { showConfirmation } = useConfirmation();
     
-    //const [isVisible, setisVisible] = useState(0)
-     // const idUser = localStorage.getItem('id');
-    //const [nomprofil, setnomprofil]= useState('')
-
-    /*useEffect(() => {
-        const token = localStorage.getItem('token');
-           const nomutilisateur =  async ()=> {
-                try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
-              if (response) {
-                 setnomprofil(response.data.nom)
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération des utilisateurs:', error);
-                
-            } finally {
-              console.log('fin')
-            }
-            }
-            nomutilisateur()
-    }, [idUser]);*/
-
     // fonction du tableau
     const [Popup, setPopup] = useState(false)
    
@@ -403,8 +375,9 @@ function RendezvousMedecin(){
          const fetchrendezvous = async () => {
             const token = localStorage.getItem('token');
             const id = localStorage.getItem('id');
+            const today = new Date().toISOString().split('T')[0];
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${id}/confirmed/from-today`,
+                const response = await axios.get(`${API_BASE}/utilisateurs/${id}/rendez-vous/confirmed/${today}`,
                     {   headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
@@ -546,7 +519,18 @@ function RendezvousMedecin(){
   const handleDossierMedical = () => {
     setPopup(false);
     if (rdvaouvrir) {
-      window.location.href = `/medecin/rendezvous/dossiermedical/${rdvaouvrir.id}`;
+      console.log('Structure complète du rendez-vous:', JSON.stringify(rdvaouvrir, null, 2));
+      
+      // Essayer d'utiliser l'ID du patient s'il est disponible
+      if (rdvaouvrir.patientId) {
+        console.log('Utilisation de l\'ID du patient:', rdvaouvrir.patientId);
+        navigate(`/medecin/rendezvous/dossiermedical/${rdvaouvrir.patientId}`);
+      } else {
+        console.log('ID du patient non disponible, utilisation de l\'ID du rendez-vous:', rdvaouvrir.id);
+        // Si l'ID du patient n'est pas disponible, utiliser l'ID du rendez-vous
+        // et le composant DossierMedical devra gérer cette situation
+        navigate(`/medecin/rendezvous/dossiermedical/${rdvaouvrir.id}`);
+      }
     }
   };
 
