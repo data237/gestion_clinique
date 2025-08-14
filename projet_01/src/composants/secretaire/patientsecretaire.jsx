@@ -2,6 +2,7 @@ import '../../styles/tableau.css'
 import '../../styles/Zonedaffichage.css'
 import '../../styles/Barrehorizontal2.css'
 import '../../styles/add-buttons.css'
+import '../../styles/action-buttons.css'
 import Styled from 'styled-components'
 import { useState, useEffect} from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
@@ -244,8 +245,14 @@ function PatientSecretaire(){
                     }},);
                 //console.log(response.data);
               if (response && response.data) {
-                setPatients(response.data);
-                setpatientsFiltres(response.data);
+                // Trier les patients par ordre décroissant (plus récent en premier)
+                const patientsTries = response.data.sort((a, b) => {
+                    // Trier par ID (plus récent en premier)
+                    return b.id - a.id;
+                });
+                
+                setPatients(patientsTries);
+                setpatientsFiltres(patientsTries);
                } 
             } catch (error) {
                 console.error('Erreur lors de la récupération des patients:', error);
@@ -466,8 +473,8 @@ function PatientSecretaire(){
                             <tr key={patient.id} className='tr'>
         
                                 
-                                <td onClick={() => handleRowClick(patient)} className='td'>{patient.nom}</td>
-                                <td onClick={() => handleRowClick(patient)} className='td'>{patient.prenom}</td>
+                                <td onClick={() => handleRowClick(patient)} className='td'>{patient.nom ? patient.nom.charAt(0).toUpperCase() + patient.nom.slice(1).toLowerCase() : ''}</td>
+                                <td onClick={() => handleRowClick(patient)} className='td'>{patient.prenom ? patient.prenom.charAt(0).toUpperCase() + patient.prenom.slice(1).toLowerCase() : ''}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.email}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.telephone}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.dateNaissance}</td>

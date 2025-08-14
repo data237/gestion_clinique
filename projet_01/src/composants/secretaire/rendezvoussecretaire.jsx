@@ -2,6 +2,8 @@ import '../../styles/tableau.css'
 import '../../styles/Zonedaffichage.css'
 import '../../styles/Barrehorizontal2.css'
 import '../../styles/add-buttons.css'
+import '../../styles/action-buttons.css'
+import '../../styles/rendezvous-status.css'
 import Styled from 'styled-components'
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
@@ -12,7 +14,7 @@ import iconrecherche from '../../assets/iconrecherche.png'
 import iconsupprime from '../../assets/Iconsupprime.svg'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
-import { ConfirmationModal } from '../shared/UnifiedModal';
+import { ConfirmationModal, InfoModal } from '../shared/UnifiedModal';
 import Pagination from '../shared/Pagination';
 
 const SousDiv1Style = Styled.div`
@@ -109,13 +111,13 @@ const AfficheTableauStyle = Styled.div`
 
 
 
-const Span1= Styled.span`
+const Span1 = Styled.span`
     cursor: pointer;
 `
 
 
 // Style component du tableau
-    const NumeroStyle = Styled.div`
+const NumeroStyle = Styled.div`
     display: flex;
     justify-content: space-between;
     padding: 10px 20px;
@@ -307,33 +309,35 @@ const ModalButton = Styled.button`
   }
 `;
 
-function Rendezvous(){
+function Rendezvous() {
     //const [isVisible, setisVisible] = useState(0)
-      const idUser = localStorage.getItem('id');
-    const [nomprofil, setnomprofil]= useState('')
+    const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil] = useState('')
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-           const nomutilisateur =  async ()=> {
-                try {
+        const nomutilisateur = async () => {
+            try {
                 const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                    {
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        }
+                    },);
                 console.log(token);
-              if (response) {
-                 setnomprofil(response.data.nom)
+                if (response) {
+                    setnomprofil(response.data.nom)
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
-                
+
             } finally {
-              console.log('fin')
+                console.log('fin')
             }
-            }
-            nomutilisateur()
+        }
+        nomutilisateur()
     }, [idUser]);
 
     // fonction du tableau
@@ -341,33 +345,55 @@ function Rendezvous(){
     const [rendezvousASupprimer, setrendezvousASupprimer] = useState(null);
     const [statutAmodifier, setstatutAmodifier] = useState(null);
     const [Popupstatut, setPopupstatut] = useState(false)
+    const [PopupInfo, setPopupInfo] = useState(false)
+    const [rendezvousInfo, setrendezvousInfo] = useState(null)
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [isloading, setisloading] = useState(true);
     const [rendezvous, setrendezvous] = useState([]);
     const [rendezvousFiltres, setrendezvousFiltres] = useState([]);
-  
+
     const [erreur, setErreur] = useState(null);
 
 
     const rendezvousPerPage = 8;
 
-    
-    useEffect(()=>{
-         
-         const fetchrendezvous = async () => {
+
+    useEffect(() => {
+
+        const fetchrendezvous = async () => {
             const token = localStorage.getItem('token');
             try {
                 const response = await axios.get(`${API_BASE}/rendezvous`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                    {
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        }
+                    },);
                 console.log(token);
-              if (response && response.data) {
-                setrendezvous(response.data);
-               setrendezvousFiltres(response.data);
+                if (response && response.data) {
+                    // Trier les rendez-vous par ordre décroissant (plus récent en premier)
+                    const rendezvousTries = response.data.sort((a, b) => {
+                        // Trier d'abord par date (du plus récent au plus ancien)
+                        if (a.jour && b.jour) {
+                            const dateA = new Date(a.jour);
+                            const dateB = new Date(b.jour);
+                            if (dateA.getTime() !== dateB.getTime()) {
+                                return dateB.getTime() - dateA.getTime();
+                            }
+                        }
+                        // Si même date, trier par heure (du plus tôt au plus tard)
+                        if (a.heure && b.heure) {
+                            return a.heure.localeCompare(b.heure);
+                        }
+                        // Si pas d'heure, trier par ID (plus récent en premier)
+                        return b.id - a.id;
+                    });
+
+                    setrendezvous(rendezvousTries);
+                    setrendezvousFiltres(rendezvousTries);
                 } /*else {
                 setErreur('Données introuvables');
                 }*/
@@ -377,27 +403,27 @@ function Rendezvous(){
             } finally {
                 setisloading(false);
             }
-    
+
         };
-            fetchrendezvous();
-        },[]);
-        
+        fetchrendezvous();
+    }, []);
+
     useEffect(() => {
-            if (!valeurrecherche.trim()) {
-                setrendezvousFiltres(rendezvous); // Si rien à chercher, on affiche tout
-                return;
-            }
+        if (!valeurrecherche.trim()) {
+            setrendezvousFiltres(rendezvous); // Si rien à chercher, on affiche tout
+            return;
+        }
 
-            const recherche = valeurrecherche.toLowerCase();
+        const recherche = valeurrecherche.toLowerCase();
 
-            const resultats = rendezvous.filter((u) =>
-                u.jour.toLowerCase().includes(recherche) ||
-                u.patientNomComplet.toLowerCase().includes(recherche) ||
-                u.medecinNomComplet.toLowerCase().includes(recherche) ||
-                (u.statut === "ANNULE" ? "annulé" : "actif").includes(recherche)
-            );
+        const resultats = rendezvous.filter((u) =>
+            u.jour.toLowerCase().includes(recherche) ||
+            u.patientNomComplet.toLowerCase().includes(recherche) ||
+            u.medecinNomComplet.toLowerCase().includes(recherche) ||
+            (u.statut === "ANNULE" ? "annulé" : "actif").includes(recherche)
+        );
 
-            setrendezvousFiltres(resultats);
+        setrendezvousFiltres(resultats);
     }, [valeurrecherche, rendezvous]);
 
 
@@ -408,310 +434,382 @@ function Rendezvous(){
     const totalPages = Math.ceil(rendezvousFiltres.length / rendezvousPerPage);
 
     useEffect(() => {
-      // Ne pas afficher la pagination s'il n'y a qu'une page ou moins
-      if (totalPages <= 1) {
-        setpagesToShow([]);
-        return;
-      }
-      
-      if (totalPages >= 6) {
-        setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
-      } else {
-        const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
-        setpagesToShow(fullList);
-      }
+        // Ne pas afficher la pagination s'il n'y a qu'une page ou moins
+        if (totalPages <= 1) {
+            setpagesToShow([]);
+            return;
+        }
+
+        if (totalPages >= 6) {
+            setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
+        } else {
+            const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
+            setpagesToShow(fullList);
+        }
     }, [rendezvousFiltres.length, totalPages]);
 
-            //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
+    //let pagesToShow = [1, 2, 3, "...", totalPages - 1, totalPages];
 
-            const handleClick = (page) => {
-                if (page !== "..." && page !== currentPage) {
-                setCurrentPage(page);
-                }
-            }
+    const handleClick = (page) => {
+        if (page !== "..." && page !== currentPage) {
+            setCurrentPage(page);
+        }
+    }
 
 
 
     //toggle boutton
-    
-    
+
+
     // Remplacer la fonction toggleStatus par annulerRendezVous
-const annulerRendezVous = () => {
-    if (!statutAmodifier) return;
-    
-    const annuler = async () => {
+    const annulerRendezVous = () => {
+        if (!statutAmodifier) return;
+
+        // Empêcher l'annulation des rendez-vous confirmés
+        if (statutAmodifier[1] === "CONFIRME") {
+            if (window.showNotification) {
+                window.showNotification("Les rendez-vous confirmés ne peuvent pas être annulés", "warning");
+            }
+            setPopupstatut(false);
+            setstatutAmodifier(null);
+            return;
+        }
+
+        const annuler = async () => {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await axios.put(`${API_BASE}/rendezvous/${statutAmodifier[0]}/cancel`, {}, {
+                    headers: {
+                        accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+
+                // Mettre à jour la liste des rendez-vous avec le statut "ANNULE"
+                setrendezvous((prevData) =>
+                    prevData.map((item) =>
+                        item.id === statutAmodifier[0] ? { ...item, statut: "ANNULE" } : item
+                    )
+                );
+
+                setPopupstatut(false);
+                setstatutAmodifier(null);
+
+                // Afficher un message de succès
+                if (window.showNotification) {
+                    window.showNotification("Rendez-vous annulé avec succès", "success");
+                }
+
+                console.log(response.data);
+            } catch (error) {
+                console.error('Erreur lors de l\'annulation du rendez-vous:', error);
+
+                // Afficher un message d'erreur
+                if (window.showNotification) {
+                    window.showNotification("Erreur lors de l'annulation du rendez-vous", "error");
+                }
+            }
+        };
+
+        annuler();
+    };
+
+    // Fonction pour gérer le clic sur un rendez-vous annulé
+    const handleRendezVousAnnuleClick = (rendezvous) => {
+        setrendezvousInfo(rendezvous);
+        setPopupInfo(true);
+    };
+
+    // Fonction pour gérer la navigation vers la modification selon le statut
+    const handleModificationClick = (rendezvous) => {
+        if (rendezvous.statut === "ANNULE") {
+            // Pour les rendez-vous annulés, afficher le popup d'information
+            handleRendezVousAnnuleClick(rendezvous);
+            return;
+        }
+
+        if (rendezvous.statut === "TERMINE") {
+            if (window.showNotification) {
+                window.showNotification("Impossible de modifier un rendez-vous terminé", "warning");
+            }
+            return;
+        }
+
+        if (rendezvous.statut === "CONFIRME") {
+            if (window.showNotification) {
+                window.showNotification("Ce rendez-vous est confirmé. Modifications limitées.", "info");
+            }
+        }
+
+        // Navigation vers la modification
+        navigate(`/secretaire/rendezvous/modifier/${rendezvous.id}`);
+    };
+
+
+    const modification = (numeropage) => {
+        let nouvelleListe = [...pagesToShow] // copie de l'ancien tableau
+
+        if (numeropage > 2 && numeropage < totalPages - 2) {
+            nouvelleListe[0] = numeropage - 2
+            nouvelleListe[1] = numeropage - 1
+            nouvelleListe[2] = numeropage
+            nouvelleListe[3] = '...'
+        } else if (numeropage === totalPages - 2) {
+            nouvelleListe[0] = numeropage - 3
+            nouvelleListe[1] = numeropage - 2
+            nouvelleListe[2] = numeropage - 1
+            nouvelleListe[3] = numeropage
+        } else {
+            // Peut-être une autre logique ici ?
+        }
+        console.log(pagesToShow)
+        setpagesToShow(nouvelleListe)
+    }
+
+    // S'assurer que currentPage est toujours valide
+    const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
+    if (validCurrentPage !== currentPage) {
+        setCurrentPage(validCurrentPage);
+    }
+
+    const indexOfLastrendezvous = validCurrentPage * rendezvousPerPage;
+    const indexOfFirstrendezvous = indexOfLastrendezvous - rendezvousPerPage;
+    const currentrendezvous = rendezvousFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
+
+
+    //
+
+    //aficher les détails d'un rendezvous
+    //const [user, setuser] = useState({})
+
+    //
+    const navigate = useNavigate();
+
+    const handleRowClick = (rendezvous) => {
+        // Si le rendez-vous est annulé, afficher le popup d'information au lieu de naviguer
+        if (rendezvous.statut === "ANNULE") {
+            handleRendezVousAnnuleClick(rendezvous);
+            return;
+        }
+        navigate(`/secretaire/rendezvous/viewrendezvous/${rendezvous.id}`);
+    };
+
+
+
+    // Modifier la fonction supprimerrendezvous
+    const supprimerrendezvous = async () => {
+        if (!rendezvousASupprimer) return;
+
         const token = localStorage.getItem('token');
         try {
-            const response = await axios.put(`${API_BASE}/rendezvous/${statutAmodifier[0]}/cancel`, {}, {
+            await axios.delete(`${API_BASE}/rendezvous/${rendezvousASupprimer}`, {
                 headers: {
                     accept: 'application/json',
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 },
             });
-            
-            // Mettre à jour la liste des rendez-vous avec le statut "ANNULE"
-            setrendezvous((prevData) =>
-                prevData.map((item) =>
-                    item.id === statutAmodifier[0] ? { ...item, statut: "ANNULE" } : item
-                )
+
+            // Mettre à jour la liste des rendez-vous
+            setrendezvous((prevrendezvous) =>
+                prevrendezvous.filter((u) => u.id !== rendezvousASupprimer)
             );
-            
-            setPopupstatut(false);
-            setstatutAmodifier(null);
-            
+
+            setPopupsupprime(false);
+            setrendezvousASupprimer(null);
+
             // Afficher un message de succès
             if (window.showNotification) {
-                window.showNotification("Rendez-vous annulé avec succès", "success");
+                window.showNotification("Rendez-vous supprimé avec succès", "success");
             }
-            
-            console.log(response.data);
+
+            console.log(`rendezvous ${rendezvousASupprimer} supprimé`);
         } catch (error) {
-            console.error('Erreur lors de l\'annulation du rendez-vous:', error);
-            
+            console.error('Erreur lors de la suppression :', error);
+
             // Afficher un message d'erreur
             if (window.showNotification) {
-                window.showNotification("Erreur lors de l'annulation du rendez-vous", "error");
+                window.showNotification("Erreur lors de la suppression du rendez-vous", "error");
             }
         }
     };
-    
-    annuler();
-};
-
-    
-         
-    
 
 
+    if (isloading) return <p>Chargement...</p>;
 
+    if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
+    return (<>
+        {/* Modal de suppression */}
+        <ConfirmationModal
+            isOpen={Popupsupprime}
+            onClose={() => setPopupsupprime(false)}
+            title="Confirmation de suppression"
+            message="Êtes-vous sûr de vouloir supprimer ce rendez-vous ?"
+            confirmText="Supprimer"
+            cancelText="Annuler"
+            onConfirm={supprimerrendezvous}
+            confirmType="danger"
+        />
 
-    const modification = (numeropage) => {
-    let nouvelleListe = [...pagesToShow] // copie de l'ancien tableau
+        {/* Modal de changement de statut */}
+        <ConfirmationModal
+            isOpen={Popupstatut}
+            onClose={() => setPopupstatut(false)}
+            title="Confirmation d'annulation"
+            message="Voulez-vous annuler ce rendez-vous ?"
+            confirmText="Oui, annuler"
+            cancelText="Non"
+            onConfirm={annulerRendezVous}
+            confirmType="warning"
+        />
 
-    if (numeropage > 2 && numeropage < totalPages - 2) {
-        nouvelleListe[0] = numeropage - 2
-        nouvelleListe[1] = numeropage - 1
-        nouvelleListe[2] = numeropage
-        nouvelleListe[3] = '...'
-    } else if (numeropage === totalPages - 2) {
-        nouvelleListe[0] = numeropage - 3
-        nouvelleListe[1] = numeropage - 2
-        nouvelleListe[2] = numeropage - 1
-        nouvelleListe[3] = numeropage
-    } else {
-        // Peut-être une autre logique ici ?
-    }
-    console.log(pagesToShow)
-    setpagesToShow(nouvelleListe)
-    }
+        {/* Modal d'information pour rendez-vous annulé */}
+        <InfoModal
+            isOpen={PopupInfo}
+            onClose={() => setPopupInfo(false)}
+            title="Rendez-vous annulé"
+            message="Ce rendez-vous est annulé. Impossible de le réactiver. Veuillez le supprimer et créer un nouveau rendez-vous si nécessaire."
+            buttonText="Compris"
+        />
 
-    // S'assurer que currentPage est toujours valide
-    const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages));
-    if (validCurrentPage !== currentPage) {
-      setCurrentPage(validCurrentPage);
-    }
-    
-    const indexOfLastrendezvous = validCurrentPage * rendezvousPerPage;
-    const indexOfFirstrendezvous = indexOfLastrendezvous - rendezvousPerPage;
-    const currentrendezvous = rendezvousFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
-    
+        <SousDiv1Style>
+            <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil={nomprofil}>
+                <Span1>Liste des rendez vous</Span1>
+            </Barrehorizontal1>
+        </SousDiv1Style>
 
-    //
-
-    //aficher les détails d'un rendezvous
-        //const [user, setuser] = useState({})
-        
-    //
-     const navigate = useNavigate();
-
-  const handleRowClick = (rendezvous) => {
-    navigate(`/secretaire/rendezvous/viewrendezvous/${rendezvous.id}`);
-  };
-
-
-
-  // Modifier la fonction supprimerrendezvous
-const supprimerrendezvous = async () => {
-    if (!rendezvousASupprimer) return;
-
-    const token = localStorage.getItem('token');
-    try {
-        await axios.delete(`${API_BASE}/rendezvous/${rendezvousASupprimer}`, {
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        // Mettre à jour la liste des rendez-vous
-        setrendezvous((prevrendezvous) =>
-            prevrendezvous.filter((u) => u.id !== rendezvousASupprimer)
-        );
-
-        setPopupsupprime(false);
-        setrendezvousASupprimer(null);
-        
-        // Afficher un message de succès
-        if (window.showNotification) {
-            window.showNotification("Rendez-vous supprimé avec succès", "success");
-        }
-        
-        console.log(`rendezvous ${rendezvousASupprimer} supprimé`);
-    } catch (error) {
-        console.error('Erreur lors de la suppression :', error);
-        
-        // Afficher un message d'erreur
-        if (window.showNotification) {
-            window.showNotification("Erreur lors de la suppression du rendez-vous", "error");
-        }
-    }
-};
-
-
-  if (isloading) return <p>Chargement...</p>;
-
-  if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
-    return(<>
-    {/* Modal de suppression */}
-    <ConfirmationModal
-        isOpen={Popupsupprime}
-        onClose={() => setPopupsupprime(false)}
-        title="Confirmation de suppression"
-        message="Êtes-vous sûr de vouloir supprimer ce rendez-vous ?"
-        confirmText="Supprimer"
-        cancelText="Annuler"
-        onConfirm={supprimerrendezvous}
-        confirmType="danger"
-    />
-
-    {/* Modal de changement de statut */}
-    <ConfirmationModal
-        isOpen={Popupstatut}
-        onClose={() => setPopupstatut(false)}
-        title="Confirmation d'annulation"
-        message="Voulez-vous annuler ce rendez-vous ?"
-        confirmText="Oui, annuler"
-        cancelText="Non"
-        onConfirm={annulerRendezVous}
-        confirmType="warning"
-    />
-
-    {/* Supprimer l'ancien Overlay et les anciens popups */}
-    {/* <Overlay onClick={() => setPopupsupprime(false)} $Overlaydisplay = {Popupsupprime || Popupstatut ? 'block' : 'none'}/>
-        <Popupsuppr $Popupsupprdisplay = {Popupsupprime ? 'flex' : 'none'}>
-            <p>voulez-vous supprimer cet rendezvous ?</p>
-            <Containbouttonpopup>
-                <Bouttonpopup onClick={supprimerrendezvous}> oui </Bouttonpopup>
-                <Bouttonpopup onClick={()=> setPopupsupprime(false)}> non </Bouttonpopup>
-            </Containbouttonpopup>
-        </Popupsuppr>
-        <Popupstat $Popupstatutdisplay={Popupstatut ? 'flex' : 'none'}>
-            <p>Voulez-vous annuler ce rendez-vous ?</p>
-            <Containbouttonpopup>
-                <Bouttonpopup onClick={annulerRendezVous}>Oui</Bouttonpopup>
-                <Bouttonpopup onClick={() => setPopupstatut(false)}>Non</Bouttonpopup>
-            </Containbouttonpopup>
-        </Popupstat> */}
-            <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil={nomprofil}> 
-                    <Span1>Liste des rendez vous</Span1>
-                </Barrehorizontal1>
-            </SousDiv1Style>
-            
-            <SousDiv2Style >
-                <div className='affichebarh2'
+        <SousDiv2Style >
+            <div className='affichebarh2'
                 style={{
-                  marginTop: '-20px',
+                    marginTop: '-20px',
                 }}
-                >
-                    <div className='recherche'>
-                        <img className='iconburger' src={iconburger}></img>
-                        <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
-                        <img className='iconrecherche' src={iconrecherche}></img>
-                    </div>
-                    <Link to="/secretaire/patient?focus=patient"><button className='add-button add-button-with-icon'> <span>+</span> Créer un rendez-vous</button></Link>
+            >
+                <div className='recherche'>
+                    <img className='iconburger' src={iconburger}></img>
+                    <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici' value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
+                    <img className='iconrecherche' src={iconrecherche}></img>
                 </div>
-                  
-                
-                
-                <div className='zonedaffichage'>
-                    <div className='numero'>
-                            <div>
-                                <h2 className='nomtable'> Rendez-vous </h2>
-                            </div>
-                            <Pagination
-                              currentPage={currentPage}
-                              totalPages={totalPages}
-                              onPageChange={setCurrentPage}
-                              onModification={modification}
-                              itemsPerPage={rendezvousPerPage}
-                              totalItems={rendezvousFiltres.length}
-                            />
-                            
+                <Link to="/secretaire/patient?focus=patient"><button className='add-button add-button-with-icon'> <span>+</span> Créer un rendez-vous</button></Link>
+            </div>
+
+
+
+            <div className='zonedaffichage'>
+                <div className='numero'>
+                    <div>
+                        <h2 className='nomtable'> Rendez-vous </h2>
                     </div>
-                        <div className='conteneurbarre'>
-                            <div className='barre'></div>
-                        </div>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage}
+                        onModification={modification}
+                        itemsPerPage={rendezvousPerPage}
+                        totalItems={rendezvousFiltres.length}
+                    />
+
+                </div>
+                <div className='conteneurbarre'>
+                    <div className='barre'></div>
+                </div>
                 <div className='affichetableau'>
-                   
+
                     <table className='tableau-2'>
                         <thead>
-                        <tr>
-                            
-                            <th className='th'>Jour</th>
-                            <th className='th'>Heure</th>
-                            <th className='th'>Service medical</th>
-                            <th className='th'>Nom du patient</th>
-                            <th className='th'>Nom du medecin</th>
-                            <th className='th'>Nom de la salle</th>
-                            <th className='th'>Statut</th>
-                            <th className='th'>Action</th>
-                           
-                        </tr>
+                            <tr>
+
+                                <th className='th'>Jour</th>
+                                <th className='th'>Heure</th>
+                                <th className='th'>Service medical</th>
+                                <th className='th'>Nom du patient</th>
+                                <th className='th'>Nom du medecin</th>
+                                <th className='th'>Nom de la salle</th>
+                                <th className='th'>Statut</th>
+                                <th className='th'>Action</th>
+
+                            </tr>
                         </thead>
                         <tbody>
-                        {currentrendezvous.map((rendezvous) => (
-                           <tr key={rendezvous.id} className='tr'>
-    
-                            
-                            
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.jour}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.heure}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.serviceMedical}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.nomSalle}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>
-    {rendezvous.statut}
-</td>
-                             <td className='td bouttons'>
-                                <button
-                                    onClick={() => {
-                                        setstatutAmodifier([rendezvous.id, rendezvous.statut]);
-                                        setPopupstatut(true);
-                                    }}
-                                    className={`toggle-button ${rendezvous.statut === "ANNULE" ? "on" : ""}`}
-                                    title={rendezvous.statut === "ANNULE" ? "Rendez-vous annulé" : "Cliquer pour annuler"}
-                                >
-                                    <div className={`circle ${rendezvous.statut ? "" : "active"}`}></div>
-                                </button>
-                                <button onClick={() => {setrendezvousASupprimer(rendezvous.id);setPopupsupprime(true);}}>
-                                    <img src={iconsupprime} className='iconsupprime' alt="Supprimer"></img>
-                                </button>  
-                            </td>
-                            </tr>
-                        ))}
+                            {currentrendezvous.map((rendezvous) => (
+                                <tr key={rendezvous.id} className={`tr ${
+                                    rendezvous.statut === "ANNULE" ? "rendezvous-annule" :
+                                    rendezvous.statut === "TERMINE" ? "rendezvous-termine" :
+                                    rendezvous.statut === "CONFIRME" ? "rendezvous-confirme" : ""
+                                }`}>
+
+
+
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.jour}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.heure}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.serviceMedical}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.patientNomComplet ? rendezvous.patientNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ') : ''}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.medecinNomComplet ? rendezvous.medecinNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ') : ''}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.nomSalle}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>
+                                        {rendezvous.statut}
+                                    </td>
+                                    <td className='td bouttons'>
+                                        {/* Toggle button - désactivé pour les rendez-vous annulés, confirmés et terminés */}
+                                        <input
+                                            type="checkbox"
+                                            checked={rendezvous.statut === "ANNULE"}
+                                            onChange={() => {
+                                                // Désactiver pour les rendez-vous CONFIRME, TERMINE et ANNULE
+                                                if (rendezvous.statut === "CONFIRME" || rendezvous.statut === "TERMINE" || rendezvous.statut === "ANNULE") {
+                                                    if (rendezvous.statut === "ANNULE") {
+                                                        handleRendezVousAnnuleClick(rendezvous);
+                                                    }
+                                                    return;
+                                                }
+                                                setstatutAmodifier([rendezvous.id, rendezvous.statut]);
+                                                setPopupstatut(true);
+                                            }}
+                                            className={`toggle-button ${
+                                                rendezvous.statut === "CONFIRME" ? "disabled-confirme" : 
+                                                rendezvous.statut === "TERMINE" ? "disabled-termine" : 
+                                                rendezvous.statut === "ANNULE" ? "disabled-annule" : ""
+                                            }`}
+                                            title={
+                                                rendezvous.statut === "ANNULE" ? "Rendez-vous annulé - impossible de réactiver" : 
+                                                rendezvous.statut === "CONFIRME" ? "Rendez-vous confirmé - ne peut pas être annulé" :
+                                                rendezvous.statut === "TERMINE" ? "Rendez-vous terminé" :
+                                                "Cliquer pour annuler"
+                                            }
+                                            disabled={rendezvous.statut === "CONFIRME" || rendezvous.statut === "TERMINE" || rendezvous.statut === "ANNULE"}
+                                        />
+
+                                        {/* Bouton de suppression - désactivé pour les rendez-vous terminés */}
+                                        <button 
+                                            onClick={() => { 
+                                                // Désactiver pour les rendez-vous TERMINE
+                                                if (rendezvous.statut === "TERMINE") {
+                                                    return;
+                                                }
+                                                setrendezvousASupprimer(rendezvous.id); 
+                                                setPopupsupprime(true); 
+                                            }}
+                                            className={`delete-button ${rendezvous.statut === "TERMINE" ? "disabled-termine" : ""}`}
+                                            title={
+                                                rendezvous.statut === "TERMINE" ? "Rendez-vous terminé - ne peut pas être supprimé" :
+                                                "Supprimer le rendez-vous"
+                                            }
+                                            disabled={rendezvous.statut === "TERMINE"}
+                                        >
+                                            <img src={iconsupprime} className='iconsupprime' alt="Supprimer"></img>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
-                   
-                    </div>
-                </div>
 
-               
-                
-            </SousDiv2Style>
-    </>)   
+                </div>
+            </div>
+
+
+
+        </SousDiv2Style>
+    </>)
 }
 export default Rendezvous

@@ -132,9 +132,9 @@ useEffect(() => {
     console.log(pagesToShow) 
 
 
-    //toggle boutton
+    // boutton
 
-    const toggleStatus = (id) => {
+    const Status = (id) => {
     setutilisateurs((prevData) =>
       prevData.map((item) =>
         item.id === id ? { ...item, isActive: !item.isActive } : item
@@ -231,7 +231,7 @@ const modification = (numeropage) => {
         </thead>
         <tbody>
           {currentutilisateurs.map((utilisateur, index) => (
-            <tr key={index}>
+            <tr key={index} className='tr'>
               <td><input
                     type="checkbox"
                     checked={selectedutilisateurs.includes(utilisateur.id)}
@@ -245,8 +245,8 @@ const modification = (numeropage) => {
               <td className={`${utilisateur.isActive ? "off" : ""}`}>{utilisateur.isActive ? "inactive" : "actif"}</td>
               <td className='bouttons'>
                 <button
-                    onClick={() => toggleStatus(utilisateur.id)}
-                    className={`toggle-button ${utilisateur.isActive ? "on" : ""}`}
+                    onClick={() => Status(utilisateur.id)}
+                    className={`-button ${utilisateur.isActive ? "on" : ""}`}
                     >
                 <div className={ `circle  ${utilisateur.isActive  ? "active" : ""}`} ></div></button>
                 <button>🗑️</button>

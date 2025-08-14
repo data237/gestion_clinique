@@ -2,6 +2,8 @@ import '../../styles/tableau.css'
 import '../../styles/Zonedaffichage.css'
 import '../../styles/Barrehorizontal2.css'
 import '../../styles/add-buttons.css'
+import '../../styles/action-buttons.css'
+import '../../styles/rendezvous-status.css'
 import Styled from 'styled-components'
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
@@ -113,7 +115,18 @@ function Utilisateur() {
 
     const utilisateursPerPage = 8;
 
-
+    // Fonction utilitaire pour extraire le nom du service médical
+    const getServiceMedicalName = (utilisateur) => {
+        // Vérifier d'abord si l'utilisateur a un service médical
+        if (utilisateur.serviceMedicalName) {
+            return utilisateur.serviceMedicalName;
+        }
+        else if (utilisateur.role && utilisateur.role.roleType === 'MEDECIN') {
+            return 'Service non défini';
+        } else {
+            return '—';
+        }
+    };
 
     useEffect(() => {
         startLoading('fetchUtilisateurs');
@@ -130,8 +143,24 @@ function Utilisateur() {
                     },);
                 console.log(token);
                 if (response && response.data) {
-                    setutilisateurs(response.data);
-                    setutilisateursFiltres(response.data);
+                    // Trier les utilisateurs par ordre décroissant (plus récent en premier)
+                    const utilisateursTries = response.data.sort((a, b) => {
+                        // Trier par ID (plus récent en premier)
+                        return b.id - a.id;
+                    });
+                    
+                    // Debug: afficher la structure du premier utilisateur
+                    if (utilisateursTries.length > 0) {
+                        console.log('Structure utilisateur complète:', utilisateursTries[0]);
+                        console.log('Propriétés disponibles:', Object.keys(utilisateursTries[0]));
+                        console.log('Service médical direct:', utilisateursTries[0].serviceMedicalName);
+                        console.log('Service médical possible:', utilisateursTries[0].serviceMedical);
+                        console.log('Service médical nom:', utilisateursTries[0].serviceMedicalNom);
+                        console.log('Service médical objet:', utilisateursTries[0].serviceMedical);
+                    }
+                    
+                    setutilisateurs(utilisateursTries);
+                    setutilisateursFiltres(utilisateursTries);
                 } else {
                     setErreur('Données introuvables');
                 }
@@ -154,12 +183,16 @@ function Utilisateur() {
 
         const recherche = valeurrecherche.toLowerCase();
 
-        const resultats = utilisateurs.filter((u) =>
-            u.nom.toLowerCase().includes(recherche) ||
-            u.prenom.toLowerCase().includes(recherche) ||
-            u.email.toLowerCase().includes(recherche) ||
-            u.role.roleType.toLowerCase().includes(recherche)
-        );
+        const resultats = utilisateurs.filter((u) => {
+            const serviceMedical = getServiceMedicalName(u);
+            const serviceMedicalText = typeof serviceMedical === 'string' ? serviceMedical : serviceMedical.props?.children || '';
+            
+            return u.nom.toLowerCase().includes(recherche) ||
+                   u.prenom.toLowerCase().includes(recherche) ||
+                   u.email.toLowerCase().includes(recherche) ||
+                   u.role.roleType.toLowerCase().includes(recherche) ||
+                   serviceMedicalText.toLowerCase().includes(recherche);
+        });
 
         setutilisateursFiltres(resultats);
     }, [valeurrecherche, utilisateurs]);
@@ -343,6 +376,7 @@ function Utilisateur() {
                                 <th className='th'>Nom</th>
                                 <th className='th'>Prénom</th>
                                 <th className='th'>Email</th>
+                                <th className='th'>Service médical</th>
                                 <th className='th'>Rôle</th>
                                 <th className='th'>Statut</th>
                                 <th className='action th'>Action</th>
@@ -350,33 +384,37 @@ function Utilisateur() {
                         </thead>
                         <tbody>
                             {currentutilisateurs.map((utilisateur) => (
-                                <tr key={utilisateur.id} className='tr'>
-                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.nom}</td>
-                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.prenom}</td>
+                                <tr key={utilisateur.id} className={`tr ${
+                                    !utilisateur.actif ? "rendezvous-termine" : ""
+                                }`}>
+                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.nom ? utilisateur.nom.charAt(0).toUpperCase() + utilisateur.nom.slice(1).toLowerCase() : ''}</td>
+                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.prenom ? utilisateur.prenom.charAt(0).toUpperCase() + utilisateur.prenom.slice(1).toLowerCase() : ''}</td>
                                     <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.email}</td>
+                                    <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{getServiceMedicalName(utilisateur)}</td>
                                     <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.role.roleType}</td>
                                     <td className={`${utilisateur.actif ? "" : "off"} td`} onClick={() => { handleRowClick(utilisateur) }}>{utilisateur.actif ? "actif" : "inactif"}</td>
                                     <td className='td bouttons'>
-                                        <button
-                                            onClick={() => {
+                                        <input
+                                            type="checkbox"
+                                            checked={utilisateur.actif}
+                                            onChange={() => {
                                                 showConfirmation({
                                                     title: "Modification du statut",
-                                                    content: `Voulez-vous ${utilisateur.actif ? 'désactiver' : 'activer'} l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} ?`,
+                                                    content: `Voulez-vous ${utilisateur.actif ? 'désactiver' : 'activer'} l'utilisateur ${utilisateur.nom ? utilisateur.nom.charAt(0).toUpperCase() + utilisateur.nom.slice(1).toLowerCase() : ''} ${utilisateur.prenom ? utilisateur.prenom.charAt(0).toUpperCase() + utilisateur.prenom.slice(1).toLowerCase() : ''} ?`,
                                                     onConfirm: () => toggleStatus(utilisateur.id, utilisateur.actif),
                                                     confirmText: "Confirmer",
                                                     cancelText: "Annuler"
                                                 });
                                             }}
-                                            className={`toggle-button ${utilisateur.actif ? "" : "on"}`}
+                                            className={`toggle-button ${utilisateur.actif ? "admin-active" : "disabled-termine"}`}
                                             disabled={isLoading('toggleStatus')}
-                                        >
-                                            <div className={`circle  ${utilisateur.actif ? "" : "active"}`} ></div>
-                                        </button>
+                                            title={utilisateur.actif ? "Utilisateur actif - cliquer pour désactiver" : "Utilisateur inactif - cliquer pour activer"}
+                                        />
                                         <button
                                             onClick={() => {
                                                 showConfirmation({
                                                     title: "Suppression d'utilisateur",
-                                                    content: `Voulez-vous vraiment supprimer l'utilisateur ${utilisateur.nom} ${utilisateur.prenom} ?`,
+                                                    content: `Voulez-vous vraiment supprimer l'utilisateur ${utilisateur.nom ? utilisateur.nom.charAt(0).toUpperCase() + utilisateur.nom.slice(1).toLowerCase() : ''} ${utilisateur.prenom ? utilisateur.prenom.charAt(0).toUpperCase() + utilisateur.prenom.slice(1).toLowerCase() : ''} ?`,
                                                     onConfirm: () => supprimerUtilisateur(utilisateur.id),
                                                     confirmText: "Supprimer",
                                                     cancelText: "Annuler",
@@ -384,6 +422,7 @@ function Utilisateur() {
                                                 });
                                             }}
                                             disabled={isLoading('deleteUser')}
+                                            className="delete-button"
                                         >
                                             <img src={iconsupprime} className='iconsupprime'></img>
                                         </button>

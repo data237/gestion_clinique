@@ -157,8 +157,6 @@ const ButtonRow = Styled.div`
 `;
 
 const Button = Styled.button`
-
-  
   &:hover {
     background-color: ${props => props.primary ? 'rgba(139, 139, 235, 1)' : 'rgba(239, 239, 255, 1)'};
     transform: translateY(-1px);
@@ -188,6 +186,37 @@ const HelpMessage = Styled.span`
   font-size: 11px;
   margin-top: 2px;
   font-style: italic;
+`;
+
+// Style pour le formulaire flouté quand le statut est TERMINE
+const BlurredFormContainer = Styled(FormContainer)`
+  filter: blur(2px);
+  pointer-events: none;
+  opacity: 0.6;
+`;
+
+// Message d'information sur le statut
+const StatusMessage = Styled.div`
+  background-color: ${props => {
+    if (props.status === 'TERMINE') return 'rgba(255, 193, 7, 0.1)';
+    if (props.status === 'CONFIRME') return 'rgba(40, 167, 69, 0.1)';
+    return 'rgba(108, 117, 125, 0.1)';
+  }};
+  border: 1px solid ${props => {
+    if (props.status === 'TERMINE') return 'rgba(255, 193, 7, 0.3)';
+    if (props.status === 'CONFIRME') return 'rgba(40, 167, 69, 0.3)';
+    return 'rgba(108, 117, 125, 0.3)';
+  }};
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 500;
+  color: ${props => {
+    if (props.status === 'TERMINE') return '#856404';
+    if (props.status === 'CONFIRME') return '#155724';
+    return '#495057';
+  }};
 `;
 
 const ModifierRendezVous = () => {
@@ -301,8 +330,6 @@ const ModifierRendezVous = () => {
     fetchMedecins();
   }, [formData.jour, formData.heure, formData.serviceMedical]);
 
-
-
   const navigate = useNavigate();
   
   const handleClick = () => {
@@ -326,6 +353,32 @@ const ModifierRendezVous = () => {
     navigate(`/secretaire/rendezvous/viewrendezvous/${id}`);
   };
 
+  // Fonction pour déterminer si un champ peut être modifié selon le statut
+  const canEditField = (fieldName) => {
+    if (rendezvous?.statut === 'TERMINE') {
+      return false; // Aucun champ modifiable si TERMINE
+    }
+    
+    if (rendezvous?.statut === 'CONFIRME') {
+      // Seulement la date et l'heure peuvent être modifiées si CONFIRME
+      return fieldName === 'jour' || fieldName === 'heure';
+    }
+    
+    // Pour les autres statuts, tous les champs sont modifiables
+    return true;
+  };
+
+  // Fonction pour obtenir le message de statut approprié
+  const getStatusMessage = () => {
+    if (rendezvous?.statut === 'TERMINE') {
+      return "Ce rendez-vous est terminé et ne peut plus être modifié";
+    }
+    if (rendezvous?.statut === 'CONFIRME') {
+      return "Ce rendez-vous est confirmé. Seule la date et l'heure peuvent être modifiées";
+    }
+    return null;
+  };
+
   // Fonction pour valider l'heure (entre 7h00 et 20h00)
   const validateTime = (time) => {
     const [hours, minutes] = time.split(':').map(Number);
@@ -346,6 +399,11 @@ const ModifierRendezVous = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     
+    // Si le statut est TERMINE, ne pas permettre de modification
+    if (rendezvous?.statut === 'TERMINE') {
+      return;
+    }
+    
     // Mettre à jour le formulaire sans validation immédiate
     setFormData(prev => ({ ...prev, [name]: value }));
     
@@ -358,6 +416,11 @@ const ModifierRendezVous = () => {
   // Fonction pour valider un champ spécifique après la saisie
   const handleBlur = (e) => {
     const { name, value } = e.target;
+    
+    // Si le statut est TERMINE, ne pas permettre de validation
+    if (rendezvous?.statut === 'TERMINE') {
+      return;
+    }
     
     // Validation seulement quand l'utilisateur quitte le champ
     if (name === 'jour' && value) {
@@ -382,6 +445,11 @@ const ModifierRendezVous = () => {
   const validateForm = () => {
     const errors = {};
     let hasErrors = false;
+
+    // Si le statut est TERMINE, ne pas valider
+    if (rendezvous?.statut === 'TERMINE') {
+      return false;
+    }
 
     if (!formData.medecinId) {
       errors.medecinId = 'Le médecin est obligatoire';
@@ -421,6 +489,14 @@ const ModifierRendezVous = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     
+    // Si le statut est TERMINE, ne pas permettre de soumission
+    if (rendezvous?.statut === 'TERMINE') {
+      if (window.showNotification) {
+        window.showNotification("Impossible de modifier un rendez-vous terminé", "error");
+      }
+      return;
+    }
+    
     if (!validateForm()) {
       return;
     }
@@ -449,7 +525,21 @@ const ModifierRendezVous = () => {
     const token = localStorage.getItem('token');
     
     try {
-      await axios.put(`${API_BASE}/rendezvous/${id}`, formData, {
+      // Préparer les données à envoyer selon le statut
+      let dataToSend = {};
+      
+      if (rendezvous?.statut === 'CONFIRME') {
+        // Si CONFIRME, ne modifier que la date et l'heure
+        dataToSend = {
+          jour: formData.jour,
+          heure: formData.heure
+        };
+      } else {
+        // Pour les autres statuts, envoyer toutes les données
+        dataToSend = formData;
+      }
+      
+      await axios.put(`${API_BASE}/rendezvous/${id}`, dataToSend, {
         headers: {
           accept: 'application/json',
           Authorization: `Bearer ${token}`,
@@ -457,9 +547,13 @@ const ModifierRendezVous = () => {
         },
       });
 
-      // Afficher un message de succès
+      // Afficher un message de succès approprié
       if (window.showNotification) {
-        window.showNotification("Rendez-vous modifié avec succès", "success");
+        if (rendezvous?.statut === 'CONFIRME') {
+          window.showNotification("Date et heure du rendez-vous modifiées avec succès", "success");
+        } else {
+          window.showNotification("Rendez-vous modifié avec succès", "success");
+        }
       }
 
       // Rediriger vers la vue détaillée
@@ -490,6 +584,9 @@ const ModifierRendezVous = () => {
   
   if (erreur) return <p style={{ color: 'red' }}>{erreur}</p>;
 
+  // Déterminer le composant de formulaire à utiliser selon le statut
+  const FormComponent = rendezvous?.statut === 'TERMINE' ? BlurredFormContainer : FormContainer;
+
   return (
     <>
       <SousDiv1Style>
@@ -501,13 +598,20 @@ const ModifierRendezVous = () => {
       
       <Affichedetailuser>
         <Form onSubmit={handleSubmit}>
-          <FormContainer>
+          <FormComponent>
             <Title>
               <Title1>Modifier le rendez-vous</Title1>
               <Title2 onClick={handleViewClick}>Voir les détails</Title2>
             </Title>
             
             <TraitHorizontal></TraitHorizontal>
+            
+            {/* Message d'information sur le statut */}
+            {getStatusMessage() && (
+              <StatusMessage status={rendezvous?.statut}>
+                {getStatusMessage()}
+              </StatusMessage>
+            )}
             
             <FormRow>
               <FormGroup>
@@ -534,6 +638,7 @@ const ModifierRendezVous = () => {
                   onBlur={handleBlur}
                   className={fieldErrors.jour ? 'error' : ''}
                   min={new Date().toISOString().split('T')[0]}
+                  disabled={!canEditField('jour')}
                 />
                 {fieldErrors.jour && <ErrorMessage>{fieldErrors.jour}</ErrorMessage>}
                 <HelpMessage>Date minimale : aujourd'hui</HelpMessage>
@@ -550,6 +655,7 @@ const ModifierRendezVous = () => {
                   className={fieldErrors.heure ? 'error' : ''}
                   min="07:00"
                   max="20:00"
+                  disabled={!canEditField('heure')}
                 />
                 {fieldErrors.heure && <ErrorMessage>{fieldErrors.heure}</ErrorMessage>}
                 <HelpMessage>Heures autorisées : 7h00 à 20h00</HelpMessage>
@@ -557,7 +663,7 @@ const ModifierRendezVous = () => {
             </FormRow>
 
             <FormRow>
-            <FormGroup>
+              <FormGroup>
                 <Label htmlFor="serviceMedical">Service médical *</Label>
                 <Select
                   id="serviceMedical"
@@ -565,6 +671,7 @@ const ModifierRendezVous = () => {
                   value={formData.serviceMedical}
                   onChange={handleChange}
                   className={fieldErrors.serviceMedical ? 'error' : ''}
+                  disabled={!canEditField('serviceMedical')}
                 >
                   <option value="">Sélectionner un service</option>
                   <option value="MEDECINE_GENERALE">Médecine Générale</option>
@@ -596,7 +703,7 @@ const ModifierRendezVous = () => {
                   value={formData.medecinId}
                   onChange={handleChange}
                   className={fieldErrors.medecinId ? 'error' : ''}
-                  disabled={!formData.jour || !formData.heure || !formData.serviceMedical}
+                  disabled={!canEditField('medecinId') || !formData.jour || !formData.heure || !formData.serviceMedical}
                 >
                   <option value="">
                     {!formData.jour || !formData.heure || !formData.serviceMedical 
@@ -628,22 +735,25 @@ const ModifierRendezVous = () => {
                   value={formData.notes}
                   onChange={handleChange}
                   placeholder="Notes optionnelles sur le rendez-vous..."
+                  disabled={!canEditField('notes')}
                 />
               </FormGroup>
             </FormRow>
-
-            
-          </FormContainer>
+          </FormComponent>
+          
           <ButtonRow>
-              <Button type="button" className="cancel-button" onClick={handleAnnuler}>
-                Annuler
-              </Button>
-              <Button type="submit" className="submit-button" disabled={isSubmitting}>
-                {isSubmitting ? 'Modification...' : 'Modifier le rendez-vous'}
-              </Button>
-            </ButtonRow>
+            <Button type="button" className="cancel-button" onClick={handleAnnuler}>
+              Annuler
+            </Button>
+            <Button 
+              type="submit" 
+              className="submit-button" 
+              disabled={isSubmitting || rendezvous?.statut === 'TERMINE'}
+            >
+              {isSubmitting ? 'Modification...' : 'Modifier le rendez-vous'}
+            </Button>
+          </ButtonRow>
         </Form>
-        
       </Affichedetailuser>
       
       {/* Modal de confirmation */}

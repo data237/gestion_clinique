@@ -194,7 +194,7 @@ const FormulairePatient = () => {
   prenom: "",
   email: "",
   dateNaissance: "",
-  telephone: "",
+  telephone: "+237",
   adresse: "",
   genre: "",
   dossierMedical: {
@@ -221,6 +221,21 @@ const handleChange = e => {
         [field]: value
       }
     }));
+  } else if (name === "telephone") {
+    // Gestion spéciale pour le téléphone
+    // Permettre seulement les chiffres et le + au début
+    const cleanedValue = value.replace(/[^\d+]/g, '');
+    
+    // S'assurer que le + est toujours au début
+    if (cleanedValue.startsWith('+')) {
+      setFormData(prev => ({ ...prev, [name]: cleanedValue }));
+    } else if (cleanedValue.startsWith('237')) {
+      // Si l'utilisateur tape 237, ajouter automatiquement le +
+      setFormData(prev => ({ ...prev, [name]: '+' + cleanedValue }));
+    } else {
+      // Sinon, ajouter +237 par défaut
+      setFormData(prev => ({ ...prev, [name]: '+237' + cleanedValue }));
+    }
   } else {
     setFormData(prev => ({
       ...prev,
@@ -256,6 +271,17 @@ const handleChange = e => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       window.showNotification('Veuillez entrer une adresse email valide', 'error');
+      return;
+    }
+
+    // Validation du téléphone
+    const phoneNumber = formData.telephone.replace(/[^\d]/g, ''); // Enlever tout sauf les chiffres
+    if (phoneNumber.length < 13) {
+      window.showNotification('Le numéro de téléphone doit contenir au moins 13 chiffres (indicatif inclus)', 'error');
+      return;
+    }
+    if (phoneNumber.length > 13) {
+      window.showNotification('Le numéro de téléphone ne doit pas contenir plus de 13 chiffres (indicatif inclus)', 'error');
       return;
     }
 
@@ -375,8 +401,16 @@ const handleChange = e => {
                 <FormRow>
                   
                   <FormGroup>
-                    <Label htmlFor="telephone">telephone</Label>
-                    <Input id="telephone" name="telephone" value={formData.telephone} onChange={handleChange} />
+                    <Label htmlFor="telephone">Téléphone</Label>
+                    <Input 
+                      id="telephone" 
+                      name="telephone" 
+                      type="tel"
+                      value={formData.telephone} 
+                      onChange={handleChange}
+                      placeholder="+237XXXXXXXXX"
+                      title="Format: +237 suivi de 9 chiffres minimum"
+                    />
                   </FormGroup>
                 </FormRow>
                 <TraitHorizontal2></TraitHorizontal2>

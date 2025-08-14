@@ -189,7 +189,7 @@ const FormulaireUtilisateur = () => {
   prenom: "",
   email: "",
   dateNaissance: "",
-  telephone: "",
+  telephone: "+237",
   adresse: "",
   genre: "m",
   password: "",
@@ -199,12 +199,51 @@ const FormulaireUtilisateur = () => {
 
   });
   const [isVisible, setisVisible] = useState(false)
+  const [telephoneError, setTelephoneError] = useState("")
+  const [telephoneValid, setTelephoneValid] = useState(false)
     
   
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Gestion spéciale pour le téléphone
+    if (name === "telephone") {
+      // Permettre seulement les chiffres et le + au début
+      const cleanedValue = value.replace(/[^\d+]/g, '');
+      
+      // S'assurer que le + est toujours au début
+      if (cleanedValue.startsWith('+')) {
+        setFormData(prev => ({ ...prev, [name]: cleanedValue }));
+      } else if (cleanedValue.startsWith('237')) {
+        // Si l'utilisateur tape 237, ajouter automatiquement le +
+        setFormData(prev => ({ ...prev, [name]: '+' + cleanedValue }));
+      } else {
+        // Sinon, ajouter +237 par défaut
+        setFormData(prev => ({ ...prev, [name]: '+237' + cleanedValue }));
+      }
+
+      // Validation en temps réel
+      validateTelephone(cleanedValue.startsWith('+') ? cleanedValue : '+237' + cleanedValue);
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // Fonction de validation en temps réel du téléphone
+  const validateTelephone = (telephone) => {
+    const phoneNumber = telephone.replace(/[^\d]/g, '');
+    
+    if (phoneNumber.length < 13) {
+      setTelephoneError('Le numéro doit contenir au moins 13 chiffres (indicatif inclus)');
+      setTelephoneValid(false);
+    } else if (phoneNumber.length > 13) {
+      setTelephoneError('Le numéro ne doit pas contenir plus de 13 chiffres (indicatif inclus)');
+      setTelephoneValid(false);
+    } else {
+      setTelephoneError('');
+      setTelephoneValid(true);
+    }
   };
  const handleChangerole = e => {
     const { name, value } = e.target;
@@ -259,6 +298,12 @@ const FormulaireUtilisateur = () => {
     // Validation du mot de passe
     if (formData.password.length < 6) {
       window.showNotification('Le mot de passe doit contenir au moins 6 caractères', 'error');
+      return;
+    }
+
+    // Validation du téléphone
+    if (!telephoneValid) {
+      window.showNotification('Veuillez corriger le numéro de téléphone', 'error');
       return;
     }
 
@@ -381,8 +426,19 @@ const FormulaireUtilisateur = () => {
             <Input id="password" name="password" type="password" value={formData.password} onChange={handleChange} />
           </FormGroup>
           <FormGroup>
-            <Label htmlFor="telephone">telephone</Label>
-            <Input id="telephone" name="telephone" value={formData.telephone} onChange={handleChange} />
+            <Label htmlFor="telephone">Téléphone</Label>
+            <Input 
+              id="telephone" 
+              name="telephone" 
+              type="tel"
+              value={formData.telephone} 
+              onChange={handleChange}
+              placeholder="+237XXXXXXXXX"
+              title="Format: +237 suivi de 9 chiffres minimum"
+              className={telephoneError ? 'input-error' : telephoneValid ? 'input-valid' : ''}
+            />
+            {telephoneError && <span className="error-message">{telephoneError}</span>}
+            {telephoneValid && <span className="success-message">✓ Numéro valide</span>}
           </FormGroup>
         </FormRow>
         <FormRow>

@@ -134,9 +134,9 @@ useEffect(() => {
 
 
 
-    //toggle boutton
+    // boutton
 
-    const toggleStatus = (id) => {
+    const Status = (id) => {
     setPatients((prevData) =>
       prevData.map((item) =>
         item.id === id ? { ...item, isActive: !item.isActive } : item
@@ -235,7 +235,7 @@ const modification = (numeropage) => {
         </thead>
         <tbody>
           {currentPatients.map((patient, index) => (
-            <tr key={index}>
+            <tr key={index} className='tr'>
               <td><input
                     type="checkbox"
                     checked={selectedPatients.includes(patient.id)}
@@ -252,8 +252,8 @@ const modification = (numeropage) => {
               <td className={`${patient.isActive ? "off" : ""}`}>{patient.groupe_sanguin}</td>
               <td className='bouttons'>
                 <button
-                    onClick={() => toggleStatus(patient.id)}
-                    className={`toggle-button ${patient.isActive ? "on" : ""}`}
+                    onClick={() => Status(patient.id)}
+                    className={`-button ${patient.isActive ? "on" : ""}`}
                     >
                 <div className={ `circle  ${patient.isActive  ? "active" : ""}`} ></div></button>
                 <button>🗑️</button>

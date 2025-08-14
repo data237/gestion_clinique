@@ -385,8 +385,27 @@ function RendezvousMedecin(){
               if (response && response.data) {
                 console.log('Données reçues de l\'API:', response.data)
                 console.log('Premier rendez-vous:', response.data[0])
-                setrendezvous(response.data);
-               setrendezvousFiltres(response.data);
+                
+                // Trier les rendez-vous par ordre décroissant (plus récent en premier)
+                const rendezvousTries = response.data.sort((a, b) => {
+                    // Trier d'abord par date (du plus récent au plus ancien)
+                    if (a.jour && b.jour) {
+                        const dateA = new Date(a.jour);
+                        const dateB = new Date(b.jour);
+                        if (dateA.getTime() !== dateB.getTime()) {
+                            return dateB.getTime() - dateA.getTime();
+                        }
+                    }
+                    // Si même date, trier par heure (du plus tôt au plus tard)
+                    if (a.heure && b.heure) {
+                        return a.heure.localeCompare(b.heure);
+                    }
+                    // Si pas d'heure, trier par ID (plus récent en premier)
+                    return b.id - a.id;
+                });
+                
+                setrendezvous(rendezvousTries);
+               setrendezvousFiltres(rendezvousTries);
                 } /*else {
                 setErreur('Données introuvables');
                 }*/
@@ -588,8 +607,8 @@ function RendezvousMedecin(){
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.jour}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.heure}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.serviceMedical}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet ? rendezvous.patientNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ') : ''}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet ? rendezvous.medecinNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ') : ''}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.nomSalle}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.statut}</td>
                             

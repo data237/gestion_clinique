@@ -7,6 +7,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
+import Pagination from '../shared/Pagination';
 import imgprofil from '../../assets/photoDoc.png'
 import iconrecherche from '../../assets/iconrecherche.png'
 import iconburger from '../../assets/iconburger.png'
@@ -124,37 +125,7 @@ const DivbuttonStyle = Styled.div`
     display: flex;
     gap: 15px;
 `
-const ButtonStyle = Styled.button`
-    padding: 5px 5px;
-    font-family: Roboto;
-    font-weight: 300;
-    font-size: 1em;
-    background-color: ${props => props.$buttonbackgroundColor};
-    color: ${props => props.$buttonColor};
-    border-radius: 5px;
-    gap: 0px;
-     &:hover{
-        cursor: pointer;
-        background-color: rgba(65, 65, 255, 1);
-        border-radius: 5px;
-    }
-    &:focus{
-        cursor: pointer;
-        background-color: rgba(65, 65, 255, 1);
-        color: white;
-        border-radius: 5px;
-    }
-    
-`
-const ButtonPSStyle = Styled.button`
-    padding: 5px 5px;
-    font-family: Roboto;
-    font-weight: 300;
-    font-size: 1em;
-     &:hover{
-        cursor: pointer;
-    }
-`
+
 
 const NomtableStyle = Styled.p`
     font-family: "Inter", sans-serif;
@@ -219,8 +190,18 @@ function RendezvousMedecinToday(){
                 console.log('Réponse API:', response);
                 console.log('Données reçues:', response.data);
               if (response && response.data) {
-                setrendezvous(response.data);
-               setrendezvousFiltres(response.data);
+                // Trier les rendez-vous par ordre décroissant (plus récent en premier)
+                const rendezvousTries = response.data.sort((a, b) => {
+                    // Trier d'abord par heure (du plus tôt au plus tard pour la journée)
+                    if (a.heure && b.heure) {
+                        return a.heure.localeCompare(b.heure);
+                    }
+                    // Si pas d'heure, trier par ID (plus récent en premier)
+                    return b.id - a.id;
+                });
+                
+                setrendezvous(rendezvousTries);
+                setrendezvousFiltres(rendezvousTries);
                 } else {
                 //setErreur('Données introuvables');
                 }
@@ -254,53 +235,16 @@ function RendezvousMedecinToday(){
     }, [valeurrecherche, rendezvous]);
 
 
+    const totalPages = Math.ceil(rendezvousFiltres.length / rendezvousPerPage);
 
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
 
-
-    const [pagesToShow, setpagesToShow] = useState([]);
-    const totalPages = Math.ceil(rendezvous.length / rendezvousPerPage);
-
-    useEffect(() => {
-            if (totalPages >= 6) {
-            setpagesToShow([1, 2, 3, "...", totalPages - 1, totalPages]);
-            } else {
-            const fullList = Array.from({ length: totalPages }, (_, i) => i + 1);
-            setpagesToShow(fullList);
-            }
-            }, [rendezvous.length, totalPages]);
-
-
-            const handleClick = (page) => {
-                if (page !== "..." && page !== currentPage) {
-                setCurrentPage(page);
-                }
-            }
-
-
-
-    //toggle boutton
-   
-
-
-    const modification = (numeropage) => {
-    let nouvelleListe = [...pagesToShow] // copie de l'ancien tableau
-
-    if (numeropage > 2 && numeropage < totalPages - 2) {
-        nouvelleListe[0] = numeropage - 2
-        nouvelleListe[1] = numeropage - 1
-        nouvelleListe[2] = numeropage
-        nouvelleListe[3] = '...'
-    } else if (numeropage === totalPages - 2) {
-        nouvelleListe[0] = numeropage - 3
-        nouvelleListe[1] = numeropage - 2
-        nouvelleListe[2] = numeropage - 1
-        nouvelleListe[3] = numeropage
-    } else {
-        // Peut-être une autre logique ici ?
-    }
-    console.log(pagesToShow)
-    setpagesToShow(nouvelleListe)
-    }
+    const handleModification = (page) => {
+        // Cette fonction peut être utilisée pour des actions supplémentaires lors du changement de page
+        console.log('Page modifiée:', page);
+    };
 
     const indexOfLastrendezvous = currentPage * rendezvousPerPage;
     const indexOfFirstrendezvous = indexOfLastrendezvous - rendezvousPerPage;
@@ -308,12 +252,6 @@ function RendezvousMedecinToday(){
     const currentrendezvous = rendezvousFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
     
 
-    //
-
-    //aficher les détails d'un rendezvous
-        //const [user, setuser] = useState({})
-        
-    //
      const navigate = useNavigate();
 
   const handleRowClick = (rendezvous) => {
@@ -342,32 +280,22 @@ function RendezvousMedecinToday(){
                     </div>
                     
                 </div>
-                  
-                
+                    
                 
                 <div className='zonedaffichage'>
                     <div className='numero'>
                             <div>
-                                <h2 className='nomtable'> Utilisateurs </h2>
+                                <h2 className='nomtable'> Rendez-vous du jour </h2>
                             </div>
                             <div className='divbutton'>
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage - 1); modification(currentPage - 1 )}} disabled={currentPage === 1}>Précédent</button>
-                                <div>
-                                        {pagesToShow.map((page, idx) => (
-                                            <ButtonStyle
-                                            key={idx}
-                                            onClick={() => handleClick(page)}
-                                            $buttonbackgroundColor = {page === currentPage ? 'rgba(65, 65, 255, 1)' : ''}
-                                            $buttonColor = {page === currentPage ? 'white' : ''}
-                                            disabled={page === "..."}
-                                            >
-                                            {page}
-                                            </ButtonStyle>
-                                        ))}
-                                </div>
-                                
-                                <button className='buttonPS' onClick={() => {setCurrentPage(currentPage + 1 ); modification(currentPage + 1 )}}
-                                disabled={currentPage === totalPages}>Suivant</button>
+                                <Pagination
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    onPageChange={handlePageChange}
+                                    onModification={handleModification}
+                                    itemsPerPage={rendezvousPerPage}
+                                    totalItems={rendezvousFiltres.length}
+                                />
                             </div>
                             
                     </div>
@@ -400,8 +328,8 @@ function RendezvousMedecinToday(){
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.jour}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.heure}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.serviceMedical}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet}</td>
-                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.patientNomComplet ? rendezvous.patientNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ') : ''}</td>
+                            <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.medecinNomComplet ? rendezvous.medecinNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ') : ''}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.nomSalle}</td>
                             <td onClick={() => {handleRowClick(rendezvous)}} className='td'>{rendezvous.statut}</td>
                             

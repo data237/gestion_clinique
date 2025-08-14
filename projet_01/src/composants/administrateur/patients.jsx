@@ -2,15 +2,18 @@ import '../../styles/tableau.css'
 import '../../styles/Zonedaffichage.css'
 import '../../styles/Barrehorizontal2.css'
 import '../../styles/add-buttons.css'
+import '../../styles/action-buttons.css'
+import '../../styles/rendezvous-status.css'
 import Styled from 'styled-components'
-import { useState, useEffect} from 'react';
-import { API_BASE } from '../../composants/config/apiconfig'
 import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import { API_BASE } from '../../composants/config/apiconfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 //import Barrehorizontal2 from "../barrehorizontal2";
 //import Boutton from '../boutton'
 import imgmedecin from '../../assets/imagemedecin.jpg'
 import iconrecherche from '../../assets/iconrecherche.png'
+import iconsupprime from '../../assets/Iconsupprime.svg'
 import iconburger from '../../assets/iconburger.png'
 import { Link, useNavigate } from 'react-router-dom';
 import { useLoading } from '../LoadingProvider';
@@ -200,8 +203,14 @@ function Patient(){
                     }},);
                 //console.log(response.data);
               if (response && response.data) {
-                setPatients(response.data);
-                setpatientsFiltres(response.data);
+                // Trier les patients par ordre décroissant (plus récent en premier)
+                const patientsTries = response.data.sort((a, b) => {
+                    // Trier par ID (plus récent en premier)
+                    return b.id - a.id;
+                });
+                
+                setPatients(patientsTries);
+                setpatientsFiltres(patientsTries);
                } 
             } catch (error) {
                 console.error('Erreur lors de la récupération des patients:', error);
@@ -361,24 +370,21 @@ function Patient(){
                             <tr key={patient.id} className='tr'>
         
                                 
-                                <td onClick={() => handleRowClick(patient)} className='td'>{patient.nom}</td>
-                                <td onClick={() => handleRowClick(patient)} className='td'>{patient.prenom}</td>
+                                <td onClick={() => handleRowClick(patient)} className='td'>{patient.nom ? patient.nom.charAt(0).toUpperCase() + patient.nom.slice(1).toLowerCase() : ''}</td>
+                                <td onClick={() => handleRowClick(patient)} className='td'>{patient.prenom ? patient.prenom.charAt(0).toUpperCase() + patient.prenom.slice(1).toLowerCase() : ''}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.email}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.telephone}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.dateNaissance}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.adresse}</td>
                                 <td onClick={() => handleRowClick(patient)} className='td'>{patient.genre}</td>
                                 <td className='td bouttons'>
-                                {/*<button
-                                    onClick={() => toggleStatus(patient.id)}
-                                    className={`toggle-button ${patient.isActive ? "on" : ""}`}
-                                    >
-                                <div className={ `circle  ${patient.isActive  ? "active" : ""}`} ></div></button>*/}
+                             
+                             
                                 <button 
                                     onClick={()=> {
                                         showConfirmation({
                                             title: "Suppression de patient",
-                                            content: `Voulez-vous vraiment supprimer le patient ${patient.nom} ${patient.prenom} ?`,
+                                            content: `Voulez-vous vraiment supprimer le patient ${patient.nom ? patient.nom.charAt(0).toUpperCase() + patient.nom.slice(1).toLowerCase() : ''} ${patient.prenom ? patient.prenom.charAt(0).toUpperCase() + patient.prenom.slice(1).toLowerCase() : ''} ?`,
                                             onConfirm: () => supprimerPatient(patient.id),
                                             confirmText: "Supprimer",
                                             cancelText: "Annuler",
@@ -386,8 +392,9 @@ function Patient(){
                                         });
                                     }}
                                     disabled={isLoading('deletePatient')}
+                                    className="delete-button"
                                 >
-                                    🗑️
+                                    <img src={iconsupprime} className='iconsupprime'></img>
                                 </button>
                             </td>
                                 </tr>

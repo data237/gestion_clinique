@@ -141,10 +141,16 @@ function Facture(){
                     'Content-Type': 'application/json',
                     }},);
                 console.log(token);
-              if (response && response.data) {
-                setfactures(response.data);
-                setfacturesFiltres(response.data);
-                } else {
+                            if (response && response.data) {
+                // Trier les factures par ordre décroissant (plus récent en premier)
+                const facturesTries = response.data.sort((a, b) => {
+                    // Trier par ID (plus récent en premier)
+                    return b.id - a.id;
+                });
+                
+                setfactures(facturesTries);
+                setfacturesFiltres(facturesTries);
+               } else {
                 //setErreur('Données introuvables');
                 }
             } catch (error) {
@@ -352,8 +358,8 @@ function Facture(){
                             <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.dateEmission.split("T")[0]}</td>
                             <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.dateEmission.split("T")[1].split(".")[0]}</td>
                             <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.serviceMedicalNom}</td>
-                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.patientNomComplet}</td>
-                             <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.montant}</td>
+                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.patientNomComplet ? facture.patientNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ') : ''}</td>
+                            <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.montant} FCFA</td>
                             <td onClick={() => {handleRowClick(facture)}} className='td'>{facture.statutPaiement}</td>
                             
                             </tr>
