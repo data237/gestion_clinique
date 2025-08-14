@@ -7,8 +7,6 @@ import { useNavigate } from 'react-router-dom';
 import imageclinique from '../assets/img_clinique.jpg'
 import logoclinique from '../assets/logo.png'
 import icon from '../assets/Icon.png'
-import Photoprofil from '../composants/photoprofil.jsx'
-import photoProfil from '../assets/img_profil.jpg'
 
 function PageLogin() {
   let navigate = useNavigate()
@@ -24,13 +22,6 @@ function PageLogin() {
   const [success, setSuccess] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState('');
-   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordChangeError, setPasswordChangeError] = useState('');
-  const [passwordChangeSuccess, setPasswordChangeSuccess] = useState('');
-  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(photoProfil);
   
   // Validation email en temps réel
   useEffect(() => {
@@ -67,33 +58,6 @@ function PageLogin() {
     }
   }, [loginAttempts]);
 
-  // Récupérer la photo de profil actuelle
-  useEffect(() => {
-    const fetchCurrentPhoto = async () => {
-      const userId = localStorage.getItem('id');
-      const token = localStorage.getItem('token');
-      
-      if (userId && token) {
-        try {
-          const response = await axios.get(`${API_BASE}/utilisateurs/${userId}/photo`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          
-          if (response.data) {
-            setCurrentPhotoUrl(response.data);
-          }
-        } catch (error) {
-          console.error('Erreur lors de la récupération de la photo:', error);
-          // Garder la photo par défaut en cas d'erreur
-        }
-      }
-    };
-
-    fetchCurrentPhoto();
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -129,11 +93,6 @@ function PageLogin() {
       localStorage.setItem('username', username);
       localStorage.setItem('photoUrl', photoUrl);
       localStorage.setItem('user', JSON.stringify(authorities[0].authority));
-
-      // Mettre à jour la photo de profil dans l'état local
-      if (photoUrl) {
-        setCurrentPhotoUrl(photoUrl);
-      }
 
       // Gérer "Se souvenir de moi"
       if (rememberMe) {
@@ -220,205 +179,12 @@ function PageLogin() {
     setPopupMessage('');
   };
 
-  const handlePhotoUpload = async (file) => {
-    try {
-      // Validation du fichier
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
-      
-      if (file.size > maxSize) {
-        setPopupMessage('Le fichier est trop volumineux (max 5MB)');
-        setShowPopup(true);
-        return;
-      }
-      
-      if (!allowedTypes.includes(file.type)) {
-        setPopupMessage('Format de fichier non supporté (JPG, PNG, GIF uniquement)');
-        setShowPopup(true);
-        return;
-      }
-
-      // Récupérer l'ID utilisateur depuis le localStorage
-      const userId = localStorage.getItem('id');
-      if (!userId) {
-        setPopupMessage('Erreur: ID utilisateur non trouvé. Veuillez vous reconnecter.');
-        setShowPopup(true);
-        return;
-      }
-
-      // Créer FormData pour l'upload
-      const formData = new FormData();
-      formData.append('photo', file);
-
-      // Appel API pour uploader la photo
-      const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_BASE}/utilisateurs/${userId}/photo`, formData, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      if (response.status === 200) {
-        // Récupérer la nouvelle photo de profil
-        try {
-          const photoResponse = await axios.get(`${API_BASE}/utilisateurs/${userId}/photo`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            },
-          });
-          
-          if (photoResponse.data) {
-            // Mettre à jour la photo dans le localStorage et l'état local
-            localStorage.setItem('photoUrl', photoResponse.data);
-            setCurrentPhotoUrl(photoResponse.data);
-          }
-        } catch (photoError) {
-          console.error('Erreur lors de la récupération de la photo:', photoError);
-        }
-
-        setPopupMessage('Photo de profil mise à jour avec succès !');
-        setShowPopup(true);
-      }
-      
-    } catch (error) {
-      console.error('Erreur lors de l\'upload de la photo:', error);
-      let errorMessage = 'Erreur lors de l\'upload de la photo. Veuillez réessayer.';
-      
-      if (error.response?.status === 401) {
-        errorMessage = 'Session expirée. Veuillez vous reconnecter.';
-      } else if (error.response?.status === 403) {
-        errorMessage = 'Accès refusé. Vous n\'avez pas les permissions nécessaires.';
-      } else if (error.response?.status === 413) {
-        errorMessage = 'Fichier trop volumineux.';
-      }
-      
-      setPopupMessage(errorMessage);
-      setShowPopup(true);
-    }
-  };
-
-  const handleChangePassword = () => {
-    setShowChangePasswordModal(true);
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    setPasswordChangeError('');
-    setPasswordChangeSuccess('');
-  };
-
-  const handlePasswordChangeSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!currentPassword) {
-      setPasswordChangeError('Le mot de passe actuel est requis');
-      return;
-    }
-    
-    if (!newPassword) {
-      setPasswordChangeError('Le nouveau mot de passe est requis');
-      return;
-    }
-    
-    if (newPassword.length < 6) {
-      setPasswordChangeError('Le nouveau mot de passe doit contenir au moins 6 caractères');
-      return;
-    }
-    
-    if (!confirmPassword) {
-      setPasswordChangeError('La confirmation du mot de passe est requise');
-      return;
-    }
-    
-    if (newPassword !== confirmPassword) {
-      setPasswordChangeError('Les mots de passe ne correspondent pas');
-      return;
-    }
-
-    try {
-      // Récupérer l'ID utilisateur depuis le localStorage
-      const userId = localStorage.getItem('id');
-      if (!userId) {
-        setPasswordChangeError('Erreur: ID utilisateur non trouvé. Veuillez vous reconnecter.');
-        return;
-      }
-
-      // Appel API pour changer le mot de passe
-      const token = localStorage.getItem('token');
-      const response = await axios.put(`${API_BASE}/utilisateurs/${userId}/password`, {
-        newPassword: newPassword,
-        confirmPassword: confirmPassword
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.status === 200) {
-        setPasswordChangeSuccess('Mot de passe modifié avec succès !');
-        setPasswordChangeError('');
-        
-        // Vider les champs
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
-        
-        setTimeout(() => {
-          setShowChangePasswordModal(false);
-          setPasswordChangeSuccess('');
-        }, 2000);
-      }
-      
-    } catch (error) {
-      console.error('Erreur lors du changement de mot de passe:', error);
-      let errorMessage = 'Erreur lors du changement de mot de passe. Veuillez réessayer.';
-      
-      if (error.response?.status === 401) {
-        errorMessage = 'Session expirée. Veuillez vous reconnecter.';
-      } else if (error.response?.status === 403) {
-        errorMessage = 'Accès refusé. Vous n\'avez pas les permissions nécessaires.';
-      } else if (error.response?.status === 400) {
-        errorMessage = error.response.data?.message || 'Données invalides.';
-      }
-      
-      setPasswordChangeError(errorMessage);
-    }
-  };
-
-  const closeChangePasswordModal = () => {
-    setShowChangePasswordModal(false);
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    setPasswordChangeError('');
-    setPasswordChangeSuccess('');
-  };
-
   return (
     <>
       <div className='accueil'>
-        {/* Header avec photo de profil */}
-        <div className='header-login'>
-          <div className='header-content'>
-            <div className='logo-section'>
-              <img src={logoclinique} alt="Logo" className='header-logo' />
-            </div>
-            <div className='profile-section'>
-              <Photoprofil 
-                imgprofil={currentPhotoUrl}
-                onPhotoUpload={handlePhotoUpload}
-                onChangePassword={handlePasswordChangeSubmit}
-                userId={localStorage.getItem('id')}
-              />
-            </div>
-          </div>
-        </div>
-
         <div className='image-container'>
           <img src={imageclinique} className='img_cli_acc' alt="Clinique" />
         </div>
-        
         <form className='formulaire' onSubmit={handleSubmit}>
           <img src={logoclinique} alt="Logo" />
           <div className='formulaire_1'>
@@ -534,7 +300,12 @@ function PageLogin() {
                   <div className="spinner"></div>
                   Connexion...
                 </>
-              )  : (
+              ) : success ? (
+                <>
+                  ✅ Connexion réussie
+                  <img src={icon} className='icon' alt="Connexion" />
+                </>
+              ) : (
                 <>
                   Se connecter 
                   <img src={icon} className='icon' alt="Connexion" />
@@ -556,83 +327,6 @@ function PageLogin() {
           </div>
         </form>
       </div>
-
-      {/* Modal de changement de mot de passe */}
-      {showChangePasswordModal && (
-        <div className="popup-overlay" onClick={closeChangePasswordModal}>
-          <div className="popup-content change-password-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="popup-header">
-              <h3>🔒 Modifier le mot de passe</h3>
-              <button className="popup-close" onClick={closeChangePasswordModal}>×</button>
-            </div>
-            <div className="popup-body">
-              <form onSubmit={handlePasswordChangeSubmit}>
-                <div className="form-group">
-                  <label htmlFor="currentPassword">Mot de passe actuel</label>
-                  <input
-                    type="password"
-                    id="currentPassword"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                    placeholder="Entrez votre mot de passe actuel"
-                    required
-                    className="login-input"
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label htmlFor="newPassword">Nouveau mot de passe</label>
-                  <input
-                    type="password"
-                    id="newPassword"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Entrez le nouveau mot de passe"
-                    required
-                    className="login-input"
-                  />
-                </div>
-                
-                <div className="form-group">
-                  <label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirmez le nouveau mot de passe"
-                    required
-                    className="login-input"
-                  />
-                </div>
-                
-                {passwordChangeError && (
-                  <div className="error-message">
-                    <span className="error-icon">⚠️</span>
-                    {passwordChangeError}
-                  </div>
-                )}
-                
-                {passwordChangeSuccess && (
-                  <div className="success-message">
-                    <span className="success-icon">✅</span>
-                    {passwordChangeSuccess}
-                  </div>
-                )}
-                
-                <div className="modal-buttons">
-                  <button type="submit" className="popup-btn primary">
-                    Modifier le mot de passe
-                  </button>
-                  <button type="button" className="popup-btn secondary" onClick={closeChangePasswordModal}>
-                    Annuler
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Popup Modal */}
       {showPopup && (

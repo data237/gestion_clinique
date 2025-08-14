@@ -45,29 +45,36 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
 
     // Récupérer la photo de profil actuelle
     useEffect(() => {
+        let objectUrl;
+    
         const fetchCurrentPhoto = async () => {
             const token = localStorage.getItem('token');
-            
             if (userId && token) {
                 try {
                     const response = await axios.get(`${API_BASE}/utilisateurs/${userId}/photo`, {
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         },
+                        responseType: 'blob',
                     });
-                    
-                    if (response.data) {
-                        setCurrentPhotoUrl(response.data);
-                    }
+    
+                    objectUrl = URL.createObjectURL(response.data);
+                    setCurrentPhotoUrl(objectUrl);
                 } catch (error) {
-                    console.error('Erreur lors de la récupération de la photo:', error);
-                    // Garder la photo par défaut en cas d'erreur
+                    console.error('Erreur récupération photo:', error);
                 }
             }
         };
-
+    
         fetchCurrentPhoto();
+    
+        return () => {
+            if (objectUrl) {
+                URL.revokeObjectURL(objectUrl);
+            }
+        };
     }, [userId]);
+    
 
     const handlePhotoUpload = async (file) => {
         try {
@@ -89,7 +96,7 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
                 return;
             }
 
-            if (!userId) {
+            if (!userId || userId === 'null') {
                 if (window.showNotification) {
                     window.showNotification('Erreur: ID utilisateur non trouvé. Veuillez vous reconnecter.', 'error');
                 }
@@ -98,7 +105,9 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
 
             // Créer FormData pour l'upload
             const formData = new FormData();
-            formData.append('photo', file);
+            formData.append('photoProfil', file);
+
+
 
             // Appel API pour uploader la photo
             const token = localStorage.getItem('token');
@@ -110,25 +119,46 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
             });
 
             if (response.status === 200) {
-                // Récupérer la nouvelle photo de profil
-                try {
-                    const photoResponse = await axios.get(`${API_BASE}/utilisateurs/${userId}/photo`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                    });
+                // La réponse contient les données utilisateur mises à jour
+                const photoUrl = response.data?.photoProfil || response.data?.photo_profil;
+                if (response.data && photoUrl) {
+                    // Construire l'URL complète de la photo
+                    const fullPhotoUrl = `${API_BASE}/utilisateurs/${userId}/photo`;
                     
-                    if (photoResponse.data) {
-                        // Mettre à jour la photo dans le localStorage et l'état local
-                        localStorage.setItem('photoUrl', photoResponse.data);
-                        setCurrentPhotoUrl(photoResponse.data);
+                    // Mettre à jour la photo dans le localStorage et l'état local
+                    localStorage.setItem('photoUrl', fullPhotoUrl);
+                    setCurrentPhotoUrl(fullPhotoUrl);
+                    
+                    if (window.showNotification) {
+                        window.showNotification('Photo de profil mise à jour avec succès !', 'success');
                     }
-                } catch (photoError) {
-                    console.error('Erreur lors de la récupération de la photo:', photoError);
-                }
-
-                if (window.showNotification) {
-                    window.showNotification('Photo de profil mise à jour avec succès !', 'success');
+                } else {
+                    // Fallback : essayer de récupérer la photo séparément
+                    try {
+                        const userRole = localStorage.getItem('user');
+                        console.log('Tentative de récupération de la photo avec token:', token ? `${token.substring(0, 20)}...` : 'null');
+                        console.log('Rôle utilisateur:', userRole);
+                        const photoResponse = await axios.get(`${API_BASE}/utilisateurs/${userId}/photo`, {
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                            },
+                        });
+                        
+                        if (photoResponse.data) {
+                            localStorage.setItem('photoUrl', photoResponse.data);
+                            setCurrentPhotoUrl(photoResponse.data);
+                        }
+                        
+                        if (window.showNotification) {
+                            window.showNotification('Photo de profil mise à jour avec succès !', 'success');
+                        }
+                    } catch (photoError) {
+                        console.error('Erreur lors de la récupération de la photo:', photoError);
+                        console.log('PhotoError response:', photoError.response?.data);
+                        if (window.showNotification) {
+                            window.showNotification('Photo uploadée mais erreur lors de la récupération', 'warning');
+                        }
+                    }
                 }
             }
             
@@ -140,6 +170,10 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
                 errorMessage = 'Session expirée. Veuillez vous reconnecter.';
             } else if (error.response?.status === 403) {
                 errorMessage = 'Accès refusé. Vous n\'avez pas les permissions nécessaires.';
+            } else if (error.response?.status === 400) {
+                errorMessage = `Paramètres invalides: ${error.response.data || 'Vérifiez le format du fichier'}`;
+            } else if (error.response?.status === 404) {
+                errorMessage = 'Endpoint de photo non disponible. Contactez l\'administrateur.';
             } else if (error.response?.status === 413) {
                 errorMessage = 'Fichier trop volumineux.';
             }
@@ -152,7 +186,7 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
 
     const handlePasswordChange = async ({ newPassword, confirmPassword }) => {
         try {
-            if (!userId) {
+            if (!userId || userId === 'null') {
                 throw new Error('ID utilisateur non trouvé');
             }
 
@@ -191,6 +225,8 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
                 errorMessage = 'Session expirée. Veuillez vous reconnecter.';
             } else if (error.response?.status === 403) {
                 errorMessage = 'Accès refusé. Vous n\'avez pas les permissions nécessaires.';
+            } else if (error.response?.status === 404) {
+                errorMessage = 'Endpoint de changement de mot de passe non disponible. Contactez l\'administrateur.';
             } else if (error.response?.status === 400) {
                 errorMessage = error.response.data?.message || 'Données invalides.';
             }

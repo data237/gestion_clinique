@@ -29,9 +29,9 @@ const DropdownMenu = Styled.div`
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 200px;
   z-index: 1000;
-  opacity: ${props => props.isOpen ? '1' : '0'};
-  visibility: ${props => props.isOpen ? 'visible' : 'hidden'};
-  transform: ${props => props.isOpen ? 'translateY(0)' : 'translateY(-10px)'};
+  opacity: ${props => props.$isOpen ? '1' : '0'};
+  visibility: ${props => props.$isOpen ? 'visible' : 'hidden'};
+  transform: ${props => props.$isOpen ? 'translateY(0)' : 'translateY(-10px)'};
   transition: all 0.2s ease;
   margin-top: 8px;
 `;
@@ -507,7 +507,7 @@ function Photoprofil({ imgprofil, onPhotoUpload, onChangePassword, userId }) {
           onClick={toggleMenu}
         />
         
-        <DropdownMenu isOpen={isMenuOpen}>
+                    <DropdownMenu $isOpen={isMenuOpen}>
           <MenuItem onClick={openPhotoModal}>
             <MenuIcon>📷</MenuIcon>
             <MenuText>Changer la photo</MenuText>

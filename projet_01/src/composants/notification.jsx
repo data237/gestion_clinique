@@ -151,7 +151,7 @@ const NotificationProvider = ({ children }) => {
   const [counter, setCounter] = useState(0);
 
   const addNotification = (message, type = 'info', duration = 5000) => {
-    const id = counter;
+    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${counter}`;
     setCounter(prev => prev + 1);
     setNotifications(prev => [...prev, { id, message, type, duration }]);
   };

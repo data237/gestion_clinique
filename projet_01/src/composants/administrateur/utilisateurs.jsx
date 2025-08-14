@@ -248,34 +248,6 @@ function Utilisateur() {
     }
 
 
-    /*
-    const supprimerUtilisateur = async (id) => {
-        const token2 = localStorage.getItem('token');
-        try {
-            await axios.delete(`http://localhost:8081/Api/V1/clinique/utilisateurs/${id}`, {
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token2}`,
-                'Content-Type': 'application/json',
-            },
-            });
-
-            // Supprime l'utilisateur localement du tableau
-            setutilisateurs((prevData) =>
-                prevData.filter((item) => item.id !== id)
-            );
-
-            console.log(`Utilisateur ${id} supprimé`);
-        } catch (error) {
-            console.error('Erreur lors de la suppression :', error);
-        }
-        };
-      */
-
-
-
-
-
 
 
     const indexOfLastutilisateur = currentPage * utilisateursPerPage;
