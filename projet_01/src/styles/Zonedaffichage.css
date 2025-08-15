@@ -12,6 +12,7 @@
 
 .zonedaffichage-dashboad{
     height: 82vh;
+    background-color: #EFEFFF;
     display: flex;
     flex-direction: column;
     gap: 32px;
