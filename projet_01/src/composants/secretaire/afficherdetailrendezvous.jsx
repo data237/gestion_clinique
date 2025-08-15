@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE } from '../config/apiconfig';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -141,13 +141,7 @@ const AfficherDetailRendezVous = () => {
     const token = localStorage.getItem('token');
     const nomutilisateur = async () => {
       try {
-        const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
         if (response) {
           setnomprofil(response.data.nom);
         }
@@ -162,13 +156,7 @@ const AfficherDetailRendezVous = () => {
     const fetchRendezvous = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get(`${API_BASE}/rendezvous/${id}`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await axiosInstance.get(`/rendezvous/${id}`);
         setRendezvous(response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération du rendez-vous:', error);

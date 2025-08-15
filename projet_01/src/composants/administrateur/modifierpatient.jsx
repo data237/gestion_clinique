@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../composants/config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
@@ -189,16 +189,10 @@ const ModifierPatient = () => {
   const [nomprofil, setnomprofil]= useState('')
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
            const nomutilisateur =  async ()=> {
                 try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                console.log('Token utilisé:', localStorage.getItem('token'));
               if (response) {
                  setnomprofil(response.data.nom)
                 }
@@ -223,14 +217,8 @@ const ModifierPatient = () => {
    useEffect(()=>{
          startLoading('fetchPatient');
          const fetchPatients = async () => {
-           const token = localStorage.getItem('token');
             try {
-                const response = await axios.get(`${API_BASE}/patients/${id}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }});
+                const response = await axiosInstance.get(`/patients/${id}`);
                 //console.log(response.data);
                setFormData(response.data);
             } catch (error) {
@@ -253,18 +241,10 @@ const ModifierPatient = () => {
         title: "Confirmer la modification",
         content: `Voulez-vous vraiment modifier les informations du patient ${formData.nom} ${formData.prenom} ?`,
         onConfirm: async () => {
-          const token2 = localStorage.getItem('token');
           startLoading('updatePatient');
           
           try {
-            const response = await axios.put(`${API_BASE}/patients/${id}`, formData,
-            {
-              headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token2}`,
-                'Content-Type': 'application/json',
-              },
-            });
+            const response = await axiosInstance.put(`/patients/${id}`, formData);
             
             window.showNotification('Patient modifié avec succès', 'success');
             navigate("/admin/patient");

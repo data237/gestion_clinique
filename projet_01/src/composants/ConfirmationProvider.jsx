@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import Modal from './Modal';
+import { ConfirmationModal } from './shared/UnifiedModal';
 
 const ConfirmationContext = createContext();
 
@@ -56,18 +56,32 @@ export const ConfirmationProvider = ({ children }) => {
     showConfirmation
   };
 
+  // Déterminer le type de confirmation selon la variante
+  const getConfirmType = (variant) => {
+    switch (variant) {
+      case 'danger':
+        return 'danger';
+      case 'warning':
+        return 'warning';
+      case 'info':
+        return 'info';
+      default:
+        return 'info';
+    }
+  };
+
   return (
     <ConfirmationContext.Provider value={value}>
       {children}
-      <Modal
+      <ConfirmationModal
         isOpen={confirmation.isOpen}
         onClose={hideConfirmation}
         title={confirmation.title}
-        content={confirmation.content}
+        message={confirmation.content}
         onConfirm={handleConfirm}
         confirmText={confirmation.confirmText}
         cancelText={confirmation.cancelText}
-        variant={confirmation.variant}
+        confirmType={getConfirmType(confirmation.variant)}
       />
     </ConfirmationContext.Provider>
   );

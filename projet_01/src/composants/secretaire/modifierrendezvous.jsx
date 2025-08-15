@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API_BASE } from '../config/apiconfig';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -244,13 +244,7 @@ const ModifierRendezVous = () => {
     const token = localStorage.getItem('token');
     const nomutilisateur = async () => {
       try {
-        const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
         if (response) {
           setnomprofil(response.data.nom);
         }
@@ -265,13 +259,7 @@ const ModifierRendezVous = () => {
     const fetchRendezvous = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get(`${API_BASE}/rendezvous/${id}`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await axiosInstance.get(`/rendezvous/${id}`);
         const rdv = response.data;
         setRendezvous(rdv);
         setFormData({
@@ -302,13 +290,7 @@ const ModifierRendezVous = () => {
 
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get(`${API_BASE}/utilisateurs/available/${formData.serviceMedical}?jour=${formData.jour}&heure=${formData.heure}`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await axiosInstance.get(`/utilisateurs/available/${formData.serviceMedical}?jour=${formData.jour}&heure=${formData.heure}`);
         setMedecins(response.data);
         
         // Notification du nombre de médecins disponibles
@@ -539,13 +521,7 @@ const ModifierRendezVous = () => {
         dataToSend = formData;
       }
       
-      await axios.put(`${API_BASE}/rendezvous/${id}`, dataToSend, {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      await axiosInstance.put(`/rendezvous/${id}`, dataToSend);
 
       // Afficher un message de succès approprié
       if (window.showNotification) {

@@ -6,7 +6,7 @@ import '../../styles/action-buttons.css'
 import Styled from 'styled-components'
 import { useState, useEffect} from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import Barrehorizontal2 from "../../composants/barrehorizontal2";
 import Boutton from '../../composants/boutton'
@@ -198,12 +198,7 @@ function PatientSecretaire(){
         const token = localStorage.getItem('token');
            const nomutilisateur =  async ()=> {
                 try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
                 console.log(token);
               if (response) {
                  setnomprofil(response.data.nom)
@@ -237,12 +232,7 @@ function PatientSecretaire(){
          const fetchPatients = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await axios.get(`${API_BASE}/patients`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                const response = await axiosInstance.get(`/patients`);
                 //console.log(response.data);
               if (response && response.data) {
                 // Trier les patients par ordre décroissant (plus récent en premier)
@@ -314,13 +304,7 @@ function PatientSecretaire(){
 
         const token2 = localStorage.getItem('token');
         try {
-            await axios.delete(`${API_BASE}/patients/${patientASupprimer}`, {
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token2}`,
-                'Content-Type': 'application/json',
-            },
-            });
+            await axiosInstance.delete(`/patients/${patientASupprimer}`);
 
             // Supprime l'patient localement du tableau
             setPatients((prevData) =>

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE } from '../../composants/config/apiconfig';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import '../../styles/add-buttons.css'
@@ -186,13 +186,7 @@ const FormulaireFacture = ({ id, onClick1 }) => {
     const fetchfactures = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get(`${API_BASE}/factures/recherche/${id}`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          }
-        });
+        const response = await axiosInstance.get(`/factures/recherche/${id}`);
         setfacture(response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des factures:', error);
@@ -297,13 +291,7 @@ const FormulaireFacture = ({ id, onClick1 }) => {
 
     try {
       // 1) patch paiement (si tu veux d'abord marquer payé)
-      await axios.patch(`${API_BASE}/factures/payer/${id}/${facture.modePaiement}`, {}, {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        }
-      });
+      await axiosInstance.patch(`/factures/payer/${id}/${facture.modePaiement}`, {});
 
       // 2) préparer les données pour le PDF
       const amountFormatted = typeof facture.montant === 'number'

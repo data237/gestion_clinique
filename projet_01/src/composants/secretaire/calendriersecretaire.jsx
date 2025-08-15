@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
@@ -38,14 +38,7 @@ const CalendarSecretaire = () => {
     const token = localStorage.getItem('token');
     const nomutilisateur = async () => {
       try {
-        const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-          {
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            }
-          });
+        const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
         console.log(token);
         if (response) {
           setnomprofil(response.data.nom)
@@ -145,13 +138,7 @@ const CalendarSecretaire = () => {
               const apiUrl = `${API_BASE}/rendezvous/month/${year}/${month}`;
               console.log('Appel API:', apiUrl);
 
-              const response = await axios.get(apiUrl, {
-                  headers: {
-                      accept: 'application/json',
-                      Authorization: `Bearer ${token}`,
-                      'Content-Type': 'application/json',
-                  },
-              });
+              const response = await axiosInstance.get(`/rendezvous/month/${year}/${month}`);
 
               console.log('Réponse API:', response.data);
 

@@ -4,7 +4,7 @@ import '../../styles/Barrehorizontal2.css'
 import '../../styles/action-buttons.css'
 import '../../styles/rendezvous-status.css'
 import Styled from 'styled-components'
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
@@ -187,14 +187,7 @@ function RendezvousScretaireToday() {
         const token = localStorage.getItem('token');
         const nomutilisateur = async () => {
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    },);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
                 console.log(token);
                 if (response) {
                     setnomprofil(response.data.nom)
@@ -233,14 +226,7 @@ function RendezvousScretaireToday() {
             const token = localStorage.getItem('token');
 
             try {
-                const response = await axios.get(`${API_BASE}/rendezvous/jour/${today}`,
-                    {
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    },);
+                const response = await axiosInstance.get(`/rendezvous/jour/${today}`);
                 console.log(token);
                 if (response && response.data) {
                     // Trier les rendez-vous par ordre décroissant (plus récent en premier)
@@ -346,13 +332,7 @@ function RendezvousScretaireToday() {
         const annuler = async () => {
             const token = localStorage.getItem('token');
             try {
-                const response = await axios.put(`${API_BASE}/rendezvous/${statutAmodifier[0]}/cancel`, {}, {
-                    headers: {
-                        accept: 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await axiosInstance.put(`/rendezvous/${statutAmodifier[0]}/cancel`, {});
 
                 // Mettre à jour la liste des rendez-vous avec le statut "ANNULE"
                 setrendezvous((prevData) =>
@@ -389,13 +369,7 @@ function RendezvousScretaireToday() {
 
         const token = localStorage.getItem('token');
         try {
-            await axios.delete(`${API_BASE}/rendezvous/${rendezvousASupprimer}`, {
-                headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+            await axiosInstance.delete(`/rendezvous/${rendezvousASupprimer}`);
 
             // Mettre à jour la liste des rendez-vous
             setrendezvous((prevrendezvous) =>

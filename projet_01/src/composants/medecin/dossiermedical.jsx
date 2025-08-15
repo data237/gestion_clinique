@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import { API_BASE } from '../config/apiconfig';
 import '../../styles/Zonedaffichage.css';
 import '../../styles/buttons.css';
@@ -42,13 +42,7 @@ const DossierMedical = () => {
                 // Récupérer le dossier médical avec l'ID
                 console.log('URL API dossier médical:', `${API_BASE}/dossierMedical/patient/${idToUse}`);
                 
-                const dossierResponse = await axios.get(`${API_BASE}/dossierMedical/patient/${idToUse}`, {
-                    headers: {
-                        accept: 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    }
-                });
+                const dossierResponse = await axiosInstance.get(`/dossierMedical/patient/${idToUse}`);
                 
                 console.log('Réponse API dossier médical:', dossierResponse);
                 
@@ -80,13 +74,7 @@ const DossierMedical = () => {
             setConsultationLoading(true);
             const token = localStorage.getItem('token');
             
-            const response = await axios.get(`${API_BASE}/consultations/${consultationId}`, {
-                headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                }
-            });
+            const response = await axiosInstance.get(`/consultations/${consultationId}`);
             
             if (response.data) {
                 setConsultationDetails(response.data);

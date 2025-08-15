@@ -1,7 +1,7 @@
 import Styled from 'styled-components'
 import React, { useEffect, useState } from 'react';
 import { API_BASE } from './config/apiconfig'
-import axios from 'axios';
+import axiosInstance from './config/axiosConfig';
 import Cloche from './cloche'
 import Photoprofil from './photoprofil'
 
@@ -51,10 +51,7 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
             const token = localStorage.getItem('token');
             if (userId && token) {
                 try {
-                    const response = await axios.get(`${API_BASE}/utilisateurs/${userId}/photo`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
+                    const response = await axiosInstance.get(`/utilisateurs/${userId}/photo`, {
                         responseType: 'blob',
                     });
     
@@ -111,9 +108,8 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
 
             // Appel API pour uploader la photo
             const token = localStorage.getItem('token');
-            const response = await axios.put(`${API_BASE}/utilisateurs/${userId}/photo`, formData, {
+            const response = await axiosInstance.put(`/utilisateurs/${userId}/photo`, formData, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
                 },
             });
@@ -138,11 +134,7 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
                         const userRole = localStorage.getItem('user');
                         console.log('Tentative de récupération de la photo avec token:', token ? `${token.substring(0, 20)}...` : 'null');
                         console.log('Rôle utilisateur:', userRole);
-                        const photoResponse = await axios.get(`${API_BASE}/utilisateurs/${userId}/photo`, {
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                            },
-                        });
+                        const photoResponse = await axiosInstance.get(`/utilisateurs/${userId}/photo`);
                         
                         if (photoResponse.data) {
                             localStorage.setItem('photoUrl', photoResponse.data);
@@ -192,14 +184,9 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
 
             // Appel API pour changer le mot de passe
             const token = localStorage.getItem('token');
-            const response = await axios.put(`${API_BASE}/utilisateurs/${userId}/password`, {
+            const response = await axiosInstance.put(`/utilisateurs/${userId}/password`, {
                 newPassword: newPassword,
                 confirmPassword: confirmPassword
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
             });
 
             if (response.status === 200) {

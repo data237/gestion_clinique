@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
@@ -270,14 +270,7 @@ const FormulaireRendezVous = () => {
     const token = localStorage.getItem('token');
     const nompatient = async () => {
       try {
-        const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-          {
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            }
-          },);
+        const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
 
         if (response) {
           setnomprofil(response.data.nom)
@@ -309,14 +302,7 @@ const FormulaireRendezVous = () => {
     const fetchpatients = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get(`${API_BASE}/patients/nom/${nompatient}`,
-          {
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            }
-          });
+        const response = await axiosInstance.get(`/patients/nom/${nompatient}`);
 
         const patientTrouve = response.data[0];
 
@@ -351,14 +337,7 @@ const FormulaireRendezVous = () => {
 
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get(`${API_BASE}/utilisateurs/available/${formData.serviceMedical}?jour=${formData.jour}&heure=${formData.heure}`,
-          {
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            }
-          });
+        const response = await axiosInstance.get(`/utilisateurs/available/${formData.serviceMedical}?jour=${formData.jour}&heure=${formData.heure}`);
         const medecins = response.data;
         setmedecindisponible(medecins);
         
@@ -482,15 +461,7 @@ const FormulaireRendezVous = () => {
 
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.post(`${API_BASE}/rendezvous/createRendezVous`, formData,
-        {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await axiosInstance.post(`/rendezvous/createRendezVous`, formData);
              console.log(response.data);
        setidfacture(response.data.factureId)
        setPopup(true)

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useNavigate } from 'react-router-dom';
@@ -146,12 +146,7 @@ const FormulairePatientSecretaire = () => {
         const token = localStorage.getItem('token');
            const nomutilisateur =  async ()=> {
                 try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
                 console.log(token);
               if (response) {
                  setnomprofil(response.data.nom)
@@ -281,13 +276,7 @@ const FormulairePatientSecretaire = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${API_BASE}/patients`, formData, {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axiosInstance.post(`/patients`, formData);
 
       console.log(response.data);
       

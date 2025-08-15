@@ -6,7 +6,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import frLocale from '@fullcalendar/core/locales/fr';
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import { API_BASE } from '../../composants/config/apiconfig';
 import '../../styles/calendar.css';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
@@ -97,11 +97,10 @@ const Calendar = () => {
 
     useEffect(() => {
         const fetchRendezvous = async () => {
-            const token = localStorage.getItem('token');
             const id = localStorage.getItem('id');
 
-            if (!token || !id) {
-                console.error('Token ou ID manquant');
+            if (!id) {
+                console.error('ID manquant');
                 setIsLoading(false);
                 return;
             }
@@ -111,16 +110,7 @@ const Calendar = () => {
                 const year = today.getFullYear();
                 const month = today.getMonth() + 1;
 
-                const apiUrl = `${API_BASE}/rendezvous/utilisateurs/${id}/confirmed/month/${year}/${month}`;
-                console.log('Appel API:', apiUrl);
-
-                const response = await axios.get(apiUrl, {
-                    headers: {
-                        accept: 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+                const response = await axiosInstance.get(`/rendezvous/utilisateurs/${id}/confirmed/month/${year}/${month}`);
 
                 console.log('Réponse API:', response.data);
 

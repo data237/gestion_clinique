@@ -1,6 +1,6 @@
 import React ,{useEffect, useState}from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
@@ -156,12 +156,7 @@ const FormulairePrescription = ({ id }) => {
                 
                 const token = localStorage.getItem('token');
                 try {
-                    const response = await axios.get(`${API_BASE}/prescriptions/${id}`,
-                        {   headers: {
-                        accept: 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                        }});
+                    const response = await axiosInstance.get(`/prescriptions/${id}`);
                     //console.log(response.data);
                   setprescription(response.data);
                 } catch (error) {

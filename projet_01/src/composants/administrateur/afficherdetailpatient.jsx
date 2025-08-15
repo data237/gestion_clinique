@@ -1,6 +1,6 @@
 import React ,{useEffect, useState}from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
-import axios from 'axios';
+import axiosInstance from '../../composants/config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -150,16 +150,10 @@ const DetailsPatient = () => {
     const [nomprofil, setnomprofil]= useState('')
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
            const nomutilisateur =  async ()=> {
                 try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                console.log('Token utilisé:', localStorage.getItem('token'));
               if (response) {
                  setnomprofil(response.data.nom)
                 } else {
@@ -185,14 +179,8 @@ const DetailsPatient = () => {
     useEffect(()=>{
             
             const fetchPatients = async () => {
-                const token = localStorage.getItem('token');
                 try {
-                    const response = await axios.get(`${API_BASE}/patients/${id}`,
-                        {   headers: {
-                        accept: 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                        }});
+                    const response = await axiosInstance.get(`/patients/${id}`);
                     //console.log(response.data);
                   setPatient(response.data);
                 } catch (error) {

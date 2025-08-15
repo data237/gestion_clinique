@@ -2,7 +2,7 @@ import '../../styles/tableau.css'
 import '../../styles/Zonedaffichage.css'
 import '../../styles/Barrehorizontal2.css'
 import Styled from 'styled-components'
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
@@ -97,12 +97,7 @@ function Facture(){
         console.log(token);
            const nomutilisateur =  async ()=> {
                 try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
                 console.log(token);
               if (response) {
                  setnomprofil(response.data.nom)
@@ -134,12 +129,7 @@ function Facture(){
             const token = localStorage.getItem('token');
               console.log(token);
             try {
-                const response = await axios.get(`${API_BASE}/factures/statut/impayee`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                const response = await axiosInstance.get(`/factures/statut/impayee`);
                 console.log(token);
                             if (response && response.data) {
                 // Trier les factures par ordre décroissant (plus récent en premier)

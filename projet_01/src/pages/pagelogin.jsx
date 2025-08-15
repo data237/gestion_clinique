@@ -1,7 +1,7 @@
 import '../styles/pagelogin.css'
 import '../styles/buttons.css'
 import { useState, useEffect } from 'react';
-import axios from 'axios'
+import axiosInstance from '../composants/config/axiosConfig'
 import { API_BASE } from '../composants/config/apiconfig'
 import { useNavigate } from 'react-router-dom';
 import imageclinique from '../assets/img_clinique.jpg'
@@ -77,7 +77,7 @@ function PageLogin() {
     setError('');
 
     try {
-      const response = await axios.post(`${API_BASE}/login`, {
+      const response = await axiosInstance.post(`/login`, {
         email,
         password,
       });
@@ -103,13 +103,7 @@ function PageLogin() {
 
       // Appeler l'endpoint pour annuler les vieux rendez-vous
       try {
-        await axios.post(`${API_BASE}/rendezvous/cancel-old`, {}, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+        await axiosInstance.post(`/rendezvous/cancel-old`);
         console.log('Vieux rendez-vous annulés avec succès');
       } catch (cancelError) {
         console.error('Erreur lors de l\'annulation des vieux rendez-vous:', cancelError);

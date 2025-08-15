@@ -1,7 +1,7 @@
 import '../../styles/Zonedaffichage.css'
 import React, { useEffect, useState } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
-import axios from 'axios';
+import axiosInstance from '../../composants/config/axiosConfig';
 import { Chart as ChartJS } from "chart.js/auto";
 import { Line } from "react-chartjs-2";
 import Styled from 'styled-components'
@@ -56,17 +56,9 @@ function Dashboard(){
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         const nomutilisateur = async () => {
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    });
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
                 if (response) {
                     setnomprofil(response.data.nom)
                 }
@@ -78,17 +70,9 @@ function Dashboard(){
     }, [idUser]);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         const statjournalier = async () => {
             try {
-                const response = await axios.get(`${API_BASE}/stats/daily`,
-                    {   
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    });
+                const response = await axiosInstance.get(`/stats/daily`);
                 if (response) {
                     setstatjour(response.data)
                 }
@@ -101,17 +85,9 @@ function Dashboard(){
     }, []);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         const utilisateursconnectes = async () => {
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/connected/last-activity`,
-                    {   
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    });
+                const response = await axiosInstance.get(`/utilisateurs/connected/last-activity`);
                 if (response) {
                     setusersconnecte(response.data)
                 }
@@ -123,17 +99,9 @@ function Dashboard(){
     }, []);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         const utilisateursdeconnectes = async () => {
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/disconnected/last-activity`,
-                    {   
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    });
+                const response = await axiosInstance.get(`/utilisateurs/disconnected/last-activity`);
                 if (response) {
                     setusersdisconnecte(response.data)
                 }
@@ -145,17 +113,9 @@ function Dashboard(){
     }, []);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         const connexionAdmin = async () => {
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}/connexions`,
-                    {   
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    });
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}/connexions`);
                 if (response) {
                     setconnexionadmin(response.data)
                 }
@@ -167,32 +127,17 @@ function Dashboard(){
     }, [idUser]);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         const Historique = async () => {
             try {
                 // Essayer d'abord l'endpoint /historiques
-                let response = await axios.get(`${API_BASE}/historiqueActions`,
-                    {   
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    });
+                let response = await axiosInstance.get(`/historiqueActions`);
                 
                 if (response && response.data) {
                     console.log('Données historiques reçues:', response.data);
                     sethistoriques(response.data);
                 } else {
                     // Si pas de données, essayer l'endpoint alternatif
-                    response = await axios.get(`${API_BASE}/historiques`,
-                        {   
-                            headers: {
-                                accept: 'application/json',
-                                Authorization: `Bearer ${token}`,
-                                'Content-Type': 'application/json',
-                            }
-                        });
+                    response = await axiosInstance.get(`/historiques`);
                     
                     if (response && response.data) {
                         console.log('Données historiques reçues (alternatif):', response.data);

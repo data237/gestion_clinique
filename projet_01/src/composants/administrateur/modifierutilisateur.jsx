@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../composants/config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
@@ -163,7 +163,6 @@ const ButtonRow = Styled.div`
   margin-top: 20px;
 `;
 
-// Button styling is now handled by add-buttons.css
 
 const ModifierUtilisateur = () => {
   const navigate = useNavigate();
@@ -171,24 +170,25 @@ const ModifierUtilisateur = () => {
   const { showConfirmation } = useConfirmation();
   const idUser = localStorage.getItem('id');
   const [nomprofil, setnomprofil]= useState('')
+  
+  // Mapping des rôles pour la conversion
+  const roleMapping = {
+    "ADMIN": 1,
+    "MEDECIN": 2,
+    "SECRETAIRE": 3
+  };
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
            const nomutilisateur =  async ()=> {
                 try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                console.log('Token utilisé:', localStorage.getItem('token'));
               if (response) {
                  setnomprofil(response.data.nom)
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
-                
+                // L'erreur 401 sera automatiquement gérée par l'intercepteur Axios
             } finally {
               console.log('fin')
             }
@@ -202,49 +202,52 @@ const ModifierUtilisateur = () => {
   
     
   const { id } = useParams();
-  //  const [utilisateur, setUtilisateur] = useState(null);
-    
-  /*
-   useEffect(() => {
-    fetch('/utilisateurs.json')
-      .then(res => res.json())
-      .then(data => {console.log("ID reçu depuis l'URL:", id);
-      console.log("Données chargées:", data);
-      const user = data.find(u => String(u.id) === String(id));
-      console.log("Utilisateur trouvé:", user);
-        setFormData(user);
-        if (user?.rôle === "Médecin") {
-          setisVisiblerole(true);
-        }
-      });
-  }, [id]);
-
-  */
-
-  
   
    
    useEffect(()=>{
          startLoading('fetchUser');
          const fetchUtilisateurs = async () => {
-           const token = localStorage.getItem('token');
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${id}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }});
+                const response = await axiosInstance.get(`/utilisateurs/${id}`);
                 //console.log(response.data);
                const user = response.data
-               setFormData(response.data);
-              if (user.role.roleType === "MEDECIN") {
+               
+               // Transformer les données pour la compatibilité avec le formulaire
+               const transformedData = {
+                 ...user,
+                 // Garder l'objet role complet avec id et roleType
+                 role: user.role ? { 
+                   id: user.role.id, 
+                   roleType: user.role.id === 1 ? "ADMIN" : 
+                             user.role.id === 2 ? "MEDECIN" : 
+                             user.role.id === 3 ? "SECRETAIRE" : ""
+                 } : null
+               };
+               
+               console.log('=== DEBUG PRÉCHARGEMENT ===');
+               console.log('Données reçues du backend:', user);
+               console.log('Role ID reçu:', user.role?.id);
+               console.log('Données transformées:', transformedData);
+               console.log('Role transformé:', transformedData.role);
+               console.log('Service médical:', transformedData.serviceMedical);
+               console.log('isVisiblerole sera:', transformedData.role?.roleType === "MEDECIN");
+               console.log('================================');
+               
+               setFormData(transformedData);
+               
+               // Utiliser les données transformées pour la vérification
+               if (transformedData.role?.roleType === "MEDECIN") {
                  setisVisiblerole(true);
-                }
+               } else {
+                 setisVisiblerole(false);
+               }
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
-                setErreur('Erreur lors du chargement');
-                window.showNotification('Erreur lors du chargement de l\'utilisateur', 'error');
+                // L'erreur 401 sera automatiquement gérée par l'intercepteur Axios
+                if (error.response?.status !== 401) {
+                    setErreur('Erreur lors du chargement');
+                    window.showNotification('Erreur lors du chargement de l\'utilisateur', 'error');
+                }
             } finally {
                 stopLoading('fetchUser');
             }
@@ -259,73 +262,77 @@ const ModifierUtilisateur = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   const handleChangerole = e => {
-    const { name, value } = e.target;
-    value === "medecin" ? setisVisiblerole(true) : setisVisiblerole(false)
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const selectedRoleType = e.target.value;
+  
+    // Vérifier si un rôle a été sélectionné
+    if (!selectedRoleType) {
+      setisVisiblerole(false);
+      setFormData(prev => ({
+        ...prev,
+        role: null,
+        serviceMedical: null
+      }));
+      return;
+    }
+  
+    // Vérifier si c'est un médecin
+    const isMedecin = selectedRoleType === "MEDECIN";
+  
+    // Afficher ou masquer le champ serviceMedical
+    setisVisiblerole(isMedecin);
+  
+    // Mettre à jour formData avec l'objet role contenant id et roleType
+    setFormData(prev => ({
+      ...prev,
+      role: { 
+        id: roleMapping[selectedRoleType],
+        roleType: selectedRoleType
+      },
+      // Réinitialiser serviceMedical si ce n'est pas un médecin
+      serviceMedical: isMedecin ? prev.serviceMedical : null
+    }));
   };
+  
 
   
   
  
   
  
-  const formData2 = {
-       nom : formData.nom,
-       prenom : formData.prenom,
-       email : formData.email,
-       dateNaissance : formData.dateNaissance,
-       telephone : formData.telephone,
-       adresse :  formData.adresse,
-       genre : formData.genre,
-       password :  formData.password,
-       actif : formData.actif,
-       role :  formData.role
-      }
-  const handleSubmit = async(e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const token2 = localStorage.getItem('token');
     startLoading('updateUser');
-    
+
     try {
-      if(formData.role.roleType != "MEDECIN"){
-        const response = await axios.put(`${API_BASE}/utilisateurs/${id}`, formData2,
-      {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token2}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log(response.data);
-      }else{
-        const response = await axios.put(`${API_BASE}/utilisateurs/${id}`, formData,
-      {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token2}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log(response.data);
-      }
-      
+      // Filtrer les champs vides pour éviter d'écraser les valeurs existantes
+      const dataToSend = {};
+      Object.keys(formData).forEach(key => {
+        if (
+          formData[key] !== null &&
+          formData[key] !== "" &&
+          !(typeof formData[key] === "object" && Object.keys(formData[key]).length === 0)
+        ) {
+          dataToSend[key] = formData[key];
+        }
+      });
+
+      const response = await axiosInstance.put(`/utilisateurs/${id}`, dataToSend);
+
+      console.log(response.data);
       window.showNotification('Utilisateur modifié avec succès', 'success');
       navigate("/admin/utilisateur");
-      
+
     } catch (error) {
       console.error('Erreur de connexion :', error);
       
-      // Messages d'erreur plus spécifiques
-      if (error.response) {
+      // L'erreur 401 sera automatiquement gérée par l'intercepteur Axios
+      if (error.response && error.response.status !== 401) {
+        // Messages d'erreur plus spécifiques
         if (error.response.status === 409) {
           window.showNotification('Un utilisateur avec cet email existe déjà', 'error');
         } else if (error.response.status === 400) {
           window.showNotification('Données invalides. Vérifiez les informations saisies', 'error');
-        } else if (error.response.status === 401) {
-          window.showNotification('Session expirée. Veuillez vous reconnecter', 'error');
         } else if (error.response.status === 404) {
           window.showNotification('Utilisateur introuvable', 'error');
         } else {
@@ -333,10 +340,10 @@ const ModifierUtilisateur = () => {
         }
       } else if (error.request) {
         window.showNotification('Erreur de connexion au serveur. Vérifiez votre connexion internet', 'error');
-      } else {
+      } else if (error.response?.status !== 401) {
         window.showNotification('Erreur lors de la modification de l\'utilisateur', 'error');
       }
-    } finally{
+    } finally {
       stopLoading('updateUser');
     };
   };
@@ -394,7 +401,7 @@ const ModifierUtilisateur = () => {
       </div>
     </div>
   );
-  return (
+     return (
     <>
       <SousDiv1Style>
           <Barrehorizontal1 titrepage="Gestion des utilisateurs" imgprofil1={imgprofil} nomprofil={nomprofil}> 
@@ -465,17 +472,17 @@ const ModifierUtilisateur = () => {
             <FormRow>
               <FormGroup>
                 <Label htmlFor="role">Rôle</Label>
-                <Select id="role" name="role" value={formData.role.roleType} onChange={handleChangerole}>
+                <Select id="role" name="role" value={formData.role?.roleType || ""} onChange={handleChangerole}>
                   <option value="">Sélectionnez un rôle</option>
-                  <option value="Admin">Admin</option>
-                  <option value="medecin">medecin</option>
-                  <option value="secretaire">secretaire</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="MEDECIN">Médecin</option>
+                  <option value="SECRETAIRE">Secrétaire</option>
                 </Select>
                 </FormGroup>
                 <FormGroupvisible $formgroupdisplay={isVisiblerole ? "flex" : "none"}>
-                  <Label htmlFor="servicemedical">Service médical</Label>
-                  <Select id="servicemedical" name="servicemedical" value={formData.servicemedical} onChange={handleChange} >
-                    <option value="">Sélectionnez un rôle</option>
+                  <Label htmlFor="serviceMedical">Service médical</Label>
+                  <Select id="serviceMedical" name="serviceMedical" value={formData.serviceMedical} onChange={handleChange} >
+                    <option value="">Sélectionnez un service</option>
                     <option value="CARDIOLOGIE">CARDIOLOGIE</option>
                     <option value="MEDECINE_GENERALE">MEDECINE_GENERALE</option>
                     <option value="PEDIATRIE">PEDIATRIE</option>

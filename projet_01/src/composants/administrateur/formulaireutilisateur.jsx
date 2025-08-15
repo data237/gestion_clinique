@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../composants/config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
@@ -159,16 +159,10 @@ const FormulaireUtilisateur = () => {
     const [nomprofil, setnomprofil]= useState('')
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
            const nomutilisateur =  async ()=> {
                 try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                console.log('Token utilisé:', localStorage.getItem('token'));
               if (response) {
                  setnomprofil(response.data.nom)
                 }
@@ -310,27 +304,11 @@ const FormulaireUtilisateur = () => {
     startLoading('createUser');
     try {
       if(formData.role != "medecin"){
-        const response = await axios.post(`${API_BASE}/utilisateurs`, formData2,
-      {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log(response.data);
+        const response = await axiosInstance.post(`/utilisateurs`, formData2);
+        console.log(response.data);
       }else{
-        const response = await axios.post(`${API_BASE}/utilisateurs`, formData,
-      {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    console.log(response.data);
+        const response = await axiosInstance.post(`/utilisateurs`, formData);
+        console.log(response.data);
       }
       
       window.showNotification('Utilisateur créé avec succès', 'success');

@@ -5,7 +5,7 @@ import '../../styles/add-buttons.css'
 import '../../styles/action-buttons.css'
 import '../../styles/rendezvous-status.css'
 import Styled from 'styled-components'
-import axios from 'axios';
+import axiosInstance from '../../composants/config/axiosConfig';
 import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
@@ -80,18 +80,10 @@ function Utilisateur() {
     const [nomprofil, setnomprofil] = useState('')
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
         const nomutilisateur = async () => {
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    },);
-                console.log(token);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                console.log('Token utilisé:', localStorage.getItem('token'));
                 if (response) {
                     setnomprofil(response.data.nom)
                 } else {
@@ -131,17 +123,9 @@ function Utilisateur() {
     useEffect(() => {
         startLoading('fetchUtilisateurs');
         const fetchUtilisateurs = async () => {
-            const token = localStorage.getItem('token');
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs`,
-                    {
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        }
-                    },);
-                console.log(token);
+                const response = await axiosInstance.get(`/utilisateurs`);
+                console.log('Token utilisé:', localStorage.getItem('token'));
                 if (response && response.data) {
                     // Trier les utilisateurs par ordre décroissant (plus récent en premier)
                     const utilisateursTries = response.data.sort((a, b) => {
@@ -221,15 +205,8 @@ function Utilisateur() {
         if (!userId) return;
 
         startLoading('toggleStatus');
-        const token2 = localStorage.getItem('token');
         try {
-            const response = await axios.patch(`${API_BASE}/utilisateurs/${userId}/status/${!currentStatus}`, { utilisateurs }, {
-                headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token2}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axiosInstance.patch(`/utilisateurs/${userId}/status/${!currentStatus}`, { utilisateurs });
             const user = response.data
             setutilisateurs((prevData) =>
                 prevData.map((item) =>
@@ -273,15 +250,8 @@ function Utilisateur() {
         if (!userId) return;
 
         startLoading('deleteUser');
-        const token2 = localStorage.getItem('token');
         try {
-            await axios.delete(`${API_BASE}/utilisateurs/${userId}`, {
-                headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token2}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+            await axiosInstance.delete(`/utilisateurs/${userId}`);
 
             setutilisateurs((prevUtilisateurs) =>
                 prevUtilisateurs.filter((u) => u.id !== userId)

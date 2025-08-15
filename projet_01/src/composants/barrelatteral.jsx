@@ -3,7 +3,7 @@ import { API_BASE } from '../composants/config/apiconfig'
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png'
 import logout from '../assets/arrow_back.svg'
-import axios from 'axios'
+import axiosInstance from './config/axiosConfig'
 import Eltmenu from './eltmenu'
 
 const MenuStyle = Styled.div`
@@ -255,47 +255,46 @@ const PulseEffect = Styled.div`
     }
 `
 
-function Barrelatteral({children}){
+function Barrelatteral({ children }) {
+    const navigate = useNavigate();
 
-    const navigate = useNavigate()
-    const idUser = localStorage.getItem('id');
-    const handleLogout = () => {
-    // Supprimer le token (ou autre info) du localStorage
-    
-        const logout = async () => {
-            const token2 = localStorage.getItem('token');
-            try {
-                const response = await axios.patch(`${API_BASE}/utilisateurs/${idUser}/DECONNECTE`,{},{   
-                    headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token2}`,
-                    'Content-Type': 'application/json',
-                    }});
-                console.log(response)
-                localStorage.removeItem("token");
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.warn("Aucun token trouvé");
                 navigate("/");
-            } catch (error) {
-                console.error("Erreur pendant le logout :", error);
+                return;
             }
-        };
-        logout()
-  };
-    return(<>
-            <BarrelatteralStyle>
-                <Image src={logo}></Image>
-                <MenuStyle>
-                    {children}
-                    
-                </MenuStyle>
-                <Button onClick={()=> handleLogout()}> 
-                    <PulseEffect />
-                    <LogoutContainer>
-                        <Imgsvg src={logout} ></Imgsvg>
-                        <LogoutText>Déconnexion</LogoutText>
-                    </LogoutContainer>
-                </Button>
-            </BarrelatteralStyle>
-    </>)
+
+            // Appel de l'endpoint /logout géré par CustomLogoutHandler
+            await axiosInstance.post(`/logout`);
+
+            // Nettoyage session locale
+            localStorage.clear();
+            navigate("/");
+
+        } catch (error) {
+            console.error("Erreur pendant le logout :", error);
+            // Même si erreur backend, on nettoie côté frontend
+            localStorage.clear();
+            navigate("/");
+        }
+    };
+
+    return (
+        <BarrelatteralStyle>
+            <Image src={logo} />
+            <MenuStyle>{children}</MenuStyle>
+            <Button onClick={handleLogout}>
+                <PulseEffect />
+                <LogoutContainer>
+                    <Imgsvg src={logout} />
+                    <LogoutText>Déconnexion</LogoutText>
+                </LogoutContainer>
+            </Button>
+        </BarrelatteralStyle>
+    );
 }
 
 export default Barrelatteral

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig';
-import axios from 'axios';
+import axiosInstance from '../../composants/config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useParams, useNavigate, Link } from 'react-router-dom';
@@ -158,16 +158,10 @@ const DetailsUtilisateur = () => {
     const [nomprofil, setnomprofil]= useState('')
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
            const nomutilisateur =  async ()=> {
                 try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                console.log('Token utilisé:', localStorage.getItem('token'));
               if (response) {
                  setnomprofil(response.data.nom)
                 } else {
@@ -195,15 +189,9 @@ const DetailsUtilisateur = () => {
  useEffect(()=>{
          
          const fetchUtilisateurs = async () => {
-            const token = localStorage.getItem('token');
             try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${id}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }});
-                console.log(token);
+                const response = await axiosInstance.get(`/utilisateurs/${id}`);
+                console.log('Token utilisé:', localStorage.getItem('token'));
               
                const user = response.data
                setUtilisateur(response.data);

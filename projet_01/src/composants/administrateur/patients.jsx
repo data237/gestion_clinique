@@ -5,7 +5,7 @@ import '../../styles/add-buttons.css'
 import '../../styles/action-buttons.css'
 import '../../styles/rendezvous-status.css'
 import Styled from 'styled-components'
-import axios from 'axios';
+import axiosInstance from '../../composants/config/axiosConfig';
 import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
@@ -156,16 +156,10 @@ function Patient(){
     const [nomprofil, setnomprofil]= useState('')
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
            const nomutilisateur =  async ()=> {
                 try {
-                const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
-                console.log(token);
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                console.log('Token utilisé:', localStorage.getItem('token'));
               if (response) {
                  setnomprofil(response.data.nom)
                 }
@@ -193,14 +187,8 @@ function Patient(){
     useEffect(()=>{
         startLoading('fetchPatients');
         const fetchPatients = async () => {
-            const token = localStorage.getItem('token');
             try {
-                const response = await axios.get(`${API_BASE}/patients`,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                const response = await axiosInstance.get(`/patients`);
                 //console.log(response.data);
               if (response && response.data) {
                 // Trier les patients par ordre décroissant (plus récent en premier)
@@ -258,15 +246,8 @@ function Patient(){
         if (!patientId) return;
 
         startLoading('deletePatient');
-        const token2 = localStorage.getItem('token');
         try {
-            await axios.delete(`${API_BASE}/patients/${patientId}`, {
-            headers: {
-                accept: 'application/json',
-                Authorization: `Bearer ${token2}`,
-                'Content-Type': 'application/json',
-            },
-            });
+            await axiosInstance.delete(`/patients/${patientId}`);
 
             // Supprime l'patient localement du tableau
             setPatients((prevData) =>

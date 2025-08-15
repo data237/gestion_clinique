@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -444,14 +444,7 @@ const FormulaireConsultation = () => {
     const token = localStorage.getItem('token');
     const nomutilisateur = async () => {
       try {
-        const response = await axios.get(`${API_BASE}/utilisateurs/${idUser}`,
-          {
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            }
-          },);
+        const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
         console.log(token);
         if (response) {
           setnomprofil(response.data.nom)
@@ -471,13 +464,7 @@ const FormulaireConsultation = () => {
     const fetchRendezVousInfo = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_BASE}/rendez-vous/${idrdv}`, {
-          headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          }
-        });
+        const response = await axiosInstance.get(`/rendez-vous/${idrdv}`);
         
         if (response.data && response.data.serviceMedical) {
           setServiceMedical(response.data.serviceMedical.nom || response.data.serviceMedical);
@@ -611,13 +598,7 @@ const FormulaireConsultation = () => {
   const fetchConsultationData = async (consultationId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE}/consultations/${consultationId}`, {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        }
-      });
+      const response = await axiosInstance.get(`/consultations/${consultationId}`);
 
       if (response.status === 200) {
         setConsultationData(response.data);
@@ -633,13 +614,7 @@ const FormulaireConsultation = () => {
   const fetchPrescriptionData = async (consultationId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE}/prescriptions/consultation/${consultationId}`, {
-        headers: {
-          accept: 'application/json',
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        }
-      });
+      const response = await axiosInstance.get(`/prescriptions/consultation/${consultationId}`);
 
       if (response.status === 200 && response.data.length > 0) {
         setPrescriptionData(response.data[0]); // Prendre la première prescription
@@ -833,13 +808,7 @@ const FormulaireConsultation = () => {
             taille: taille
           };
 
-          const response = await axios.post(`${API_BASE}/consultations/start/${idrdv}`, validatedData, {
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            }
-          });
+          const response = await axiosInstance.post(`/consultations/start/${idrdv}`, validatedData);
 
           if (response.status === 200 || response.status === 201) {
             if (window.showNotification) {

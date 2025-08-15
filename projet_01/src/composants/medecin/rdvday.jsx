@@ -2,7 +2,7 @@ import '../../styles/tableau.css'
 import '../../styles/Zonedaffichage.css'
 import '../../styles/Barrehorizontal2.css'
 import Styled from 'styled-components'
-import axios from 'axios';
+import axiosInstance from '../config/axiosConfig';
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { API_BASE } from '../../composants/config/apiconfig'
@@ -167,26 +167,17 @@ function RendezvousMedecinToday(){
         console.log('Date utilisée pour l\'API:', today);
         
         const fetchrendezvous = async () => {
-            const token = localStorage.getItem('token');
             const id = localStorage.getItem('id');
             
-            if (!token || !id) {
-                console.error('Token ou ID manquant');
+            if (!id) {
+                console.error('ID manquant');
                 setErreur('Authentification échouée. Veuillez vous reconnecter.');
                 setisloading(false);
                 return;
             }
             
             try {
-                const apiUrl = `${API_BASE}/utilisateurs/${id}/rendez-vous/confirmed/${today}`;
-                console.log('Appel API avec URL:', apiUrl);
-                
-                const response = await axios.get(apiUrl,
-                    {   headers: {
-                    accept: 'application/json',
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                    }},);
+                const response = await axiosInstance.get(`/utilisateurs/${id}/rendez-vous/confirmed/${today}`);
                 console.log('Réponse API:', response);
                 console.log('Données reçues:', response.data);
               if (response && response.data) {
