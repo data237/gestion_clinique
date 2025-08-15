@@ -5,7 +5,8 @@ import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
-import imgprofil from '../../assets/photoDoc.png'
+import imgprofil from '../../assets/photoDoc.png';
+import { useConfirmation } from '../ConfirmationProvider';
 
 const SousDiv1Style = Styled.div`
  width: 99%;
@@ -62,13 +63,222 @@ const Title1 = Styled.h2`
 `;
 const Title2 = Styled.h2`
   margin-bottom: 0px;
-  font-size: 24px;
-  font-weight: 400;
+  font-size: 18px;
+  font-weight: 500;
   color: rgba(159, 159, 255, 1);
-  padding-bottom: 10px;
+  padding: 8px 16px;
   font-family: Roboto;
   cursor: pointer;
+  border: 2px solid rgba(159, 159, 255, 1);
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  background: transparent;
+  
+  &:hover {
+    background: rgba(159, 159, 255, 1);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(159, 159, 255, 0.3);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
 `;
+
+const EditButtonsContainer = Styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+`;
+
+// Styles pour le modal de mot de passe (inspiré de photoprofil)
+const PasswordModalOverlay = Styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  animation: fadeIn 0.3s ease-out;
+`;
+
+const PasswordModalContent = Styled.div`
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s ease-out;
+`;
+
+const PasswordModalHeader = Styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 0 24px;
+  border-bottom: 1px solid #e0e0e0;
+`;
+
+const PasswordModalTitle = Styled.h3`
+  margin: 0;
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+`;
+
+const PasswordCloseButton = Styled.button`
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #999;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background-color: #f0f0f0;
+    color: #666;
+  }
+`;
+
+const PasswordModalBody = Styled.div`
+  padding: 24px;
+`;
+
+const PasswordFormGroup = Styled.div`
+  margin-bottom: 20px;
+`;
+
+const PasswordLabel = Styled.label`
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+  font-size: 14px;
+`;
+
+const PasswordInput = Styled.input`
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+  
+  &:focus {
+    outline: none;
+    border-color: #4141ff;
+    box-shadow: 0 0 0 3px rgba(65, 65, 255, 0.1);
+  }
+  
+  &.error {
+    border-color: #ff4757;
+  }
+`;
+
+const PasswordErrorMessage = Styled.div`
+  color: #ff4757;
+  font-size: 12px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
+
+const PasswordButtonGroup = Styled.div`
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+`;
+
+const PasswordButton = Styled.button`
+  flex: 1;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &.primary {
+    background-color: #4141ff;
+    color: white;
+    
+    &:hover {
+      background-color: #4a4aff;
+    }
+    
+    &:disabled {
+      background-color: #888;
+      cursor: not-allowed;
+    }
+  }
+  
+  &.secondary {
+    background-color: #f5f5f5;
+    color: #666;
+    border: 1px solid #ddd;
+    
+    &:hover {
+      background-color: #e8e8e8;
+    }
+  }
+`;
+
+const PasswordLoadingSpinner = Styled.div`
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+// Injecter les keyframes dans le DOM
+const keyframes = `
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = keyframes;
+  document.head.appendChild(style);
+}
 
 const TraitHorizontal = Styled.div`
   width: 718px;
@@ -155,7 +365,8 @@ const Button = Styled.button`
 const DetailsUtilisateur = () => {
 
   const idUser = localStorage.getItem('id');
-    const [nomprofil, setnomprofil]= useState('')
+  const [nomprofil, setnomprofil]= useState('');
+  const { showConfirmation } = useConfirmation();
 
     useEffect(() => {
            const nomutilisateur =  async ()=> {
@@ -222,6 +433,94 @@ const DetailsUtilisateur = () => {
    const handleEditClick = (utilisateur) => {
     navigate1(`/admin/utilisateur/edit/${utilisateur.id}`);
   };
+  
+  // État pour le modal de mot de passe
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordData, setPasswordData] = useState({ newPassword: '', confirmPassword: '' });
+  const [passwordErrors, setPasswordErrors] = useState({});
+  const [isPasswordLoading, setIsPasswordLoading] = useState(false);
+  
+  const handleEditPasswordClick = (utilisateur) => {
+    setShowPasswordModal(true);
+  };
+  
+  const closePasswordModal = () => {
+    setShowPasswordModal(false);
+    setPasswordData({ newPassword: '', confirmPassword: '' });
+    setPasswordErrors({});
+  };
+  
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    
+    const newPassword = passwordData.newPassword;
+    const confirmPassword = passwordData.confirmPassword;
+    
+    // Validation
+    const newErrors = {};
+    
+    if (!newPassword) {
+      newErrors.newPassword = 'Le nouveau mot de passe est requis';
+    } else if (newPassword.length < 6) {
+      newErrors.newPassword = 'Le nouveau mot de passe doit contenir au moins 6 caractères';
+    }
+    
+    if (!confirmPassword) {
+      newErrors.confirmPassword = 'La confirmation du mot de passe est requise';
+    } else if (newPassword !== confirmPassword) {
+      newErrors.confirmPassword = 'Les mots de passe ne correspondent pas';
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setPasswordErrors(newErrors);
+      return;
+    }
+    
+    // Demander confirmation avant de modifier le mot de passe
+    showConfirmation(
+      'Modifier le mot de passe',
+      `Êtes-vous sûr de vouloir modifier le mot de passe de ${utilisateur.nom} ${utilisateur.prenom} ?`,
+      async () => {
+        setIsPasswordLoading(true);
+        setPasswordErrors({});
+        
+        try {
+          // Appel API pour changer le mot de passe de l'utilisateur sélectionné
+          const response = await axiosInstance.put(`/utilisateurs/${utilisateur.id}/password`, {
+            newPassword: newPassword,
+            confirmPassword: confirmPassword
+          });
+          
+          if (response.status === 200) {
+            if (window.showNotification) {
+              window.showNotification('Mot de passe modifié avec succès !', 'success');
+            }
+            closePasswordModal();
+          }
+          
+        } catch (error) {
+          console.error('Erreur lors du changement de mot de passe:', error);
+          let errorMessage = 'Erreur lors du changement de mot de passe. Veuillez réessayer.';
+          
+          if (error.response?.status === 401) {
+            errorMessage = 'Session expirée. Veuillez vous reconnecter.';
+          } else if (error.response?.status === 403) {
+            errorMessage = 'Accès refusé. Vous n\'avez pas les permissions nécessaires.';
+          } else if (error.response?.status === 400) {
+            errorMessage = error.response.data?.message || 'Données invalides.';
+          }
+          
+          setPasswordErrors({ general: errorMessage });
+          
+          if (window.showNotification) {
+            window.showNotification(errorMessage, 'error');
+          }
+        } finally {
+          setIsPasswordLoading(false);
+        }
+      }
+    );
+  };
   if (!utilisateur) {
   return <p style={{ textAlign: 'center' }}>Chargement...</p>;
   }
@@ -241,7 +540,10 @@ const DetailsUtilisateur = () => {
             <FormContainer>
             <Title>
                 <Title1>Détail utilisateur</Title1>
-                <Title2 onClick={() => handleEditClick(utilisateur)}>Edit</Title2>
+                <EditButtonsContainer>
+                  <Title2 onClick={() => handleEditClick(utilisateur)}>Edit utilisateur</Title2>
+                  <Title2 onClick={() => handleEditPasswordClick(utilisateur)}>Edit password</Title2>
+                </EditButtonsContainer>
             </Title>
             
             <TraitHorizontal></TraitHorizontal>
@@ -302,6 +604,82 @@ const DetailsUtilisateur = () => {
             </FormContainer>
           </Form>
       </Affichedetailuser>
+      
+      {/* Modal de changement de mot de passe */}
+      {showPasswordModal && (
+        <PasswordModalOverlay onClick={closePasswordModal}>
+          <PasswordModalContent onClick={(e) => e.stopPropagation()}>
+            <PasswordModalHeader>
+              <PasswordModalTitle>🔒 Modifier le mot de passe</PasswordModalTitle>
+              <PasswordCloseButton onClick={closePasswordModal}>×</PasswordCloseButton>
+            </PasswordModalHeader>
+            
+            <PasswordModalBody>
+              <form onSubmit={handlePasswordChange}>
+                <PasswordFormGroup>
+                  <PasswordLabel htmlFor="newPassword">Nouveau mot de passe</PasswordLabel>
+                  <PasswordInput
+                    type="password"
+                    id="newPassword"
+                    name="newPassword"
+                    value={passwordData.newPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                    placeholder="Entrez le nouveau mot de passe"
+                    className={passwordErrors.newPassword ? 'error' : ''}
+                  />
+                  {passwordErrors.newPassword && (
+                    <PasswordErrorMessage>⚠️ {passwordErrors.newPassword}</PasswordErrorMessage>
+                  )}
+                </PasswordFormGroup>
+                
+                <PasswordFormGroup>
+                  <PasswordLabel htmlFor="confirmPassword">Confirmer le nouveau mot de passe</PasswordLabel>
+                  <PasswordInput
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    placeholder="Confirmez le nouveau mot de passe"
+                    className={passwordErrors.confirmPassword ? 'error' : ''}
+                  />
+                  {passwordErrors.confirmPassword && (
+                    <PasswordErrorMessage>⚠️ {passwordErrors.confirmPassword}</PasswordErrorMessage>
+                  )}
+                </PasswordFormGroup>
+                
+                {passwordErrors.general && (
+                  <PasswordErrorMessage>⚠️ {passwordErrors.general}</PasswordErrorMessage>
+                )}
+                
+                <PasswordButtonGroup>
+                  <PasswordButton 
+                    type="button" 
+                    className="secondary"
+                    onClick={closePasswordModal}
+                  >
+                    Annuler
+                  </PasswordButton>
+                  <PasswordButton 
+                    type="submit"
+                    className="primary"
+                    disabled={isPasswordLoading}
+                  >
+                    {isPasswordLoading ? (
+                      <>
+                        <PasswordLoadingSpinner />
+                        Modification...
+                      </>
+                    ) : (
+                      'Modifier le mot de passe'
+                    )}
+                  </PasswordButton>
+                </PasswordButtonGroup>
+              </form>
+            </PasswordModalBody>
+          </PasswordModalContent>
+        </PasswordModalOverlay>
+      )}
     </>
   );
 };

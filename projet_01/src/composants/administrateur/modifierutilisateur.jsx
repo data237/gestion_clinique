@@ -221,7 +221,9 @@ const ModifierUtilisateur = () => {
                    roleType: user.role.id === 1 ? "ADMIN" : 
                              user.role.id === 2 ? "MEDECIN" : 
                              user.role.id === 3 ? "SECRETAIRE" : ""
-                 } : null
+                 } : null,
+                 // S'assurer que serviceMedicalName est correctement mappé
+                 serviceMedicalName: user.serviceMedicalName || ""
                };
                
                console.log('=== DEBUG PRÉCHARGEMENT ===');
@@ -229,7 +231,7 @@ const ModifierUtilisateur = () => {
                console.log('Role ID reçu:', user.role?.id);
                console.log('Données transformées:', transformedData);
                console.log('Role transformé:', transformedData.role);
-               console.log('Service médical:', transformedData.serviceMedical);
+               console.log('Service médical:', transformedData.serviceMedicalName);
                console.log('isVisiblerole sera:', transformedData.role?.roleType === "MEDECIN");
                console.log('================================');
                
@@ -270,7 +272,7 @@ const ModifierUtilisateur = () => {
       setFormData(prev => ({
         ...prev,
         role: null,
-        serviceMedical: null
+        serviceMedicalName: ""
       }));
       return;
     }
@@ -288,8 +290,8 @@ const ModifierUtilisateur = () => {
         id: roleMapping[selectedRoleType],
         roleType: selectedRoleType
       },
-      // Réinitialiser serviceMedical si ce n'est pas un médecin
-      serviceMedical: isMedecin ? prev.serviceMedical : null
+      // Réinitialiser serviceMedicalName si ce n'est pas un médecin
+      serviceMedicalName: isMedecin ? prev.serviceMedicalName : ""
     }));
   };
   
@@ -456,16 +458,15 @@ const ModifierUtilisateur = () => {
               </FormGroup>
             </FormRow>
 
-             <FormRow>
-              <FormGroup>
-                <Label htmlFor="password">password</Label>
-                <Input id="password" name="password" type="password" value={formData.password} onChange={handleChange} />
-              </FormGroup>
-              <FormGroup>
-                <Label htmlFor="telephone">telephone</Label>
-                <Input id="telephone" name="telephone" value={formData.telephone} onChange={handleChange} />
-              </FormGroup>
-            </FormRow>
+                          <FormRow>
+               <FormGroup>
+                 <Label htmlFor="telephone">telephone</Label>
+                 <Input id="telephone" name="telephone" value={formData.telephone} onChange={handleChange} />
+               </FormGroup>
+               <FormGroup>
+                 {/* Champ vide pour maintenir la mise en page */}
+               </FormGroup>
+             </FormRow>
 
 
 
@@ -480,8 +481,8 @@ const ModifierUtilisateur = () => {
                 </Select>
                 </FormGroup>
                 <FormGroupvisible $formgroupdisplay={isVisiblerole ? "flex" : "none"}>
-                  <Label htmlFor="serviceMedical">Service médical</Label>
-                  <Select id="serviceMedical" name="serviceMedical" value={formData.serviceMedical} onChange={handleChange} >
+                  <Label htmlFor="serviceMedicalName">Service médical</Label>
+                  <Select id="serviceMedicalName" name="serviceMedicalName" value={formData.serviceMedicalName || ""} onChange={handleChange} >
                     <option value="">Sélectionnez un service</option>
                     <option value="CARDIOLOGIE">CARDIOLOGIE</option>
                     <option value="MEDECINE_GENERALE">MEDECINE_GENERALE</option>
