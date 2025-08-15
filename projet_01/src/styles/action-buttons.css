@@ -64,6 +64,26 @@
     opacity: 1;
 }
 
+/* Bouton supprimer désactivé */
+.delete-button.disabled {
+    background-color: #f8f9fa;
+    color: #9ca3af;
+    cursor: not-allowed;
+    border-color: #e5e7eb;
+    opacity: 0.6;
+}
+
+.delete-button.disabled:hover {
+    background-color: #f8f9fa;
+    border-color: #e5e7eb;
+    transform: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.delete-button.disabled .iconsupprime {
+    opacity: 0.4;
+}
+
 /* Toggle button styles */
 .toggle-button {
     position: relative;
@@ -123,6 +143,26 @@
 .toggle-button:not(.on) .circle {
     left: 0;
     background-color: #ffffff;
+}
+
+/* Toggle button désactivé (pour l'admin connecté) */
+.toggle-button:disabled {
+    background-color: #f3f4f6;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.toggle-button:disabled:hover {
+    background-color: #f3f4f6;
+    border-color: #e5e7eb;
+    transform: none;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggle-button:disabled .circle {
+    background-color: #d1d5db;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 /* Animation du toggle */

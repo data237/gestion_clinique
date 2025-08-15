@@ -349,8 +349,8 @@ function Utilisateur() {
                                                 });
                                             }}
                                             className={`toggle-button ${utilisateur.actif ? "admin-active" : "disabled-termine"}`}
-                                            disabled={isLoading('toggleStatus')}
-                                            title={utilisateur.actif ? "Utilisateur actif - cliquer pour désactiver" : "Utilisateur inactif - cliquer pour activer"}
+                                            disabled={isLoading('toggleStatus') || parseInt(utilisateur.id) === parseInt(idUser)}
+                                            title={parseInt(utilisateur.id) === parseInt(idUser) ? "Vous ne pouvez pas modifier votre propre statut" : (utilisateur.actif ? "Utilisateur actif - cliquer pour désactiver" : "Utilisateur inactif - cliquer pour activer")}
                                         />
                                         <button
                                             onClick={() => {
@@ -363,8 +363,9 @@ function Utilisateur() {
                                                     variant: "danger"
                                                 });
                                             }}
-                                            disabled={isLoading('deleteUser')}
-                                            className="delete-button"
+                                            disabled={isLoading('deleteUser') || parseInt(utilisateur.id) === parseInt(idUser)}
+                                            className={`delete-button ${parseInt(utilisateur.id) === parseInt(idUser) ? "disabled" : ""}`}
+                                            title={parseInt(utilisateur.id) === parseInt(idUser) ? "Vous ne pouvez pas supprimer votre propre compte" : "Supprimer l'utilisateur"}
                                         >
                                             <img src={iconsupprime} className='iconsupprime'></img>
                                         </button>
