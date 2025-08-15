@@ -177,6 +177,13 @@ const FormulaireUtilisateur = () => {
     }, [idUser]);
 
   
+  // Mapping des rôles avec leurs IDs
+  const roleMapping = {
+    "ADMIN": { id: 1, roleType: "ADMIN" },
+    "MEDECIN": { id: 2, roleType: "MEDECIN" },
+    "SECRETAIRE": { id: 3, roleType: "SECRETAIRE" }
+  };
+
   const [formData, setFormData] = useState({
    
   nom: "",
@@ -241,22 +248,10 @@ const FormulaireUtilisateur = () => {
   };
  const handleChangerole = e => {
     const { name, value } = e.target;
-    value === "medecin" ? setisVisible(true) : setisVisible(false)
+    value === "MEDECIN" ? setisVisible(true) : setisVisible(false)
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   const token = localStorage.getItem('token');
-  const formData2 = {
-       nom : formData.nom,
-       prenom : formData.prenom,
-       email : formData.email,
-       dateNaissance : formData.dateNaissance,
-       telephone : formData.telephone,
-       adresse :  formData.adresse,
-       genre : formData.genre,
-       password :  formData.password,
-       actif : formData.actif,
-       role :  formData.role
-      }
   const handleSubmit = async(e) => {
     e.preventDefault();
     
@@ -301,15 +296,37 @@ const FormulaireUtilisateur = () => {
       return;
     }
 
+    // Préparation des données avec le bon format de rôle
+    const selectedRole = roleMapping[formData.role];
+    if (!selectedRole) {
+      window.showNotification('Rôle invalide sélectionné', 'error');
+      return;
+    }
+
+    const dataToSend = {
+      nom: formData.nom,
+      prenom: formData.prenom,
+      email: formData.email,
+      dateNaissance: formData.dateNaissance,
+      telephone: formData.telephone,
+      adresse: formData.adresse,
+      genre: formData.genre,
+      password: formData.password,
+      actif: formData.actif,
+      role: {
+        id: selectedRole.id
+      }
+    };
+
+    // Ajouter le service médical si c'est un médecin
+    if (formData.role === "MEDECIN" && formData.serviceMedicalName) {
+      dataToSend.serviceMedicalName = formData.serviceMedicalName;
+    }
+
     startLoading('createUser');
     try {
-      if(formData.role != "medecin"){
-        const response = await axiosInstance.post(`/utilisateurs`, formData2);
-        console.log(response.data);
-      }else{
-        const response = await axiosInstance.post(`/utilisateurs`, formData);
-        console.log(response.data);
-      }
+      const response = await axiosInstance.post(`/utilisateurs`, dataToSend);
+      console.log(response.data);
       
       window.showNotification('Utilisateur créé avec succès', 'success');
       navigate("/admin/utilisateur");
@@ -389,8 +406,8 @@ const FormulaireUtilisateur = () => {
           <FormGroup>
             <Label htmlFor="genre">Genre</Label>
             <Select id="genre" name="genre" value={formData.genre} onChange={handleChange}>
-              <option value="Femme">F</option>
-              <option value="Homme">H</option>
+              <option value="F">Femme</option>
+              <option value="H">Homme</option>
             </Select>
           </FormGroup>
           <FormGroup>
@@ -424,9 +441,9 @@ const FormulaireUtilisateur = () => {
             <Label htmlFor="role">Rôle</Label>
             <Select id="role" name="role" value={formData.role} onChange={handleChangerole}>
               <option value="">Sélectionnez un rôle</option>
-              <option value="Admin">admin</option>
-              <option value="medecin">medecin</option>
-              <option value="secretaire">secretaire</option>
+              <option value="ADMIN">ADMIN</option>
+              <option value="MEDECIN">MEDECIN</option>
+              <option value="SECRETAIRE">SECRETAIRE</option>
             </Select>
             </FormGroup>
             <FormGroupvisible $formgroupdisplay={isVisible ? "flex" : "none"}>
