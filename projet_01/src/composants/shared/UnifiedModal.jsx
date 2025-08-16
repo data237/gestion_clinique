@@ -105,8 +105,8 @@ export const ModalFooter = styled.div`
 `;
 
 export const ModalButton = styled.button`
-  background-color: ${props => props.primary ? 'rgba(159, 159, 255, 1)' : 'transparent'};
-  color: ${props => props.primary ? 'white' : 'rgba(159, 159, 255, 1)'};
+  background-color: ${props => props.$primary ? 'rgba(159, 159, 255, 1)' : 'transparent'};
+  color: ${props => props.$primary ? 'white' : 'rgba(159, 159, 255, 1)'};
   border: 1px solid rgba(159, 159, 255, 1);
   padding: 12px 24px;
   border-radius: 8px;
@@ -118,7 +118,7 @@ export const ModalButton = styled.button`
   min-width: 120px;
   
   &:hover {
-    background-color: ${props => props.primary ? 'rgba(139, 139, 235, 1)' : 'rgba(239, 239, 255, 1)'};
+    background-color: ${props => props.$primary ? 'rgba(139, 139, 235, 1)' : 'rgba(239, 239, 255, 1)'};
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
@@ -167,7 +167,7 @@ export const ConfirmationModal = ({
         <ModalFooter>
           <ModalButton onClick={onClose}>{cancelText}</ModalButton>
           <ModalButton 
-            primary 
+            $primary 
             onClick={onConfirm}
             style={getConfirmButtonStyle()}
           >
@@ -177,6 +177,57 @@ export const ConfirmationModal = ({
       </ModalContainer>
     </ModalOverlay>
   );
+};
+
+// Composant Modal unifié pour tous les usages
+export const UnifiedModal = ({ 
+    isOpen, 
+    onClose, 
+    title, 
+    children, 
+    size = 'medium',
+    showFooter = true,
+    footerContent
+}) => {
+    if (!isOpen) return null;
+
+    const getModalSize = () => {
+        switch (size) {
+            case 'small':
+                return { maxWidth: '400px' };
+            case 'large':
+                return { maxWidth: '800px' };
+            case 'xl':
+                return { maxWidth: '1200px' };
+            default: // medium
+                return { maxWidth: '600px' };
+        }
+    };
+
+    return (
+        <ModalOverlay onClick={onClose}>
+            <ModalContainer onClick={(e) => e.stopPropagation()} style={getModalSize()}>
+                <ModalHeader>
+                    <ModalTitle>{title}</ModalTitle>
+                    <ModalClose onClick={onClose}>&times;</ModalClose>
+                </ModalHeader>
+                
+                <ModalBody>
+                    {children}
+                </ModalBody>
+                
+                {showFooter && (
+                    <ModalFooter>
+                        {footerContent || (
+                            <ModalButton onClick={onClose}>
+                                Fermer
+                            </ModalButton>
+                        )}
+                    </ModalFooter>
+                )}
+            </ModalContainer>
+        </ModalOverlay>
+    );
 };
 
 // Composant Modal d'information unifié
@@ -200,7 +251,7 @@ export const InfoModal = ({
           <ModalMessage>{message}</ModalMessage>
         </ModalBody>
         <ModalFooter>
-          <ModalButton primary onClick={onClose}>{buttonText}</ModalButton>
+          <ModalButton $primary onClick={onClose}>{buttonText}</ModalButton>
         </ModalFooter>
       </ModalContainer>
     </ModalOverlay>
