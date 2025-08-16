@@ -36,17 +36,17 @@
 /* Tableau de board*/
 .dashboard-grid{
     width: 100%;
-    height: 60vh;
+    height: 64vh;
     display: grid;
     grid-template-columns: 3fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 2fr 3fr;
     gap: 16px;
     padding-left: 32px;
     padding-right: 32px;
 }
+
 .content-barre-dashboard{
-    width: 100%;
-    
+    width: 100%;    
     padding-left: 32px;
     padding-right: 32px;
    
@@ -58,9 +58,9 @@
     gap: 16px;
 }
 .barre-dashboard{
-    height: 3vh;
+    height: 3vh
     border-radius: 10px;
-    background-color: rgba(159, 159, 255, 1);
+    background-color: rgb(255, 159, 172);
     display: flex;
     align-items: center;
     gap: 16px;
@@ -95,12 +95,12 @@
 .grid-4{
     grid-column-start: 1;
     grid-column-end: 3;
-    height: 30%;
+height: 200px;	;
 }
 .line-chart{
     width: 100%;
     /*max-width: 800px;*/
-    height: 20%;
+    height: 200px;
     background-color: white;
     border-radius: 15px;
     padding: 20px;
@@ -129,8 +129,8 @@
     width: 100%;
     height: 28vh;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 1fr 50%;
     gap: 9px;
     padding: 8px;
 }
