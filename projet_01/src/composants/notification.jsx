@@ -115,7 +115,7 @@ const Notification = ({ message, type = 'info', duration = 5000, onClose }) => {
     setIsVisible(false);
     setTimeout(() => {
       onClose();
-    }, 300);
+    }, 600);
   };
 
   const getIcon = () => {

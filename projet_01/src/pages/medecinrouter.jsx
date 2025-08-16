@@ -6,6 +6,7 @@ import Calendar from "../composants/medecin/calendriermedecin";
 import RendezvousMedecinToday from "../composants/medecin/rdvday";
 import FormulaireConsultation from "../composants/medecin/formulaireconsultation";
 import DossierMedical from "../composants/medecin/dossiermedical";
+import AfficherDetailRendezvous from "../composants/medecin/afficherdetailrendezvous";
 
 const Medecinroute = () => {
     return (
@@ -16,6 +17,7 @@ const Medecinroute = () => {
 
                 {/* Routes rendez-vous */}
                 <Route path="rendezvous" element={<RendezvousMedecin />} />
+                <Route path="rendezvous/viewrendezvous/:id" element={<AfficherDetailRendezvous />} />
                 <Route path="rendezvous/consultation/:idrendezvous" element={<FormulaireConsultation />} />
                 <Route path="rendezvous/dossiermedical/:patientId" element={<DossierMedical />} />
 

@@ -246,7 +246,7 @@ function RendezvousMedecinToday(){
      const navigate = useNavigate();
 
   const handleRowClick = (rendezvous) => {
-    navigate(`/secretaire/rendezvous/viewrendezvous/${rendezvous.id}`);
+    navigate(`/medecin/rendezvous/viewrendezvous/${rendezvous.id}`);
   };
 
 

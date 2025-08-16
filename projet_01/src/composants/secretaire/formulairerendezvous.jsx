@@ -642,6 +642,7 @@ const FormulaireRendezVous = () => {
                 <Select id="servicemedical" name="serviceMedical" value={formData.serviceMedical} onChange={handleChange} >
                   <option value="">Sélectionner un service</option>
                   <option value="MEDECINE_GENERALE">Médecine Générale</option>
+                  <option value="CARDIOLOGIE">Cardiologie</option>
                   <option value="PEDIATRIE">Pédiatrie</option>
                   <option value="GYNECOLOGIE">Gynécologie</option>
                   <option value="CARDIOLOGIE">Cardiologie</option>

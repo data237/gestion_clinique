@@ -361,7 +361,7 @@ const PrescriptionPDF = ({ prescription }) => {
                                 N° {prescription.id ? prescription.id.toString().padStart(6, '0') : '000000'}
                             </Text>
                             <Text style={styles.prescriptionDate}>
-                                {formatDate(prescription.dateConsultation) || formatDate(getCurrentDate())}
+                                {formatDate(prescription.creationDate) || formatDate(getCurrentDate())}
                             </Text>
                         </View>
                     </View>
@@ -436,7 +436,7 @@ const PrescriptionPDF = ({ prescription }) => {
                                 <View style={styles.consultationItem}>
                                     <Text style={styles.consultationLabel}>Date Consultation</Text>
                                     <Text style={styles.consultationValue}>
-                                        {formatDate(prescription.dateConsultation) || formatDate(getCurrentDate())}
+                                        {formatDate(prescription.creationDate) || formatDate(getCurrentDate())}
                                     </Text>
                                 </View>
                             </View>
