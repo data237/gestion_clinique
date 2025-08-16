@@ -8,6 +8,7 @@ import Eltmenu from '../composants/eltmenu'
 import imgrendezvous from '../assets/IconRendezvous.png'
 //import imgpatient from '../assets/IconPatient.png'
 import imgcalendrier from '../assets/IconCalendrier.png'
+import iconEnvelope from '../assets/icon-envelope.svg'
 import { Link, Outlet } from 'react-router-dom';
 
 const PageStyle = Styled.div`
@@ -40,6 +41,7 @@ function PageMedecin(){
         <Barrelatteral> 
             <Link to="/medecin/rendezvous" className={contenuActif === 'rendez-vous' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('rendez-vous')}}><Eltmenu nommenu='rendez-vous' img={imgrendezvous} /></Link>
             <Link to="/medecin/calendrier" className={contenuActif === 'calendrier' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('calendrier')}}><Eltmenu nommenu='Calendrier' img={imgcalendrier} className={contenuActif === 'calendrier' ? 'eltmenu' : ''} onClick={() => {changerContenu('calendrier')}}/></Link>
+            <Link to="/medecin/messagerie" className={contenuActif === 'messagerie' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('messagerie')}}><Eltmenu nommenu='Messagerie' img={iconEnvelope} /></Link>
             {/*<button className={contenuActif === 'utilisateur' ? 'eltmenu' : ''} onClick={changerContenu('utilisateur')}> <Eltmenu nommenu='utilisateurs' img={imgutilisateur}/> </button>*/}
             {/*<button className={contenuActif === 'patient' ? 'eltmenu' : ''} onClick={() => changerContenu('patient')}> <Eltmenu nommenu='Patients' img={imgpatient}/> </button>*/}
             {/*<button className={contenuActif === 'messagerie' ? 'eltmenu' : ''} onClick={() => changerContenu('messagerie')}> <Eltmenu nommenu='Messagerie' img={mail}/> </button>*/}

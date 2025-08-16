@@ -6,6 +6,7 @@ import Eltmenu from '../composants/eltmenu'
 import imgutilisateur from '../assets/IconUtilisateursblack.png'
 import imgpatient from '../assets/IconPatient.png'
 import imgdashboard from '../assets/iconutilisateurdashboardblanc.svg'
+import iconEnvelope from '../assets/icon-envelope.svg'
 import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const PageStyle = Styled.div`
@@ -69,6 +70,8 @@ function PageAdmin(){
             setContenuActif('utilisateur');
         } else if (routeSegment === 'patient') {
             setContenuActif('patient');
+        } else if (routeSegment === 'messagerie') {
+            setContenuActif('messagerie');
         } else {
             setContenuActif('dashboard');
         }
@@ -101,6 +104,13 @@ function PageAdmin(){
                     onClick={() => changerContenu('patient')}
                 >
                     <Eltmenu nommenu='Patients' img={imgpatient} active={contenuActif === 'patient'} />
+                </Link>
+                <Link 
+                    to="/admin/messagerie" 
+                    className={contenuActif === 'messagerie' ? 'eltmenu' : 'lienadmin'} 
+                    onClick={() => changerContenu('messagerie')}
+                >
+                    <Eltmenu nommenu='Messagerie' img={iconEnvelope} active={contenuActif === 'messagerie'} />
                 </Link>
             </Barrelatteral>
             <DivStyle>

@@ -10,6 +10,7 @@ import Facture from "../composants/secretaire/facture";
 import FormulairePatientSecretaire from "../composants/secretaire/formulairepatientsecretaire";
 import AfficherDetailRendezVous from "../composants/secretaire/afficherdetailrendezvous";
 import ModifierRendezVous from "../composants/secretaire/modifierrendezvous";
+import MessagerieSecretaire from "../composants/secretaire/messagerie";
 
 const Secretaireroute = () => {
     return (
@@ -34,6 +35,9 @@ const Secretaireroute = () => {
                 
                 {/* Routes factures */}
                 <Route path="facture" element={<Facture />} />
+
+                {/* Routes messagerie */}
+                <Route path="messagerie" element={<MessagerieSecretaire />} />
 
                 {/* Redirection par défaut */}
                 <Route path="*" element={<Navigate to="rendezvous" replace />} />

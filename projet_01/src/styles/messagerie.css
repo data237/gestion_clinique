@@ -1,0 +1,453 @@
+/* Styles pour la messagerie */
+.messagerie-container {
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.messagerie-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.messagerie-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.messagerie-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.messagerie-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.messagerie-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.messagerie-content {
+    display: flex;
+    height: calc(100vh - 250px);
+    gap: 20px;
+    flex: 1;
+}
+
+.messagerie-sidebar {
+    width: 300px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.messagerie-contacts {
+    padding: 20px;
+    border-bottom: 1px solid #e1e5e9;
+}
+
+.contacts-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.contact-search {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.contact-search:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.contact-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 5px;
+}
+
+.contact-item:hover {
+    background: #f8f9fa;
+}
+
+.contact-item.active {
+    background: #e3f2fd;
+    border-left: 3px solid #2196f3;
+}
+
+.contact-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+    object-fit: cover;
+}
+
+.contact-info {
+    flex: 1;
+}
+
+.contact-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 2px;
+}
+
+.contact-status {
+    font-size: 12px;
+    color: #666;
+}
+
+.contact-status.online {
+    color: #4caf50;
+}
+
+.contact-status.offline {
+    color: #9e9e9e;
+}
+
+.messagerie-main {
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.messagerie-chat-header {
+    padding: 20px;
+    border-bottom: 1px solid #e1e5e9;
+    background: #fafafa;
+}
+
+.chat-contact {
+    display: flex;
+    align-items: center;
+}
+
+.chat-contact-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.chat-contact-info h4 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.chat-contact-status {
+    font-size: 14px;
+    color: #666;
+}
+
+.messagerie-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8f9fa;
+}
+
+.message {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message.sent {
+    align-items: flex-end;
+}
+
+.message.received {
+    align-items: flex-start;
+}
+
+.message-content {
+    max-width: 70%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.message.sent .message-content {
+    background: #667eea;
+    color: white;
+    border-bottom-right-radius: 6px;
+}
+
+.message.received .message-content {
+    background: white;
+    color: #333;
+    border: 1px solid #e1e5e9;
+    border-bottom-left-radius: 6px;
+}
+
+.message-time {
+    font-size: 12px;
+    color: #999;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.messagerie-input {
+    padding: 20px;
+    border-top: 1px solid #e1e5e9;
+    background: white;
+}
+
+.input-container {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.message-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #e1e5e9;
+    border-radius: 25px;
+    font-size: 14px;
+    resize: none;
+    min-height: 45px;
+    max-height: 100px;
+    font-family: inherit;
+}
+
+.message-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.send-btn {
+    padding: 12px 20px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 80px;
+}
+
+.send-btn:hover {
+    background: #5a6fd8;
+    transform: translateY(-1px);
+}
+
+.send-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .messagerie-content {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .messagerie-sidebar {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+    
+    .contact-list {
+        max-height: 200px;
+    }
+    
+    .message-content {
+        max-width: 85%;
+    }
+}
+
+/* Scrollbar personnalisée */
+.messagerie-messages::-webkit-scrollbar,
+.contact-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messagerie-messages::-webkit-scrollbar-track,
+.contact-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.messagerie-messages::-webkit-scrollbar-thumb,
+.contact-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.messagerie-messages::-webkit-scrollbar-thumb:hover,
+.contact-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Animation d'entrée */
+.messagerie-container {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* États de chargement */
+.messagerie-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #666;
+}
+
+.messagerie-empty {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+
+.messagerie-empty-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+/* Composant de chargement personnalisé */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+.loading-text {
+    font-size: 18px;
+    color: #333;
+    font-weight: 500;
+    text-align: center;
+}
+
+.loading-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+    text-align: center;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Gestion des erreurs */
+.error-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    color: #d32f2f;
+}
+
+.error-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.8;
+}
+
+.error-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.error-message {
+    font-size: 16px;
+    text-align: center;
+    margin-bottom: 25px;
+    max-width: 400px;
+}
+
+.error-retry-btn {
+    padding: 12px 24px;
+    background: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.error-retry-btn:hover {
+    background: #b71c1c;
+    transform: translateY(-2px);
+} 

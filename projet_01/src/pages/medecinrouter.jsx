@@ -7,6 +7,7 @@ import RendezvousMedecinToday from "../composants/medecin/rdvday";
 import FormulaireConsultation from "../composants/medecin/formulaireconsultation";
 import DossierMedical from "../composants/medecin/dossiermedical";
 import AfficherDetailRendezvous from "../composants/medecin/afficherdetailrendezvous";
+import MessagerieMedecin from "../composants/medecin/messagerie";
 
 const Medecinroute = () => {
     return (
@@ -24,6 +25,9 @@ const Medecinroute = () => {
                 {/* Routes calendrier */}
                 <Route path="calendrier" element={<Calendar />} />
                 <Route path="calendrier/:today" element={<RendezvousMedecinToday />} />
+
+                {/* Routes messagerie */}
+                <Route path="messagerie" element={<MessagerieMedecin />} />
 
                 {/* Redirection par défaut */}
                 <Route path="*" element={<Navigate to="rendezvous" replace />} />

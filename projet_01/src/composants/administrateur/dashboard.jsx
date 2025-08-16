@@ -21,6 +21,7 @@ function Dashboard() {
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
     const [blobUrls, setBlobUrls] = useState([]) // Pour stocker les URLs des blobs
+    const [monthlyRevenue, setMonthlyRevenue] = useState([])
 
     // Récupération du nom et de la photo de profil de l'utilisateur connecté
     useEffect(() => {
@@ -86,6 +87,30 @@ function Dashboard() {
             }
         }
         statjournalier()
+    }, []);
+
+    // Récupération des revenus mensuels
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const fetchMonthlyRevenue = async () => {
+            try {
+                const response = await axios.get(`${API_BASE}/stats/monthly`,
+                    {
+                        headers: {
+                            accept: 'application/json',
+                            Authorization: `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        }
+                    });
+                if (response && response.data) {
+                    setMonthlyRevenue(response.data || [])
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des revenus mensuels:', error);
+                setMonthlyRevenue([])
+            }
+        }
+        fetchMonthlyRevenue()
     }, []);
 
     // Récupération des utilisateurs connectés avec leur image de profil
@@ -446,7 +471,7 @@ function Dashboard() {
                                     datasets: [
                                         {
                                             label: "Revenue",
-                                            data: [10, 15, 20, 100, -10, 80, 14, 54, 60, 74, 12, 14],
+                                            data: monthlyRevenue.length > 0 ? monthlyRevenue : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                                             backgroundColor: "white",
                                             borderColor: "rgba(159, 159, 255, 1)",
                                         },

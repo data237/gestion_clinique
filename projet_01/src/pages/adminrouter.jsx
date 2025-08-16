@@ -10,6 +10,7 @@ import FormulairePatient from "../composants/administrateur/formulairepatient";
 import DetailsPatient from "../composants/administrateur/afficherdetailpatient";
 import ModifierPatient from "../composants/administrateur/modifierpatient";
 import Dashboard from "../composants/administrateur/dashboard";
+import MessagerieAdmin from "../composants/administrateur/messagerie";
 
 const Adminroute = () => {
     return (
@@ -32,6 +33,9 @@ const Adminroute = () => {
                 <Route path="patient/add" element={<FormulairePatient />} />
                 <Route path="patient/viewpatient/:id" element={<DetailsPatient />} />
                 <Route path="patient/edit/:id" element={<ModifierPatient />} />
+
+                {/* Routes messagerie */}
+                <Route path="messagerie" element={<MessagerieAdmin />} />
 
                 {/* Redirection par défaut */}
                 <Route path="*" element={<Navigate to="dashboard" replace />} />

@@ -3487,7 +3487,7 @@
         }
       }
     },
-    "/Api/V1/clinique/stats/yearly/{year}": {
+    "/Api/V1/clinique/stats/yearly": {
       "get": {
         "tags": [
           "STATISTIQUES"
@@ -3498,13 +3498,14 @@
         "parameters": [
           {
             "name": "year",
-            "in": "path",
+            "in": "query",
             "description": "Année (ex: 2025)",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            }
+            },
+            "example": 2025
           }
         ],
         "responses": {
@@ -3541,21 +3542,43 @@
         }
       }
     },
-    "/Api/V1/clinique/stats/last-month": {
+    "/Api/V1/clinique/stats/monthly": {
       "get": {
         "tags": [
           "STATISTIQUES"
         ],
-        "summary": "Obtenir les statistiques du mois dernier",
-        "description": "Récupère les statistiques agrégées pour le mois précédent.",
-        "operationId": "getLastMonthStats",
+        "summary": "Obtenir les statistiques mensuelles",
+        "description": "Récupère les statistiques agrégées pour un mois donné.",
+        "operationId": "getMonthlyStats",
+        "parameters": [
+          {
+            "name": "month",
+            "in": "query",
+            "description": "Numéro du mois (1-12) ou mot-clé ('last', 'current').",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": 7
+          }
+        ],
         "responses": {
           "200": {
-            "description": "Statistiques du mois dernier trouvées",
+            "description": "Statistiques du mois trouvées",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StatMoisDernierResponseDto"
+                  "$ref": "#/components/schemas/StatParMoisResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Numéro de mois invalide",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
                 }
               }
             }
@@ -3610,38 +3633,6 @@
               "text/plain": {
                 "schema": {
                   "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Erreur interne du serveur",
-            "content": {
-              "*/*": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/Api/V1/clinique/stats/current-month": {
-      "get": {
-        "tags": [
-          "STATISTIQUES"
-        ],
-        "summary": "Obtenir les statistiques du mois en cours",
-        "description": "Récupère les statistiques agrégées pour le mois actuel.",
-        "operationId": "getCurrentMonthStats",
-        "responses": {
-          "200": {
-            "description": "Statistiques du mois en cours trouvées",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StatMoisEncoursResponseDto"
                 }
               }
             }
@@ -7586,7 +7577,7 @@
           }
         }
       },
-      "StatMoisDernierResponseDto": {
+      "StatParMoisResponseDto": {
         "type": "object",
         "properties": {
           "id": {
@@ -7601,7 +7592,7 @@
             "type": "string",
             "format": "date-time"
           },
-          "moisDernier": {
+          "mois": {
             "type": "string"
           },
           "nbrRendezVousCONFIRME": {
@@ -7642,46 +7633,6 @@
             "format": "date-time"
           },
           "jour": {
-            "type": "string"
-          },
-          "nbrRendezVousCONFIRME": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "nbrRendezANNULE": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "nbrPatientEnrg": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "nbrConsultation": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "revenu": {
-            "type": "number",
-            "format": "double"
-          }
-        }
-      },
-      "StatMoisEncoursResponseDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "modificationDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "moisEncours": {
             "type": "string"
           },
           "nbrRendezVousCONFIRME": {
