@@ -116,6 +116,10 @@ export const ModalButton = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
   min-width: 120px;
+  white-space: nowrap; /* Empêcher le débordement de texte */
+  overflow: hidden; /* Empêcher le débordement */
+  text-overflow: ellipsis; /* Ajouter des points de suspension si nécessaire */
+  box-sizing: border-box; /* Inclure padding et border dans la largeur */
   
   &:hover {
     background-color: ${props => props.$primary ? 'rgba(139, 139, 235, 1)' : 'rgba(239, 239, 255, 1)'};
@@ -123,8 +127,21 @@ export const ModalButton = styled.button`
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
+  &:focus {
+    outline: none; /* Supprimer l'outline par défaut */
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 3px rgba(159, 159, 255, 0.3); /* Focus visible sans débordement */
+  }
+  
   &:active {
     transform: translateY(0);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 `;
 

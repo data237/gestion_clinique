@@ -1,6 +1,6 @@
 import '../../styles/Zonedaffichage.css'
 import React, { useEffect, useState } from 'react';
-import { API_BASE } from '../../composants/config/apiconfig'
+import { API_BASE } from '../../composants/config/apiConfig'
 import axios from 'axios';
 import { Chart as ChartJS } from "chart.js/auto";
 import { Line } from "react-chartjs-2";

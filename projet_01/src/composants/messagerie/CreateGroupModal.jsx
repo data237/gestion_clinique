@@ -26,11 +26,12 @@ const Input = styled.input`
   border: 1px solid #e1e5e9;
   border-radius: 6px;
   font-size: 14px;
+  box-sizing: border-box; /* Inclure padding et border dans la largeur */
   
   &:focus {
-    outline: none;
+    outline: none; /* Supprimer l'outline par défaut */
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); /* Focus visible sans débordement */
   }
 `;
 
@@ -43,11 +44,12 @@ const Textarea = styled.textarea`
   min-height: 80px;
   resize: vertical;
   font-family: inherit;
+  box-sizing: border-box; /* Inclure padding et border dans la largeur */
   
   &:focus {
-    outline: none;
+    outline: none; /* Supprimer l'outline par défaut */
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); /* Focus visible sans débordement */
   }
 `;
 
@@ -100,10 +102,26 @@ const RemoveButton = styled.button`
   padding: 4px 8px;
   font-size: 12px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  white-space: nowrap; /* Empêcher le débordement de texte */
+  overflow: hidden; /* Empêcher le débordement */
+  text-overflow: ellipsis; /* Ajouter des points de suspension si nécessaire */
+  box-sizing: border-box; /* Inclure padding et border dans la largeur */
   
   &:hover {
     background: #c82333;
+    transform: translateY(-1px);
+  }
+  
+  &:focus {
+    outline: none; /* Supprimer l'outline par défaut */
+    background: #c82333;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.3); /* Focus visible sans débordement */
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
   }
 `;
 
@@ -125,11 +143,12 @@ const SearchInput = styled.input`
   border-radius: 8px;
   font-size: 14px;
   margin-bottom: 15px;
+  box-sizing: border-box; /* Inclure padding et border dans la largeur */
   
   &:focus {
-    outline: none;
+    outline: none; /* Supprimer l'outline par défaut */
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); /* Focus visible sans débordement */
   }
 `;
 
@@ -146,10 +165,12 @@ const FilterSelect = styled.select`
   border-radius: 6px;
   font-size: 14px;
   background: white;
+  box-sizing: border-box; /* Inclure padding et border dans la largeur */
   
   &:focus {
-    outline: none;
+    outline: none; /* Supprimer l'outline par défaut */
     border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1); /* Focus visible sans débordement */
   }
 `;
 
@@ -231,10 +252,27 @@ const AddUsersButton = styled.button`
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
+  white-space: nowrap; /* Empêcher le débordement de texte */
+  overflow: hidden; /* Empêcher le débordement */
+  text-overflow: ellipsis; /* Ajouter des points de suspension si nécessaire */
+  box-sizing: border-box; /* Inclure padding et border dans la largeur */
   
   &:hover {
     background: #5a6fd8;
     transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  
+  &:focus {
+    outline: none; /* Supprimer l'outline par défaut */
+    background: #5a6fd8;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3); /* Focus visible sans débordement */
+    transform: translateY(-1px);
+  }
+  
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
   }
 `;
 
@@ -613,4 +651,4 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
   );
 };
 
-export default CreateGroupModal; 
+export default CreateGroupModal;
