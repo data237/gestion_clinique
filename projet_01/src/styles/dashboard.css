@@ -143,6 +143,7 @@
     border-radius: 10px;
     overflow: hidden;
     position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .grid-1-content-image {
@@ -150,6 +151,7 @@
     height: 80px;
     border-radius: 8px;
     background-color: #f0f0f0;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* Nouveau style général pour les images */
@@ -159,6 +161,13 @@
     object-fit: cover;
     object-position: center;
     border-radius: inherit;
+    filter: brightness(0.85) contrast(1.1);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.img-connecte .responsive-image {
+    filter: brightness(0.8) contrast(1.2);
+    box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.4);
 }
 
 /* .img-connecte {
@@ -231,7 +240,7 @@
 .sous-grid-liste li {
     padding: 3px 0;
     border-bottom: 1px solid #eee;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 400;
     color: #333;
 }
@@ -296,6 +305,79 @@
     border: 1px solid #efefef;
     margin-bottom: 8px;
 }
+
+/* Section Titles for Connected/Disconnected Users */
+.section-title {
+    margin: 16px 0 8px 0;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #9f9fff 0%, #8b8bff 100%);
+    border-radius: 8px;
+    border: none;
+}
+
+.section-title h4 {
+    margin: 0;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.section-title:first-child {
+    margin-top: 0;
+}
+
+/* Search Styles for Recent Actions */
+.search-container {
+    margin-bottom: 12px;
+    position: relative;
+}
+
+.historique-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+}
+
+.historique-header .grid-3-title {
+    margin: 0;
+    flex-shrink: 0;
+}
+
+.historique-header .search-container {
+    margin: 0;
+    flex: 1;
+    max-width: 300px;
+ 
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #9f9fff;
+    border-radius: 8px;
+    font-size: 12px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+  
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #9f9fff;
+    box-shadow: 0 0 0 3px rgba(159, 159, 255, 0.1);
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+
 
 /* Footer Bar */
 .barre-dashboard {

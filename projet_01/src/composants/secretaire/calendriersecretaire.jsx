@@ -140,12 +140,21 @@ const CalendarSecretaire = () => {
 
               const response = await axiosInstance.get(`/rendezvous/month/${year}/${month}`);
 
-              console.log('Réponse API:', response.data);
+              console.log('Réponse API complète:', response.data);
+              console.log('Premier rendez-vous:', response.data[0]);
+              if (response.data[0]) {
+                console.log('Structure du premier RDV:', {
+                  id: response.data[0].id,
+                  jour: response.data[0].jour,
+                  heure: response.data[0].heure,
+                  patient: response.data[0].patient,
+                  patientNom: response.data[0].patient?.nom,
+                  patientPrenom: response.data[0].patient?.prenom
+                });
+              }
 
                               if (response.data && Array.isArray(response.data)) {
-                    // Trier les rendez-vous par ordre décroissant (plus récent en premier)
                     const rendezvousTries = response.data.sort((a, b) => {
-                        // Trier d'abord par date (du plus récent au plus ancien)
                         if (a.jour && b.jour) {
                             const dateA = new Date(a.jour);
                             const dateB = new Date(b.jour);
@@ -153,43 +162,108 @@ const CalendarSecretaire = () => {
                                 return dateB.getTime() - dateA.getTime();
                             }
                         }
-                        // Si même date, trier par heure (du plus tôt au plus tard)
                         if (a.heure && b.heure) {
                             return a.heure.localeCompare(b.heure);
                         }
-                        // Si pas d'heure, trier par ID (plus récent en premier)
                         return b.id - a.id;
                     });
                     
                     const dailyCounts = {};
+                    const detailedEvents = [];
 
                     rendezvousTries.forEach(rdv => {
                         const date = rdv.jour;
                         if (date) {
                             dailyCounts[date] = (dailyCounts[date] || 0) + 1;
+                            
+                            console.log('Traitement RDV:', {
+                                id: rdv.id,
+                                jour: rdv.jour,
+                                heure: rdv.heure,
+                                patient: rdv.patient,
+                                hasHeure: !!rdv.heure,
+                                hasPatient: !!rdv.patient,
+                                patientNom: rdv.patient?.nom,
+                                patientPrenom: rdv.patient?.prenom
+                            });
+                            
+                            if (rdv.heure) {
+                                let patientNom = 'Patient';
+                                let patientPrenom = '';
+                                
+                                if (rdv.patient && typeof rdv.patient === 'object') {
+                                    patientNom = rdv.patient.nom || rdv.patient.nomPatient || 'Patient';
+                                    patientPrenom = rdv.patient.prenom || rdv.patient.prenomPatient || '';
+                                } else if (rdv.nomPatient) {
+                                    patientNom = rdv.nomPatient;
+                                    patientPrenom = rdv.prenomPatient || '';
+                                }
+                                
+                                const startTime = `${date}T${rdv.heure}`;
+                                const endTime = `${date}T${rdv.heure}`;
+                                const style = getEventStyle(date);
+                                const icon = getEventIcon(date);
+                                
+                                const detailedEvent = {
+                                    id: rdv.id,
+                                    title: `${icon} ${patientNom} ${patientPrenom}`.trim(),
+                                    start: startTime,
+                                    end: endTime,
+                                    backgroundColor: style.backgroundColor,
+                                    borderColor: style.borderColor,
+                                    textColor: style.textColor,
+                                    borderWidth: style.borderWidth,
+                                    extendedProps: {
+                                        rdvId: rdv.id,
+                                        patient: { nom: patientNom, prenom: patientPrenom },
+                                        heure: rdv.heure,
+                                        style: style,
+                                        icon: icon,
+                                        isDetailed: true
+                                    }
+                                };
+                                
+                                console.log('Événement détaillé créé:', detailedEvent);
+                                detailedEvents.push(detailedEvent);
+                            } else {
+                                console.log('RDV ignoré - manque heure:', {
+                                    hasHeure: !!rdv.heure,
+                                    heure: rdv.heure
+                                });
+                            }
                         }
                     });
 
-                  const calendarEvents = Object.keys(dailyCounts).map(date => {
-                      const style = getEventStyle(date);
-                      const icon = getEventIcon(date);
-                      
-                      return {
-                          title: `${icon} ${dailyCounts[date]} RDV`,
-                          start: date,
-                          backgroundColor: style.backgroundColor,
-                          borderColor: style.borderColor,
-                          textColor: style.textColor,
-                          borderWidth: style.borderWidth,
-                          extendedProps: {
-                              count: dailyCounts[date],
-                              style: style,
-                              icon: icon
-                          }
-                      };
-                  });
+                    // Événements pour la vue mois (comptage par jour)
+                    const monthEvents = Object.keys(dailyCounts).map(date => {
+                        const style = getEventStyle(date);
+                        const icon = getEventIcon(date);
+                        
+                        return {
+                            title: `${icon} ${dailyCounts[date]} RDV`,
+                            start: date,
+                            backgroundColor: style.backgroundColor,
+                            borderColor: style.borderColor,
+                            textColor: style.textColor,
+                            borderWidth: style.borderWidth,
+                            extendedProps: {
+                                count: dailyCounts[date],
+                                style: style,
+                                icon: icon,
+                                isDetailed: false
+                            }
+                        };
+                    });
 
-                  setEvents(calendarEvents);
+                    // Combiner les deux types d'événements
+                    const allEvents = [...monthEvents, ...detailedEvents];
+                    console.log('Résumé des événements:', {
+                        total: allEvents.length,
+                        monthEvents: monthEvents.length,
+                        detailedEvents: detailedEvents.length,
+                        allEvents: allEvents
+                    });
+                    setEvents(allEvents);
               }
           } catch (err) {
               console.error('Erreur API:', err);
@@ -338,28 +412,40 @@ const CalendarSecretaire = () => {
 
         eventContent={(eventInfo) => {
             const style = eventInfo.event.extendedProps.style;
+            const isDetailed = eventInfo.event.extendedProps.isDetailed;
+            
             return (
-                <div style={{ 
-                    textAlign: 'center', 
-                    padding: '4px 6px',
-                    fontSize: '11px',
-                    fontWeight: style.fontWeight || 'bold',
-                    backgroundColor: style.backgroundColor,
-                    color: style.textColor,
-                    borderRadius: '6px',
-                    margin: '2px',
-                    border: `${style.borderWidth} solid ${style.borderColor}`,
-                    boxShadow: style.boxShadow || 'none',
-                    opacity: style.opacity || 1,
-                    minHeight: '20px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
-                    cursor: 'pointer'
-                }}>
-                    {eventInfo.event.title}
-                </div>
+              <div 
+              onClick={() => {
+                  const dateStr = eventInfo.event.startStr.split('T')[0];
+                  navigate(`/secretaire/calendrier/${dateStr}`);
+              }}
+              style={{ 
+                  textAlign: 'center', 
+                  padding: isDetailed ? '6px 8px' : '4px 6px',
+                  fontSize: isDetailed ? '12px' : '11px',
+                  fontWeight: style.fontWeight || 'bold',
+                  backgroundColor: style.backgroundColor,
+                  color: style.textColor,
+                  borderRadius: '6px',
+                  margin: '2px',
+                  border: `${style.borderWidth} solid ${style.borderColor}`,
+                  boxShadow: style.boxShadow || 'none',
+                  opacity: style.opacity || 1,
+                  minHeight: isDetailed ? '24px' : '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.2s ease',
+                  cursor: 'pointer',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+              }}
+              title={isDetailed ? `${eventInfo.event.title} - ${eventInfo.event.extendedProps.heure}` : eventInfo.event.title}
+          >
+              {eventInfo.event.title}
+          </div>
             );
         }}
           />

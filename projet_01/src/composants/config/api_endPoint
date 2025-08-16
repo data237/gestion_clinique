@@ -73,12 +73,11 @@
         ],
         "summary": "Récupérer la photo de profil",
         "description": "Récupère la photo de profil d'un utilisateur",
-        "operationId": "getPhotoProfil",
+        "operationId": "getPhotoByUserId",
         "parameters": [
           {
             "name": "userId",
             "in": "path",
-            "description": "ID de l'utilisateur",
             "required": true,
             "schema": {
               "type": "integer",
@@ -4114,6 +4113,76 @@
         }
       }
     },
+    "/Api/V1/clinique/rendezvous/month/{year}/{month}": {
+      "get": {
+        "tags": [
+          "Gestion des Rendez-vous"
+        ],
+        "summary": "Obtenir les rendez-vous pour un mois donné",
+        "description": "Récupère tous les rendez-vous dans un mois et une année donnés.",
+        "operationId": "getRendezVousByMonth",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "path",
+            "description": "Année des rendez-vous",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "description": "Mois des rendez-vous (1-12)",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Liste des rendez-vous ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RendezVousResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "rendezVous non trouvé",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RendezVousResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erreur interne du serveur",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RendezVousResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Api/V1/clinique/rendezvous/jour/{jour}": {
       "get": {
         "tags": [
@@ -4217,7 +4286,8 @@
             "description": "Heure du rendez-vous (HH:mm:ss)",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "date-time"
             },
             "example": "14:30:00"
           },
@@ -5049,6 +5119,65 @@
         }
       }
     },
+    "/Api/V1/clinique/historiqueActions/recherche": {
+      "get": {
+        "tags": [
+          "Gestion des Historiques d'Actions"
+        ],
+        "summary": "Rechercher dans l'historique des actions",
+        "description": "Filtre les actions par nom, prénom, email ou mot clé dans la description.",
+        "operationId": "rechercherHistorique",
+        "parameters": [
+          {
+            "name": "nom",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "prenom",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "motCle",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HistoriqueActionResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/Api/V1/clinique/historiqueActions/periode": {
       "get": {
         "tags": [
@@ -5856,6 +5985,15 @@
           }
         }
       },
+      "RoleRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
       "UtilisateurRequestDto": {
         "type": "object",
         "description": "Nouveaux détails de l'utilisateur",
@@ -5916,7 +6054,7 @@
             "type": "boolean"
           },
           "role": {
-            "type": "string"
+            "$ref": "#/components/schemas/RoleRequestDto"
           }
         },
         "required": [
