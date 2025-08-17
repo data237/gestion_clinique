@@ -2,7 +2,7 @@ import '../styles/pagelogin.css'
 import '../styles/buttons.css'
 import { useState, useEffect } from 'react';
 import axiosInstance from '../composants/config/axiosConfig'
-import { API_BASE } from '../composants/config/apiconfig'
+import { API_BASE } from '../composants/config/apiConfig';
 import { useNavigate } from 'react-router-dom';
 import imageclinique from '../assets/img_clinique.jpg'
 import logoclinique from '../assets/logo.png'
@@ -350,4 +350,4 @@ function PageLogin() {
   )
 }
 
-export default PageLogin
+export default PageLogin;

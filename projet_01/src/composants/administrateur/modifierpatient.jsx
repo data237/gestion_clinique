@@ -60,7 +60,7 @@ const FormContainer = Styled.div`
   border: 1px solid rgba(217, 217, 217, 1);
   
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
@@ -239,7 +239,7 @@ const ModifierPatient = () => {
       
       showConfirmation({
         title: "Confirmer la modification",
-        content: `Voulez-vous vraiment modifier les informations du patient ${formData.nom} ${formData.prenom} ?`,
+        message: `Voulez-vous vraiment modifier les informations du patient ${formData.nom} ${formData.prenom} ?`,
         onConfirm: async () => {
           startLoading('updatePatient');
           
@@ -293,7 +293,7 @@ const ModifierPatient = () => {
   const handleClick = () => {
     showConfirmation({
       title: "Retour à la liste",
-      content: "Voulez-vous vraiment quitter sans sauvegarder ?",
+      message: "Voulez-vous vraiment quitter sans sauvegarder ?",
       onConfirm: () => navigate("/admin/patient"),
       confirmText: "Quitter",
       cancelText: "Rester",
@@ -304,7 +304,7 @@ const ModifierPatient = () => {
   const handleClick1 = () => {
     showConfirmation({
       title: "Voir les détails",
-      content: "Voulez-vous voir les détails du patient ?",
+      message: "Voulez-vous voir les détails du patient ?",
       onConfirm: () => navigate(`/admin/patient/viewpatient/${id}`),
       confirmText: "Voir",
       cancelText: "Annuler"
@@ -407,7 +407,7 @@ const ModifierPatient = () => {
                     onClick={() => {
                       showConfirmation({
                         title: "Annuler",
-                        content: "Voulez-vous vraiment annuler les modifications et retourner à la liste des patients ?",
+                        message: "Voulez-vous vraiment annuler les modifications et retourner à la liste des patients ?",
                         onConfirm: () => navigate("/admin/patient"),
                         confirmText: "Annuler",
                         cancelText: "Continuer"

@@ -26,12 +26,13 @@
   overflow: hidden;
   letter-spacing: 0.3px;
 
-  span{
-    font-size: 25px;
-    font-weight: 700;
-    text-align: center; 
-    margin-bottom: 2px;
-  }
+}
+
+.add-button span {
+  font-size: 25px;
+  font-weight: 700;
+  text-align: center; 
+  margin-bottom: 2px;
 }
 
 .add-button::before {

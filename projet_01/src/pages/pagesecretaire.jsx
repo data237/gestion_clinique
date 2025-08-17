@@ -45,8 +45,8 @@ function PageSecretaire(){
 
  
     const changerContenu = (contenu) => {
-        console.log(contenu)
-       setContenuActif(contenu)
+        console.log(contenu);
+        setContenuActif(contenu);
     };
     
     return(<>
@@ -69,4 +69,4 @@ function PageSecretaire(){
         
     </>)
 }
-export default PageSecretaire
+export default PageSecretaire;

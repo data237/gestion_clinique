@@ -23,7 +23,7 @@ const BouttonStyle = Styled.button`
   min-width: 120px;
 
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     top: 0;
     left: -100%;

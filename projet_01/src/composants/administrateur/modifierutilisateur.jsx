@@ -60,7 +60,7 @@ const FormContainer = Styled.div`
   border: 1px solid rgba(217, 217, 217, 1);
   
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
@@ -357,7 +357,7 @@ const ModifierUtilisateur = () => {
   const handleClick = () => {
     showConfirmation({
       title: "Retour à la liste",
-      content: "Voulez-vous vraiment quitter sans sauvegarder ?",
+      message: "Voulez-vous vraiment quitter sans sauvegarder ?",
       onConfirm: () => navigate("/admin/utilisateur"),
       confirmText: "Quitter",
       cancelText: "Rester",
@@ -368,7 +368,7 @@ const ModifierUtilisateur = () => {
   const handleClick1 = () => {
     showConfirmation({
       title: "Voir les détails",
-      content: "Voulez-vous voir les détails de l'utilisateur ?",
+      message: "Voulez-vous voir les détails de l'utilisateur ?",
       onConfirm: () => navigate(`/admin/utilisateur/viewuser/${id}`),
       confirmText: "Voir",
       cancelText: "Annuler"
@@ -506,7 +506,7 @@ const ModifierUtilisateur = () => {
                 onClick={() => {
                   showConfirmation({
                     title: "Annuler",
-                    content: "Voulez-vous vraiment annuler les modifications et retourner à la liste des utilisateurs ?",
+                    message: "Voulez-vous vraiment annuler les modifications et retourner à la liste des utilisateurs ?",
                     onConfirm: () => navigate("/admin/utilisateur"),
                     confirmText: "Annuler",
                     cancelText: "Continuer"

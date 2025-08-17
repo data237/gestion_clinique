@@ -2,7 +2,7 @@
     display: flex;
     width: 100%;
     
-    gap: 64px
+    gap: 64px;
 }
 .recherche{
    width: 100%;

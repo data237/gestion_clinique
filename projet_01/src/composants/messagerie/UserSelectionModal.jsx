@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { API_BASE } from '../config/apiConfig';
 import axios from 'axios';
 import styled from 'styled-components';
+import imgprofilDefault from '../../assets/photoDoc.png';
+import UserPhotoService from '../../services/userPhotoService';
 
 const SearchContainer = styled.div`
   margin-bottom: 20px;
@@ -14,6 +16,7 @@ const SearchInput = styled.input`
   border-radius: 8px;
   font-size: 14px;
   margin-bottom: 15px;
+  background: white;
   
   &:focus {
     outline: none;
@@ -24,21 +27,23 @@ const SearchInput = styled.input`
 
 const FilterContainer = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 15px;
   flex-wrap: wrap;
 `;
 
 const FilterSelect = styled.select`
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 1px solid #e1e5e9;
   border-radius: 6px;
   font-size: 14px;
   background: white;
+  min-width: 150px;
   
   &:focus {
     outline: none;
     border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 `;
 
@@ -47,6 +52,8 @@ const UserList = styled.div`
   overflow-y: auto;
   border: 1px solid #e1e5e9;
   border-radius: 8px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const UserItem = styled.div`
@@ -55,10 +62,11 @@ const UserItem = styled.div`
   padding: 12px 16px;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   
   &:hover {
     background-color: #f8f9fa;
+    transform: translateX(2px);
   }
   
   &:last-child {
@@ -67,7 +75,8 @@ const UserItem = styled.div`
   
   ${props => props.selected && `
     background-color: #e3f2fd;
-    border-left: 3px solid #2196f3;
+    border-left: 4px solid #2196f3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
   `}
 `;
 
@@ -77,35 +86,46 @@ const UserAvatar = styled.img`
   border-radius: 50%;
   margin-right: 12px;
   object-fit: cover;
+  border: 2px solid #e1e5e9;
+  background: #f0f0f0;
 `;
 
 const UserInfo = styled.div`
   flex: 1;
+  min-width: 0;
 `;
 
 const UserName = styled.div`
   font-weight: 600;
   color: #333;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const UserDetails = styled.div`
   font-size: 12px;
   color: #666;
   display: flex;
-  gap: 15px;
+  gap: 12px;
+  flex-wrap: wrap;
 `;
 
 const UserRole = styled.span`
-  background: #f0f0f0;
-  padding: 2px 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 3px 8px;
   border-radius: 12px;
   font-size: 11px;
+  font-weight: 500;
 `;
 
 const Checkbox = styled.input`
   margin-left: 10px;
-  transform: scale(1.2);
+  transform: scale(1.3);
+  accent-color: #667eea;
 `;
 
 const NoUsersMessage = styled.div`
@@ -113,6 +133,53 @@ const NoUsersMessage = styled.div`
   padding: 40px;
   color: #666;
   font-style: italic;
+  background: white;
+  border-radius: 8px;
+  border: 1px dashed #e1e5e9;
+`;
+
+const LoadingSpinner = styled.div`
+  text-align: center;
+  padding: 40px;
+  color: #667eea;
+  font-weight: 500;
+  
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e1e5e9;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+const ErrorMessage = styled.div`
+  text-align: center;
+  padding: 40px;
+  color: #dc3545;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+`;
+
+const SelectionInfo = styled.div`
+  margin-top: 20px;
+  text-align: center;
+  padding: 15px;
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 8px;
+  color: #1976d2;
+  font-weight: 500;
 `;
 
 const UserSelectionModal = ({ 
@@ -144,6 +211,10 @@ const UserSelectionModal = ({
     
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token d\'authentification manquant');
+      }
+
       const response = await axios.get(`${API_BASE}/utilisateurs`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -151,13 +222,30 @@ const UserSelectionModal = ({
         }
       });
       
-      if (response.data) {
-        setUsers(response.data);
-        setFilteredUsers(response.data);
+      if (response.data && Array.isArray(response.data)) {
+        // Ajouter les URLs des photos aux utilisateurs
+        const usersWithPhotos = response.data.map(user => ({
+          ...user,
+          photoUrl: UserPhotoService.getUserPhotoUrl(user.id, user.photoProfil)
+        }));
+        
+        setUsers(usersWithPhotos);
+        setFilteredUsers(usersWithPhotos);
+        console.log('Utilisateurs chargés avec succès:', usersWithPhotos.length);
+      } else {
+        throw new Error('Format de réponse invalide');
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des utilisateurs:', error);
-      setError('Erreur lors du chargement des utilisateurs');
+      if (error.response?.status === 401) {
+        setError('Session expirée. Veuillez vous reconnecter.');
+      } else if (error.response?.status === 403) {
+        setError('Accès refusé. Permissions insuffisantes.');
+      } else if (error.code === 'NETWORK_ERROR') {
+        setError('Erreur de connexion réseau. Vérifiez votre connexion internet.');
+      } else {
+        setError(`Erreur lors du chargement des utilisateurs: ${error.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -293,13 +381,13 @@ const UserSelectionModal = ({
       </SearchContainer>
 
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '40px' }}>
+        <LoadingSpinner>
           Chargement des utilisateurs...
-        </div>
+        </LoadingSpinner>
       ) : error ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#dc3545' }}>
+        <ErrorMessage>
           {error}
-        </div>
+        </ErrorMessage>
       ) : filteredUsers.length === 0 ? (
         <NoUsersMessage>
           Aucun utilisateur trouvé avec les critères sélectionnés
@@ -313,10 +401,10 @@ const UserSelectionModal = ({
               onClick={() => handleUserClick(user)}
             >
               <UserAvatar 
-                src={user.photoProfil ? `${API_BASE}/utilisateurs/${user.id}/photo` : '/default-avatar.png'} 
-                alt={`${user.prenom} ${user.nom}`}
+                src={user.photoUrl || imgprofilDefault} 
+                alt={`${user.prenom || ''} ${user.nom || ''}`}
                 onError={(e) => {
-                  e.target.src = '/default-avatar.png';
+                  UserPhotoService.handleImageError(e, imgprofilDefault);
                 }}
               />
               <UserInfo>
@@ -344,9 +432,9 @@ const UserSelectionModal = ({
       )}
       
       {multipleSelection && (
-        <div style={{ marginTop: '20px', textAlign: 'center' }}>
-          <p>Utilisateurs sélectionnés : {selectedUsers.length}</p>
-        </div>
+        <SelectionInfo>
+          Utilisateurs sélectionnés : {selectedUsers.length}
+        </SelectionInfo>
       )}
     </div>
   );

@@ -8,6 +8,8 @@ import UserSelectionModal from '../messagerie/UserSelectionModal';
 import CreateGroupModal from '../messagerie/CreateGroupModal';
 import NewMessageModal from '../messagerie/NewMessageModal';
 import ChatInterface from '../messagerie/ChatInterface';
+import UserPhotoService from '../../services/userPhotoService';
+import UserStatusIndicator from '../shared/UserStatusIndicator';
 
 function MessagerieAdmin() {
     const idUser = localStorage.getItem('id');
@@ -43,20 +45,16 @@ function MessagerieAdmin() {
                     });
                 if (response && response.data) {
                     setnomprofil(response.data.nom || '')
-                    // Utiliser l'API de récupération des images par ID
-                    if (response.data.id) {
+                    // Utiliser le service amélioré pour récupérer la photo
+                    if (response.data.id && response.data.photoProfil) {
                         try {
-                            const photoResponse = await axios.get(`${API_BASE}/utilisateurs/${response.data.id}/photo`, {
-                                headers: {
-                                    Authorization: `Bearer ${token}`,
-                                },
-                                responseType: 'blob'
-                            });
-                            const imageUrl = URL.createObjectURL(photoResponse.data);
-                            setImgprofil(imageUrl);
-                            setBlobUrls(prev => [...prev, imageUrl]);
+                            const photoUrl = await UserPhotoService.getUserPhotoBlob(response.data.id, response.data.photoProfil);
+                            setImgprofil(photoUrl);
+                            if (photoUrl !== imgprofilDefault) {
+                                setBlobUrls(prev => [...prev, photoUrl]);
+                            }
                         } catch (photoError) {
-                            // Si pas de photo, utiliser l'image par défaut
+                            console.warn('Erreur lors de la récupération de la photo:', photoError);
                             setImgprofil(imgprofilDefault);
                         }
                     } else {
@@ -77,7 +75,7 @@ function MessagerieAdmin() {
     // Nettoyage des blobs lors du démontage du composant
     useEffect(() => {
         return () => {
-            blobUrls.forEach(url => URL.revokeObjectURL(url));
+            UserPhotoService.revokeBlobUrls(blobUrls);
         };
     }, [blobUrls]);
 
@@ -102,8 +100,15 @@ function MessagerieAdmin() {
             if (response.data) {
                 // Exclure l'utilisateur connecté de la liste des contacts
                 const otherUsers = response.data.filter(user => user.id != idUser);
-                setUsers(otherUsers);
-                setFilteredUsers(otherUsers);
+                
+                // Ajouter les URLs des photos aux utilisateurs
+                const usersWithPhotos = otherUsers.map(user => ({
+                    ...user,
+                    photoUrl: UserPhotoService.getUserPhotoUrl(user.id, user.photoProfil)
+                }));
+                
+                setUsers(usersWithPhotos);
+                setFilteredUsers(usersWithPhotos);
             }
         } catch (error) {
             console.error('Erreur lors de la récupération des utilisateurs:', error);
@@ -303,19 +308,22 @@ function MessagerieAdmin() {
                                                     onClick={() => handleContactClick(user)}
                                                 >
                                                     <img 
-                                                        src={user.photoProfil ? `${API_BASE}/utilisateurs/${user.id}/photo` : imgprofilDefault} 
+                                                        src={user.photoUrl || imgprofilDefault} 
                                                         alt="Contact" 
                                                         className="contact-avatar"
                                                         onError={(e) => {
-                                                            e.target.src = imgprofilDefault;
+                                                            UserPhotoService.handleImageError(e, imgprofilDefault);
                                                         }}
                                                     />
-                                                    <div className="contact-info">
-                                                        <div className="contact-name">{user.prenom} {user.nom}</div>
-                                                        <div className="contact-status">
-                                                            {user.statutConnect === 'CONNECTE' ? 'En ligne' : 'Hors ligne'}
+                                                                                                            <div className="contact-info">
+                                                            <div className="contact-name">{user.prenom} {user.nom}</div>
+                                                            <UserStatusIndicator 
+                                                                userId={user.id} 
+                                                                showText={true}
+                                                                showLastSeen={false}
+                                                                size="small"
+                                                            />
                                                         </div>
-                                                    </div>
                                                 </div>
                                             ))
                                         ) : (
@@ -353,18 +361,21 @@ function MessagerieAdmin() {
                                 {selectedContact ? (
                                     <div className="chat-contact">
                                         <img 
-                                            src={selectedContact.photoProfil ? `${API_BASE}/utilisateurs/${selectedContact.id}/photo` : imgprofilDefault} 
+                                            src={selectedContact.photoUrl || imgprofilDefault} 
                                             alt="Contact" 
                                             className="chat-contact-avatar"
                                             onError={(e) => {
-                                                e.target.src = imgprofilDefault;
+                                                UserPhotoService.handleImageError(e, imgprofilDefault);
                                             }}
                                         />
                                         <div className="chat-contact-info">
                                             <h4>{selectedContact.prenom} {selectedContact.nom}</h4>
-                                            <div className="chat-contact-status">
-                                                {selectedContact.statutConnect === 'CONNECTE' ? 'En ligne' : 'Hors ligne'}
-                                            </div>
+                                            <UserStatusIndicator 
+                                                userId={selectedContact.id} 
+                                                showText={true}
+                                                showLastSeen={true}
+                                                size="medium"
+                                            />
                                         </div>
                                     </div>
                                 ) : (

@@ -8,8 +8,7 @@ const Barrehorizontal1Style = Styled.div`
     width: 100%;
     height: 89px;
     justify-content: space-between;
-
-`
+`;
 
 function Barrehorizontal2({children}){
     return(<>

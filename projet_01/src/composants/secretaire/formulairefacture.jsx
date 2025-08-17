@@ -16,8 +16,9 @@ import logoPath from '../../assets/logo.png'; // met ton logo ici (optionnel, lo
 // ... (Garde tout ton styled-components tel quel)
 // Pour la clarté je réutilise tes définitions ci-dessous — colle les tiennes exactement
 const Affichedetailuser = Styled.div`
-  display: flex; justify-content: 
-  center; align-items: center; 
+  display: flex; 
+  justifyContent: center; 
+  alignItems: center; 
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
   border: 1px solid #e2e8f0;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -31,7 +32,7 @@ const FormContainer = Styled.div`
   font-family: 'Inter', sans-serif;
   backdrop-filter: blur(10px);
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
@@ -43,7 +44,10 @@ const FormContainer = Styled.div`
   }
   > * { position: relative; z-index: 1; }
 `;
-const Title = Styled.div`display: flex; justify-content: space-between;`;
+const Title = Styled.div`
+  display: flex; 
+  justifyContent: space-between;
+`;
 const Title1 = Styled.h2`margin-bottom: 0px; font-size: 28px; font-weight: 600; color: #1e40af; padding-bottom: 15px; font-family: 'Inter', sans-serif;`;
 const Title2 = Styled.h2`margin-bottom: 0px; font-size: 24px; font-weight: 500; color: #1e40af; padding-bottom: 10px; font-family: 'Inter', sans-serif; cursor: pointer;`;
 const TraitHorizontal = Styled.div`width: 100%; height: 4px; border-radius: 2px; background: linear-gradient(90deg, #1e40af, #3b82f6); margin-bottom: 25px; box-shadow: 0 2px 4px rgba(30, 64, 175, 0.2);`;
@@ -94,7 +98,7 @@ const Select = Styled.select`
 `;
 const ButtonRow = Styled.div`
   display: flex;
-  justify-content: space-around;
+  justifyContent: space-around;
   gap: 10px;
   padding-bottom: 15px;
 `;
@@ -140,7 +144,7 @@ const Loader = Styled.div`
 const ButtonGroup = Styled.div`
   display: flex;
   gap: 15px;
-  justify-content: center;
+  justifyContent: center;
   margin-top: 20px;
 `;
 

@@ -57,7 +57,7 @@ const EltmenuStyle= Styled.div`
     }
     
     &::before {
-        content: '';
+        message: '';
         position: absolute;
         top: 0;
         left: -100%;

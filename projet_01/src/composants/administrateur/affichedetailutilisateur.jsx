@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE } from '../../composants/config/apiconfig';
+import { API_BASE } from '../../composants/config/apiConfig';
 import axiosInstance from '../../composants/config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
@@ -22,7 +22,7 @@ const Affichedetailuser = Styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-`
+`;
 const FormContainer = Styled.div`
   position: relative;
   overflow: hidden;
@@ -33,7 +33,7 @@ const FormContainer = Styled.div`
   border: 1px solid rgba(217, 217, 217, 1);
   
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
@@ -173,6 +173,7 @@ const PasswordLabel = Styled.label`
 const PasswordInput = Styled.input`
   width: 100%;
   padding: 12px 16px;
+  padding-right: 50px; /* Espace pour l'icône */
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 14px;
@@ -187,6 +188,37 @@ const PasswordInput = Styled.input`
   
   &.error {
     border-color: #ff4757;
+  }
+`;
+
+const PasswordInputWrapper = Styled.div`
+  position: relative;
+  width: 100%;
+`;
+
+const PasswordToggleButton = Styled.button`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #666;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  
+  &:hover {
+    color: #4141ff;
+  }
+  
+  &:focus {
+    outline: none;
+    color: #4141ff;
   }
 `;
 
@@ -436,7 +468,12 @@ const DetailsUtilisateur = () => {
   
   // État pour le modal de mot de passe
   const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwordData, setPasswordData] = useState({ newPassword: '', confirmPassword: '' });
+  const [passwordData, setPasswordData] = useState({ 
+    newPassword: '', 
+    confirmPassword: '', 
+    showNewPassword: false, 
+    showConfirmPassword: false 
+  });
   const [passwordErrors, setPasswordErrors] = useState({});
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   
@@ -446,7 +483,12 @@ const DetailsUtilisateur = () => {
   
   const closePasswordModal = () => {
     setShowPasswordModal(false);
-    setPasswordData({ newPassword: '', confirmPassword: '' });
+    setPasswordData({ 
+      newPassword: '', 
+      confirmPassword: '', 
+      showNewPassword: false, 
+      showConfirmPassword: false 
+    });
     setPasswordErrors({});
   };
   
@@ -477,10 +519,10 @@ const DetailsUtilisateur = () => {
     }
     
     // Demander confirmation avant de modifier le mot de passe
-    showConfirmation(
-      'Modifier le mot de passe',
-      `Êtes-vous sûr de vouloir modifier le mot de passe de ${utilisateur.nom} ${utilisateur.prenom} ?`,
-      async () => {
+    showConfirmation({
+      title: 'Modifier le mot de passe',
+      message: `Êtes-vous sûr de vouloir modifier le mot de passe de ${utilisateur.nom} ${utilisateur.prenom} ?`,
+      onConfirm: async () => {
         setIsPasswordLoading(true);
         setPasswordErrors({});
         
@@ -518,8 +560,11 @@ const DetailsUtilisateur = () => {
         } finally {
           setIsPasswordLoading(false);
         }
-      }
-    );
+      },
+      confirmText: 'Modifier',
+      cancelText: 'Annuler',
+      variant: 'info'
+    });
   };
   if (!utilisateur) {
   return <p style={{ textAlign: 'center' }}>Chargement...</p>;
@@ -618,15 +663,20 @@ const DetailsUtilisateur = () => {
               <form onSubmit={handlePasswordChange}>
                 <PasswordFormGroup>
                   <PasswordLabel htmlFor="newPassword">Nouveau mot de passe</PasswordLabel>
-                  <PasswordInput
-                    type="password"
-                    id="newPassword"
-                    name="newPassword"
-                    value={passwordData.newPassword}
-                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                    placeholder="Entrez le nouveau mot de passe"
-                    className={passwordErrors.newPassword ? 'error' : ''}
-                  />
+                  <PasswordInputWrapper>
+                    <PasswordInput
+                      type={passwordData.showNewPassword ? "text" : "password"}
+                      id="newPassword"
+                      name="newPassword"
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                      placeholder="Entrez le nouveau mot de passe"
+                      className={passwordErrors.newPassword ? 'error' : ''}
+                    />
+                    <PasswordToggleButton onClick={() => setPasswordData(prev => ({ ...prev, showNewPassword: !prev.showNewPassword }))}>
+                      {passwordData.showNewPassword ? '🙈' : '👁️'}
+                    </PasswordToggleButton>
+                  </PasswordInputWrapper>
                   {passwordErrors.newPassword && (
                     <PasswordErrorMessage>⚠️ {passwordErrors.newPassword}</PasswordErrorMessage>
                   )}
@@ -634,15 +684,20 @@ const DetailsUtilisateur = () => {
                 
                 <PasswordFormGroup>
                   <PasswordLabel htmlFor="confirmPassword">Confirmer le nouveau mot de passe</PasswordLabel>
-                  <PasswordInput
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={passwordData.confirmPassword}
-                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                    placeholder="Confirmez le nouveau mot de passe"
-                    className={passwordErrors.confirmPassword ? 'error' : ''}
-                  />
+                  <PasswordInputWrapper>
+                    <PasswordInput
+                      type={passwordData.showConfirmPassword ? "text" : "password"}
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                      placeholder="Confirmez le nouveau mot de passe"
+                      className={passwordErrors.confirmPassword ? 'error' : ''}
+                    />
+                    <PasswordToggleButton onClick={() => setPasswordData(prev => ({ ...prev, showConfirmPassword: !prev.showConfirmPassword }))}>
+                      {passwordData.showConfirmPassword ? '🙈' : '👁️'}
+                    </PasswordToggleButton>
+                  </PasswordInputWrapper>
                   {passwordErrors.confirmPassword && (
                     <PasswordErrorMessage>⚠️ {passwordErrors.confirmPassword}</PasswordErrorMessage>
                   )}

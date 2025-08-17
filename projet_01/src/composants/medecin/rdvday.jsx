@@ -5,7 +5,7 @@ import Styled from 'styled-components'
 import axiosInstance from '../config/axiosConfig';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { API_BASE } from '../../composants/config/apiconfig'
+import { API_BASE } from '../../composants/config/apiConfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import Pagination from '../shared/Pagination';
 import imgprofil from '../../assets/photoDoc.png'
@@ -146,6 +146,24 @@ const BarreStyle = Styled.div`
 
 
 function RendezvousMedecinToday(){
+    const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil] = useState('')
+    
+    // Récupération du nom de l'utilisateur connecté
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const nomutilisateur = async () => {
+            try {
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                if (response) {
+                    setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+            }
+        }
+        nomutilisateur()
+    }, [idUser]);
 
     const [valeurrecherche, setvaleurrecherche] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -256,7 +274,7 @@ function RendezvousMedecinToday(){
     return(<>
             
             <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil='bahebeck'> 
+                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}> 
                     <Span1 onClick={()=> navigate("/medecin/calendrier")}>Liste des evenements</Span1>
                     <Span2 > {">"} Rendez vous du jours </Span2>
                 </Barrehorizontal1>

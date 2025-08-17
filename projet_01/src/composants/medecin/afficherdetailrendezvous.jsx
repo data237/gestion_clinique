@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { API_BASE } from '../../composants/config/apiconfig';
+import { API_BASE } from '../../composants/config/apiConfig';
 import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
@@ -34,7 +34,7 @@ const FormContainer = Styled.div`
   border: 1px solid rgba(217, 217, 217, 1);
   
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
@@ -205,9 +205,27 @@ const DisabledButton = Styled(Button)`
 const AfficherDetailRendezvous = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const idUser = localStorage.getItem('id');
+  const [nomprofil, setnomprofil] = useState('')
   const [rendezvous, setRendezvous] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Récupération du nom de l'utilisateur connecté
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const nomutilisateur = async () => {
+      try {
+        const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+        if (response) {
+          setnomprofil(response.data.nom)
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des utilisateurs:', error);
+      }
+    }
+    nomutilisateur()
+  }, [idUser]);
   
   // Fonction pour vérifier si le rendez-vous est dans le futur
   const isRendezvousFutur = () => {
@@ -323,7 +341,7 @@ const AfficherDetailRendezvous = () => {
   return (
     <>
       <SousDiv1Style>
-        <Barrehorizontal1 titrepage="Détails du rendez-vous" imgprofil1={imgprofil} nomprofil='Médecin'>
+        <Barrehorizontal1 titrepage="Détails du rendez-vous" imgprofil1={imgprofil} nomprofil={nomprofil}>
           <Span1 onClick={() => navigate("/medecin/calendrier")}>Calendrier</Span1>
           <Span2> {">"} Détails du rendez-vous </Span2>
         </Barrehorizontal1>

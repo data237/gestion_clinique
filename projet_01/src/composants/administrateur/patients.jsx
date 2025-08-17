@@ -7,7 +7,7 @@ import '../../styles/rendezvous-status.css'
 import Styled from 'styled-components'
 import axiosInstance from '../../composants/config/axiosConfig';
 import React, { useState, useEffect } from 'react';
-import { API_BASE } from '../../composants/config/apiconfig'
+import { API_BASE } from '../../composants/config/apiConfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 //import Barrehorizontal2 from "../barrehorizontal2";
 //import Boutton from '../boutton'
@@ -39,17 +39,17 @@ const ZonedaffichageStyle = Styled.div`
     gap: 15px;
     background-color: rgba(239, 239, 255, 1);
     border-radius: 10px;
-`
+`;
 const AfficheTableauStyle = Styled.div`
    display: flex;
    justify-content: center;
-`
+`;;
 const Affichebarh2 = Styled.div`
     display: flex;
     width: 100%;
     height: 89px;
     justify-content: space-between;
-`
+`;;
 
 // affichage bar de recherche et boutton
 
@@ -64,16 +64,15 @@ const Affichebarh2 = Styled.div`
    align-items: center;
    padding-left: 20px;
    padding-right: 20px;
-`
+`;;
 const IconburgerStyle = Styled.img`
     width: 24px;
     height: 20px;
-
-`
+`;;
 const IconrechercheStyle = Styled.img`
     width: 20px;
     height: 20px;
-`
+`;;
 const InputStyle = Styled.input`
     width: 90%;
     height: 56px;
@@ -86,10 +85,9 @@ const InputStyle = Styled.input`
         outline: none;
         border: none;
     }
-`
+`;;
 
 const BouttonStyle = Styled.button`
-
 height: 56px;
 border-radius: 28px;
 padding-top: 12px;
@@ -105,24 +103,24 @@ border: none;
 &:hover{
     cursor: pointer;
 }
-`
+`;;
 
 //
 
 const Span1= Styled.span`
     cursor: pointer;
-`
+`;;
 
 // tableau patient
 const NumeroStyle = Styled.div`
     display: flex;
     justify-content: space-between;
     padding: 10px 20px;
-`
+`;;
 const DivbuttonStyle = Styled.div`
     display: flex;
     gap: 15px;
-`
+`;;
 
 const ButtonPSStyle = Styled.button`
     padding: 5px 5px;
@@ -132,21 +130,20 @@ const ButtonPSStyle = Styled.button`
      &:hover{
         cursor: pointer;
     }
-`
+`;;
 
 const NomtableStyle = Styled.p`
     font-family: "Inter", sans-serif;
     font-weight: 700;
     font-size: 1.5em;
-`
+`;
 const BarreStyle = Styled.div`
     width: 100%;
     height: 5px;
     border-radius: 2.5px;
     background-color: rgba(159, 159, 255, 1);
     padding-left:  20px;
-
-`
+`;
 
 function Patient(){
     const navigate = useNavigate();
@@ -365,7 +362,7 @@ function Patient(){
                                     onClick={()=> {
                                         showConfirmation({
                                             title: "Suppression de patient",
-                                            content: `Voulez-vous vraiment supprimer le patient ${patient.nom ? patient.nom.charAt(0).toUpperCase() + patient.nom.slice(1).toLowerCase() : ''} ${patient.prenom ? patient.prenom.charAt(0).toUpperCase() + patient.prenom.slice(1).toLowerCase() : ''} ?`,
+                                            message: `Voulez-vous vraiment supprimer le patient ${patient.nom ? patient.nom.charAt(0).toUpperCase() + patient.nom.slice(1).toLowerCase() : ''} ${patient.prenom ? patient.prenom.charAt(0).toUpperCase() + patient.prenom.slice(1).toLowerCase() : ''} ?`,
                                             onConfirm: () => supprimerPatient(patient.id),
                                             confirmText: "Supprimer",
                                             cancelText: "Annuler",

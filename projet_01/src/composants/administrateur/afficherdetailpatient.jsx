@@ -21,7 +21,7 @@ const Affichedetailuser = Styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-`
+`;
 const FormContainer = Styled.div`
   position: relative;
   overflow: hidden;
@@ -32,7 +32,7 @@ const FormContainer = Styled.div`
   border: 1px solid rgba(217, 217, 217, 1);
   
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
@@ -86,7 +86,7 @@ const TraitHorizontal = Styled.div`
   border-radius: 2.5px;
   background-color: rgba(159, 159, 255, 1);
   margin-bottom: 20px;
-`
+`;
 const TraitHorizontal2 = Styled.div`
   width: 718px;
   height: 5px;
@@ -95,7 +95,7 @@ const TraitHorizontal2 = Styled.div`
   border-radius: 2.5px;
   background-color: rgba(217, 217, 217, 1);
   margin-bottom: 20px;
-`
+`;
 const FormRow = Styled.div`
   display: flex;
   gap: 10px;
@@ -112,7 +112,7 @@ const Form = Styled.form`
   margin: 0;
   padding-left:0;
   width: 766px;
-`
+`;
 const Label = Styled.label`
   font-size: 14px;
   margin-bottom: 5px;

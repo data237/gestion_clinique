@@ -7,8 +7,8 @@ const ProfileContainer = Styled.div`
 `;
 
 const ImgprofilStyle = Styled.img`
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 60px;
     border-radius: 55.31px;
   cursor: pointer;
   transition: transform 0.2s ease;

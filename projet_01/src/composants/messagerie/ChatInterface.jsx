@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import messagingService from '../../services/messagingService';
 import imgprofilDefault from '../../assets/photoDoc.png';
 import { API_BASE } from '../config/apiConfig';
+import UserPhotoService from '../../services/userPhotoService';
+import UserStatusIndicator from '../shared/UserStatusIndicator';
 
 const ChatInterface = ({ selectedContact, selectedGroup, onMessageSent }) => {
     const [messages, setMessages] = useState([]);
@@ -211,9 +213,12 @@ const ChatInterface = ({ selectedContact, selectedGroup, onMessageSent }) => {
                         />
                         <div className="chat-contact-details">
                             <h4>{selectedContact.prenom} {selectedContact.nom}</h4>
-                            <span className="chat-contact-status">
-                                {selectedContact.statutConnect === 'CONNECTE' ? 'En ligne' : 'Hors ligne'}
-                            </span>
+                            <UserStatusIndicator 
+                                userId={selectedContact.id} 
+                                showText={true}
+                                showLastSeen={false}
+                                size="small"
+                            />
                         </div>
                     </div>
                 )}

@@ -32,15 +32,15 @@ function PageMedecin(){
 
  
     const changerContenu = (contenu) => {
-        console.log(contenu)
-       setContenuActif(contenu)
+        console.log(contenu);
+        setContenuActif(contenu);
     };
     
     return(<>
     <PageStyle>
         <Barrelatteral> 
             <Link to="/medecin/rendezvous" className={contenuActif === 'rendez-vous' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('rendez-vous')}}><Eltmenu nommenu='rendez-vous' img={imgrendezvous} /></Link>
-            <Link to="/medecin/calendrier" className={contenuActif === 'calendrier' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('calendrier')}}><Eltmenu nommenu='Calendrier' img={imgcalendrier} className={contenuActif === 'calendrier' ? 'eltmenu' : ''} onClick={() => {changerContenu('calendrier')}}/></Link>
+            <Link to="/medecin/calendrier" className={contenuActif === 'calendrier' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('calendrier')}}><Eltmenu nommenu='Calendrier' img={imgcalendrier} /></Link>
             <Link to="/medecin/messagerie" className={contenuActif === 'messagerie' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('messagerie')}}><Eltmenu nommenu='Messagerie' img={iconEnvelope} /></Link>
             {/*<button className={contenuActif === 'utilisateur' ? 'eltmenu' : ''} onClick={changerContenu('utilisateur')}> <Eltmenu nommenu='utilisateurs' img={imgutilisateur}/> </button>*/}
             {/*<button className={contenuActif === 'patient' ? 'eltmenu' : ''} onClick={() => changerContenu('patient')}> <Eltmenu nommenu='Patients' img={imgpatient}/> </button>*/}
@@ -54,4 +54,4 @@ function PageMedecin(){
         
     </>)
 }
-export default PageMedecin
+export default PageMedecin;

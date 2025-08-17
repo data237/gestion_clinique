@@ -15,7 +15,7 @@ export const ConfirmationProvider = ({ children }) => {
   const [confirmation, setConfirmation] = useState({
     isOpen: false,
     title: '',
-    content: '',
+    message: '',
     onConfirm: null,
     confirmText: 'Confirmer',
     cancelText: 'Annuler',
@@ -24,7 +24,7 @@ export const ConfirmationProvider = ({ children }) => {
 
   const showConfirmation = ({
     title,
-    content,
+    message,
     onConfirm,
     confirmText = 'Confirmer',
     cancelText = 'Annuler',
@@ -33,7 +33,7 @@ export const ConfirmationProvider = ({ children }) => {
     setConfirmation({
       isOpen: true,
       title,
-      content,
+      message,
       onConfirm,
       confirmText,
       cancelText,
@@ -77,7 +77,7 @@ export const ConfirmationProvider = ({ children }) => {
         isOpen={confirmation.isOpen}
         onClose={hideConfirmation}
         title={confirmation.title}
-        message={confirmation.content}
+        message={confirmation.message}
         onConfirm={handleConfirm}
         confirmText={confirmation.confirmText}
         cancelText={confirmation.cancelText}

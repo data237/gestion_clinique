@@ -22,7 +22,7 @@ const FormContainer = Styled.div`
   
 
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});

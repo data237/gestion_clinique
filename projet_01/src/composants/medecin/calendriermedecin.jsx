@@ -29,10 +29,28 @@ const CalendarContainer = Styled.div`
 `;
 
 const Calendar = () => {
+    const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil] = useState('')
     const [rendezvousdayvisible, setrendezvousdayvisible] = useState(false);
     const [events, setEvents] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
+    
+    // Récupération du nom de l'utilisateur connecté
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const nomutilisateur = async () => {
+            try {
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                if (response) {
+                    setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+            }
+        }
+        nomutilisateur()
+    }, [idUser]);
 
     // Fonction pour déterminer le style selon la date
     const getEventStyle = (dateStr) => {
@@ -298,7 +316,7 @@ const Calendar = () => {
     return (
         <>
             <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil='bahebeck'>
+                <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}>
                     <Span1 onClick={() => setrendezvousdayvisible(false)}>Liste des evenements</Span1>
                 </Barrehorizontal1>
             </SousDiv1Style>

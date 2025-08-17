@@ -5,7 +5,7 @@ import Styled from 'styled-components'
 import axiosInstance from '../config/axiosConfig';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { API_BASE } from '../../composants/config/apiconfig'
+import { API_BASE } from '../../composants/config/apiConfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import iconrecherche from '../../assets/iconrecherche.png'
@@ -21,23 +21,24 @@ import Pagination from '../shared/Pagination';
 const ZonedaffichageStyle = Styled.div`
     border-radius: 10px;
     padding-bottom: 50px;
-`
+`;
 
 const SousDiv1Style = Styled.div`
   width: 100%;
- padding-right: 32px;
-`
+  padding-right: 32px;
+`;
+
 const SousDiv2Style = Styled.div`
   width: 100%;
   padding-right: 32px;
   display: flex;
   flex-direction: column;
   gap: 32px;
-`
+`;
 
-const Span1= Styled.span`
+const Span1 = Styled.span`
     cursor: pointer;
-`
+`;
 
 const ModalOverlay = Styled.div`
   position: fixed;
@@ -156,7 +157,7 @@ function Facture(){
         
     useEffect(() => {
             if (!valeurrecherche.trim()) {
-                setfactures(factures); // Si rien à chercher, on affiche tout
+                setfacturesFiltres(factures); // Si rien à chercher, on affiche tout
                 return;
             }
 
@@ -168,7 +169,7 @@ function Facture(){
                 u.serviceMedicalNom.toLowerCase().includes(recherche) 
             );
 
-            setfactures(resultats);
+            setfacturesFiltres(resultats);
     }, [valeurrecherche, factures]);
 
 
@@ -241,9 +242,9 @@ function Facture(){
       setCurrentPage(validCurrentPage);
     }
     
-    const indexOfLastrendezvous = validCurrentPage * rendezvousPerPage;
-    const indexOfFirstrendezvous = indexOfLastrendezvous - rendezvousPerPage;
-    const currentrendezvous = facturesFiltres.slice(indexOfFirstrendezvous, indexOfLastrendezvous);
+    const indexOfLastFacture = validCurrentPage * rendezvousPerPage;
+    const indexOfFirstFacture = indexOfLastFacture - rendezvousPerPage;
+    const currentFactures = facturesFiltres.slice(indexOfFirstFacture, indexOfLastFacture);
     
 
     //
@@ -340,7 +341,7 @@ function Facture(){
                         </tr>
                         </thead>
                         <tbody>
-                        {currentrendezvous.map((facture) => (
+                        {currentFactures.map((facture) => (
                            <tr key={facture.id} className='tr'>
     
                             
@@ -372,4 +373,4 @@ function Facture(){
             )}
     </>)   
 }
-export default Facture
+export default Facture;

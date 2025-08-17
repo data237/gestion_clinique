@@ -5,7 +5,7 @@ import Styled from 'styled-components'
 import axiosInstance from '../config/axiosConfig';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { API_BASE } from '../../composants/config/apiconfig'
+import { API_BASE } from '../../composants/config/apiConfig';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import Pagination from '../shared/Pagination';
 import imgprofil from '../../assets/photoDoc.png'
@@ -196,17 +196,17 @@ const RendezVousActionModal = ({ isOpen, onClose, rendezVous, onDossierMedical, 
 
 const SousDiv1Style = Styled.div`
   width: 100%;
+  padding-right: 32px;
+`;
 
- padding-right: 32px;
-`
 const SousDiv2Style = Styled.div`
   width: 100%;
- 
   padding-right: 32px;
   display: flex;
   flex-direction: column;
   gap: 32px;
-`
+`;
+
 const ZonedaffichageStyle = Styled.div`
     height: 70vh;
     display: ${props => props.$zonedaffichagedisplay};
@@ -214,14 +214,14 @@ const ZonedaffichageStyle = Styled.div`
     gap: 15px;
     background-color: rgba(239, 239, 255, 1);
     border-radius: 10px;
-`
+`;
 
 const Affichebarh2 = Styled.div`
     display: flex;
     width: 100%;
     height: 89px;
     justify-content: space-between;
-`
+`;
 
 // affichage bar de recherche et boutton
 
@@ -235,66 +235,61 @@ const RechercheStyle = Styled.div`
    align-items: center;
    padding-left: 20px;
    padding-right: 20px;
-`
+`;
+
 const IconburgerStyle = Styled.img`
     width: 24px;
     height: 20px;
+`;
 
-`
 const IconrechercheStyle = Styled.img`
     width: 20px;
     height: 20px;
-`
+`;
+
 const InputStyle = Styled.input`
     width: 90%;
     height: 56px;
     border: none;
-    background-color:  rgba(239, 239, 255, 1);
-    font-family: Body/Font Family;
+    background-color: rgba(239, 239, 255, 1);
+    font-family: "Roboto", sans-serif;
     font-weight: 400;
     font-size: 1em;
      &:focus{
         outline: none;
         border: none;
     }
-`
+`;
 
 const BouttonStyle = Styled.button`
-
-height: 56px;
-border-radius: 28px;
-padding-top: 12px;
-padding-right: 16px;
-padding-bottom: 12px;
-padding-left: 16px;
-background-color: rgba(65, 65, 255, 1);
-font-family: Body/Font Family;
-font-weight: 700;
-font-size: 1.3em;
-color: #fff;
-border: none;
-&:hover{
-    cursor: pointer;
-}
-`
-
-//
+    height: 56px;
+    border-radius: 28px;
+    padding-top: 12px;
+    padding-right: 16px;
+    padding-bottom: 12px;
+    padding-left: 16px;
+    background-color: rgba(65, 65, 255, 1);
+    font-family: "Roboto", sans-serif;
+    font-weight: 700;
+    font-size: 1.3em;
+    color: #fff;
+    border: none;
+    &:hover{
+        cursor: pointer;
+    }
+`;
 
 const AfficheTableauStyle = Styled.div`
     display: flex;
     justify-content: center;
-`
+`;
 
-
-
-
-const Span1= Styled.span`
+const Span1 = Styled.span`
     cursor: pointer;
-`
-
+`;
 
 // Style component du tableau
-    const NumeroStyle = Styled.div`
+const NumeroStyle = Styled.div`
     display: flex;
     justify-content: space-between;
     padding: 10px 20px;
@@ -353,6 +348,25 @@ const BarreStyle = Styled.div`
 // gerer les popups - Utilisation du système unifié
 function RendezvousMedecin(){
     const { showConfirmation } = useConfirmation();
+    
+    const idUser = localStorage.getItem('id');
+    const [nomprofil, setnomprofil] = useState('')
+    
+    // Récupération du nom de l'utilisateur connecté
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const nomutilisateur = async () => {
+            try {
+                const response = await axiosInstance.get(`/utilisateurs/${idUser}`);
+                if (response) {
+                    setnomprofil(response.data.nom)
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des utilisateurs:', error);
+            }
+        }
+        nomutilisateur()
+    }, [idUser]);
     
     // fonction du tableau
     const [Popup, setPopup] = useState(false)
@@ -503,7 +517,7 @@ function RendezvousMedecin(){
     
     showConfirmation({
       title: 'Démarrer une consultation',
-      content: `Êtes-vous sûr de vouloir démarrer une consultation pour le patient ${rdvaouvrir.patientNomComplet} ?`,
+      message: `Êtes-vous sûr de vouloir démarrer une consultation pour le patient ${rdvaouvrir.patientNomComplet} ?`,
       confirmText: 'Démarrer',
       cancelText: 'Annuler',
       variant: 'info',
@@ -518,7 +532,7 @@ function RendezvousMedecin(){
   const handleAnnuler = () => {
     showConfirmation({
       title: 'Annuler l\'action',
-      content: 'Êtes-vous sûr de vouloir annuler ? Toutes les modifications seront perdues.',
+      message: 'Êtes-vous sûr de vouloir annuler ? Toutes les modifications seront perdues.',
       confirmText: 'Oui, annuler',
       cancelText: 'Non, continuer',
       variant: 'warning',
@@ -538,7 +552,7 @@ function RendezvousMedecin(){
     return(<>
             
             <SousDiv1Style>
-                <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil='bahebeck'> 
+                <Barrehorizontal1 titrepage="Gestion des rendez-vous" imgprofil1={imgprofil} nomprofil={nomprofil}> 
                     <Span1>Liste des rendez vous</Span1>
                 </Barrehorizontal1>
             </SousDiv1Style>

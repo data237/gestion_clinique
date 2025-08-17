@@ -22,7 +22,7 @@ const FormContainer = Styled.div`
   border: 1px solid rgba(217, 217, 217, 1);
   
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
@@ -52,7 +52,7 @@ const Afficheformulaireadd = Styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-`
+`;
 const Title = Styled.h2`
   margin-bottom: 0px;
   font-size: 24px;
@@ -70,7 +70,7 @@ const TraitHorizontal = Styled.div`
   border-radius: 2.5px;
   background-color: rgba(159, 159, 255, 1);
   margin-bottom: 20px;
-`
+`;
 const TraitHorizontal2 = Styled.div`
   width: 718px;
   height: 5px;
@@ -79,7 +79,7 @@ const TraitHorizontal2 = Styled.div`
   border-radius: 2.5px;
   background-color: rgba(217, 217, 217, 1);
   margin-bottom: 20px;
-`
+`;
 const FormRow = Styled.div`
   display: flex;
   gap: 10px;
@@ -96,7 +96,7 @@ const Form = Styled.form`
   margin: 0;
   padding-left:0;
   width: 766px;
-`
+`;
 const Label = Styled.label`
   font-size: 14px;
   margin-bottom: 5px;
@@ -328,7 +328,7 @@ const handleChange = e => {
   const handleClick = () => {
     showConfirmation({
       title: "Retour à la liste",
-      content: "Voulez-vous vraiment quitter sans sauvegarder ?",
+      message: "Voulez-vous vraiment quitter sans sauvegarder ?",
       onConfirm: () => navigate("/admin/patient"),
       confirmText: "Quitter",
       cancelText: "Rester",
@@ -448,7 +448,7 @@ const handleChange = e => {
                     onClick={() => {
                       showConfirmation({
                         title: "Annuler",
-                        content: "Voulez-vous vraiment annuler la création et retourner à la liste des patients ?",
+                        message: "Voulez-vous vraiment annuler la création et retourner à la liste des patients ?",
                         onConfirm: () => navigate("/admin/patient"),
                         confirmText: "Annuler",
                         cancelText: "Continuer"

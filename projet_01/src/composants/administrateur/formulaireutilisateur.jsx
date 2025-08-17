@@ -28,7 +28,7 @@ const Afficheformulaireadd = Styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-`
+`;
 const FormContainer = Styled.div`
 
   position: relative;
@@ -40,7 +40,7 @@ const FormContainer = Styled.div`
   border: 1px solid rgba(217, 217, 217, 1);
   
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
@@ -74,7 +74,7 @@ const TraitHorizontal = Styled.div`
   border-radius: 2.5px;
   background-color: rgba(159, 159, 255, 1);
   margin-bottom: 20px;
-`
+`;
 
 const FormRow = Styled.div`
   display: flex;
@@ -93,11 +93,10 @@ const FormGroupvisible = Styled.div`
   flex-direction: column;
 `;
 const Form = Styled.form`
-
   margin: 0;
   padding-left:0;
   width: 766px;
-`
+`;
 const Label = Styled.label`
   font-size: 14px;
   margin-bottom: 5px;
@@ -361,7 +360,7 @@ const FormulaireUtilisateur = () => {
   const handleClick = () => {
     showConfirmation({
       title: "Retour à la liste",
-      content: "Voulez-vous vraiment quitter sans sauvegarder ?",
+      message: "Voulez-vous vraiment quitter sans sauvegarder ?",
       onConfirm: () => navigate("/admin/utilisateur"),
       confirmText: "Quitter",
       cancelText: "Rester",
@@ -472,7 +471,7 @@ const FormulaireUtilisateur = () => {
             onClick={() => {
               showConfirmation({
                 title: "Annuler",
-                content: "Voulez-vous vraiment annuler la création et retourner à la liste des utilisateurs ?",
+                message: "Voulez-vous vraiment annuler la création et retourner à la liste des utilisateurs ?",
                 onConfirm: () => navigate("/admin/utilisateur"),
                 confirmText: "Annuler",
                 cancelText: "Continuer"

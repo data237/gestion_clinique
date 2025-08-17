@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE } from '../../composants/config/apiconfig'
+import { API_BASE } from '../../composants/config/apiConfig';
 import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
@@ -23,7 +23,7 @@ const FormContainer = Styled.div`
   border: 1px solid rgba(217, 217, 217, 1);
   
   &::before {
-    content: '';
+    message: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
@@ -53,7 +53,7 @@ const Afficheformulaireadd = Styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-`
+`;
 const Title = Styled.h2`
   margin-bottom: 0px;
   font-size: 24px;
@@ -792,7 +792,7 @@ const FormulaireConsultation = () => {
     // Confirmation avant création
     showConfirmation({
       title: 'Créer la consultation',
-      content: 'Êtes-vous sûr de vouloir créer cette consultation ? Cette action ne peut pas être annulée.',
+      message: 'Êtes-vous sûr de vouloir créer cette consultation ? Cette action ne peut pas être annulée.',
       confirmText: 'Créer',
       cancelText: 'Annuler',
       variant: 'info',
@@ -868,7 +868,7 @@ const FormulaireConsultation = () => {
       // Confirmation d'abandon si des données ont été saisies
       showConfirmation({
         title: 'Annuler la création',
-        content: 'Vous avez saisi des données. Êtes-vous sûr de vouloir annuler ? Toutes les données saisies seront perdues.',
+        message: 'Vous avez saisi des données. Êtes-vous sûr de vouloir annuler ? Toutes les données saisies seront perdues.',
         confirmText: 'Oui, annuler',
         cancelText: 'Non, continuer',
         variant: 'warning',

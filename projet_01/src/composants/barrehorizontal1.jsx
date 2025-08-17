@@ -1,6 +1,6 @@
 import Styled from 'styled-components'
 import React, { useEffect, useState } from 'react';
-import { API_BASE } from './config/apiconfig'
+import { API_BASE } from './config/apiConfig'
 import axiosInstance from './config/axiosConfig';
 import Cloche from './cloche'
 import Photoprofil from './photoprofil'

@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     backgroundColor: "linear-gradient(135deg, #1e40af 0%, #3b82f6 100%)",
     opacity: 0.05
   },
-  headerContent: {
+  headermessage: {
     flexDirection: "column",
     justifyContent: "space-between",
     alignItems: "center",

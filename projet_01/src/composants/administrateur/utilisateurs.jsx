@@ -342,7 +342,7 @@ function Utilisateur() {
                                             onChange={() => {
                                                 showConfirmation({
                                                     title: "Modification du statut",
-                                                    content: `Voulez-vous ${utilisateur.actif ? 'désactiver' : 'activer'} l'utilisateur ${utilisateur.nom ? utilisateur.nom.charAt(0).toUpperCase() + utilisateur.nom.slice(1).toLowerCase() : ''} ${utilisateur.prenom ? utilisateur.prenom.charAt(0).toUpperCase() + utilisateur.prenom.slice(1).toLowerCase() : ''} ?`,
+                                                    message: `Voulez-vous ${utilisateur.actif ? 'désactiver' : 'activer'} l'utilisateur ${utilisateur.nom ? utilisateur.nom.charAt(0).toUpperCase() + utilisateur.nom.slice(1).toLowerCase() : ''} ${utilisateur.prenom ? utilisateur.prenom.charAt(0).toUpperCase() + utilisateur.prenom.slice(1).toLowerCase() : ''} ?`,
                                                     onConfirm: () => toggleStatus(utilisateur.id, utilisateur.actif),
                                                     confirmText: "Confirmer",
                                                     cancelText: "Annuler"
@@ -356,7 +356,7 @@ function Utilisateur() {
                                             onClick={() => {
                                                 showConfirmation({
                                                     title: "Suppression d'utilisateur",
-                                                    content: `Voulez-vous vraiment supprimer l'utilisateur ${utilisateur.nom ? utilisateur.nom.charAt(0).toUpperCase() + utilisateur.nom.slice(1).toLowerCase() : ''} ${utilisateur.prenom ? utilisateur.prenom.charAt(0).toUpperCase() + utilisateur.prenom.slice(1).toLowerCase() : ''} ?`,
+                                                    message: `Voulez-vous vraiment supprimer l'utilisateur ${utilisateur.nom ? utilisateur.nom.charAt(0).toUpperCase() + utilisateur.nom.slice(1).toLowerCase() : ''} ${utilisateur.prenom ? utilisateur.prenom.charAt(0).toUpperCase() + utilisateur.prenom.slice(1).toLowerCase() : ''} ?`,
                                                     onConfirm: () => supprimerUtilisateur(utilisateur.id),
                                                     confirmText: "Supprimer",
                                                     cancelText: "Annuler",

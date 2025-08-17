@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UnifiedModal, ModalButton } from '../shared/UnifiedModal';
 import { API_BASE } from '../config/apiConfig';
 import axios from 'axios';
 import styled from 'styled-components';
+import imgprofilDefault from '../../assets/photoDoc.png';
+import UserPhotoService from '../../services/userPhotoService';
 
 const FormContainer = styled.div`
   margin-bottom: 20px;
@@ -128,8 +130,11 @@ const RemoveButton = styled.button`
 // Composants pour la sélection d'utilisateurs intégrée
 const UserSelectionSection = styled.div`
   margin-top: 20px;
-  border-top: 1px solid #e0e0e0;
+  border-top: 2px solid #e0e0e0;
   padding-top: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 20px;
 `;
 
 const SearchContainer = styled.div`
@@ -143,43 +148,46 @@ const SearchInput = styled.input`
   border-radius: 8px;
   font-size: 14px;
   margin-bottom: 15px;
-  box-sizing: border-box; /* Inclure padding et border dans la largeur */
+  background: white;
+  box-sizing: border-box;
   
   &:focus {
-    outline: none; /* Supprimer l'outline par défaut */
+    outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); /* Focus visible sans débordement */
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   }
 `;
 
 const FilterContainer = styled.div`
   display: flex;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 15px;
   flex-wrap: wrap;
 `;
 
 const FilterSelect = styled.select`
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 1px solid #e1e5e9;
   border-radius: 6px;
   font-size: 14px;
   background: white;
-  box-sizing: border-box; /* Inclure padding et border dans la largeur */
+  min-width: 150px;
+  box-sizing: border-box;
   
   &:focus {
-    outline: none; /* Supprimer l'outline par défaut */
+    outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1); /* Focus visible sans débordement */
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
   }
 `;
 
 const UserList = styled.div`
-  max-height: 250px;
+  max-height: 300px;
   overflow-y: auto;
   border: 1px solid #e1e5e9;
   border-radius: 8px;
-  margin-bottom: 15px;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const UserItem = styled.div`
@@ -188,10 +196,11 @@ const UserItem = styled.div`
   padding: 12px 16px;
   border-bottom: 1px solid #f0f0f0;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
   
   &:hover {
     background-color: #f8f9fa;
+    transform: translateX(2px);
   }
   
   &:last-child {
@@ -200,89 +209,163 @@ const UserItem = styled.div`
   
   ${props => props.selected && `
     background-color: #e3f2fd;
-    border-left: 3px solid #2196f3;
+    border-left: 4px solid #2196f3;
+    box-shadow: 0 2px 8px rgba(33, 150, 243, 0.15);
   `}
 `;
 
 const UserAvatarSmall = styled.img`
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   margin-right: 12px;
   object-fit: cover;
+  border: 2px solid #e1e5e9;
+  background: #f0f0f0;
 `;
 
 const UserInfoSmall = styled.div`
   flex: 1;
+  min-width: 0;
 `;
 
 const UserNameSmall = styled.div`
   font-weight: 600;
   color: #333;
-  margin-bottom: 2px;
+  margin-bottom: 4px;
   font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const UserDetailsSmall = styled.div`
   font-size: 11px;
   color: #666;
   display: flex;
-  gap: 15px;
+  gap: 12px;
+  flex-wrap: wrap;
 `;
 
 const UserRoleSmall = styled.span`
-  background: #f0f0f0;
-  padding: 2px 6px;
-  border-radius: 10px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
   font-size: 10px;
+  font-weight: 500;
 `;
 
 const Checkbox = styled.input`
   margin-left: 10px;
-  transform: scale(1.2);
+  transform: scale(1.3);
+  accent-color: #667eea;
 `;
 
 const AddUsersButton = styled.button`
-  background: #667eea;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
-  border-radius: 6px;
-  padding: 10px 16px;
+  border-radius: 8px;
+  padding: 12px 20px;
   font-size: 14px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   width: 100%;
-  white-space: nowrap; /* Empêcher le débordement de texte */
-  overflow: hidden; /* Empêcher le débordement */
-  text-overflow: ellipsis; /* Ajouter des points de suspension si nécessaire */
-  box-sizing: border-box; /* Inclure padding et border dans la largeur */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
   
   &:hover {
-    background: #5a6fd8;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
   }
   
   &:focus {
-    outline: none; /* Supprimer l'outline par défaut */
-    background: #5a6fd8;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3); /* Focus visible sans débordement */
-    transform: translateY(-1px);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
   }
   
   &:active {
     transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
   }
 `;
 
 const NoUsersMessage = styled.div`
   text-align: center;
-  padding: 20px;
+  padding: 30px;
   color: #666;
   font-style: italic;
   background: white;
-  border-radius: 4px;
+  border-radius: 8px;
+  border: 1px dashed #e1e5e9;
+`;
+
+const LoadingSpinner = styled.div`
+  text-align: center;
+  padding: 30px;
+  color: #667eea;
+  font-weight: 500;
+  
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e1e5e9;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
+const ErrorContainer = styled.div`
+  text-align: center;
+  padding: 20px;
+  color: #dc3545;
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 8px;
+  margin: 10px 0;
+`;
+
+const SuccessMessage = styled.div`
+  text-align: center;
+  padding: 15px;
+  color: #155724;
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  border-radius: 8px;
+  margin: 10px 0;
+  font-weight: 500;
+`;
+
+const DuplicateWarning = styled.div`
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`;
+
+const WarningIcon = styled.span`
+  color: #f39c12;
+  font-size: 14px;
 `;
 
 const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
@@ -344,6 +427,10 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
     
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token d\'authentification manquant');
+      }
+
       const response = await axios.get(`${API_BASE}/utilisateurs`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -351,13 +438,30 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
         }
       });
       
-      if (response.data) {
-        setUsers(response.data);
-        setFilteredUsers(response.data);
+      if (response.data && Array.isArray(response.data)) {
+        // Ajouter les URLs des photos aux utilisateurs
+        const usersWithPhotos = response.data.map(user => ({
+          ...user,
+          photoUrl: UserPhotoService.getUserPhotoUrl(user.id, user.photoProfil)
+        }));
+        
+        setUsers(usersWithPhotos);
+        setFilteredUsers(usersWithPhotos);
+        console.log('Utilisateurs chargés avec succès:', usersWithPhotos.length);
+      } else {
+        throw new Error('Format de réponse invalide');
       }
     } catch (error) {
       console.error('Erreur lors de la récupération des utilisateurs:', error);
-      setUsersError('Erreur lors du chargement des utilisateurs');
+      if (error.response?.status === 401) {
+        setUsersError('Session expirée. Veuillez vous reconnecter.');
+      } else if (error.response?.status === 403) {
+        setUsersError('Accès refusé. Permissions insuffisantes.');
+      } else if (error.code === 'NETWORK_ERROR') {
+        setUsersError('Erreur de connexion réseau. Vérifiez votre connexion internet.');
+      } else {
+        setUsersError(`Erreur lors du chargement des utilisateurs: ${error.message}`);
+      }
     } finally {
       setUsersLoading(false);
     }
@@ -369,7 +473,10 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
       return;
     }
 
-    if (selectedUsers.length === 0) {
+    // Nettoyer les doublons avant la validation
+    cleanDuplicateUsers();
+
+    if (getSelectedUsersCount() === 0) {
       setError('Veuillez sélectionner au moins un utilisateur');
       return;
     }
@@ -416,18 +523,70 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
   };
 
   const handleUserToggle = (user) => {
-    const isAlreadySelected = selectedUsers.some(selected => selected.id === user.id);
-    
-    if (isAlreadySelected) {
-      setSelectedUsers(prev => prev.filter(selected => selected.id !== user.id));
-    } else {
-      setSelectedUsers(prev => [...prev, user]);
+    if (!user || !user.id) {
+      console.error('Utilisateur invalide:', user);
+      return;
     }
+
+    setSelectedUsers(prev => {
+      // Vérifier si l'utilisateur est déjà sélectionné
+      const isAlreadySelected = prev.some(selected => selected.id === user.id);
+      
+      if (isAlreadySelected) {
+        // Retirer l'utilisateur s'il est déjà sélectionné
+        const updatedUsers = prev.filter(selected => selected.id !== user.id);
+        console.log(`Utilisateur ${user.prenom} ${user.nom} retiré de la sélection`);
+        return updatedUsers;
+      } else {
+        // Ajouter l'utilisateur s'il n'est pas déjà sélectionné
+        const updatedUsers = [...prev, user];
+        console.log(`Utilisateur ${user.prenom} ${user.nom} ajouté à la sélection`);
+        return updatedUsers;
+      }
+    });
   };
 
   const removeUser = (userId) => {
     setSelectedUsers(prev => prev.filter(user => user.id !== userId));
   };
+
+  // Fonction pour vérifier si un utilisateur est sélectionné
+  const isUserSelected = (userId) => {
+    return selectedUsers.some(user => user.id === userId);
+  };
+
+  // Fonction pour obtenir le nombre d'utilisateurs sélectionnés (sans doublons)
+  const getSelectedUsersCount = () => {
+    const uniqueIds = new Set(selectedUsers.map(user => user.id));
+    return uniqueIds.size;
+  };
+
+  // Fonction pour nettoyer les doublons existants
+  const cleanDuplicateUsers = () => {
+    setSelectedUsers(prev => {
+      const uniqueUsers = [];
+      const seenIds = new Set();
+      
+      prev.forEach(user => {
+        if (!seenIds.has(user.id)) {
+          seenIds.add(user.id);
+          uniqueUsers.push(user);
+        }
+      });
+      
+      return uniqueUsers;
+    });
+  };
+
+  // Nettoyer les doublons quand la liste change
+  React.useEffect(() => {
+    if (selectedUsers.length > 0) {
+      const uniqueIds = new Set(selectedUsers.map(user => user.id));
+      if (uniqueIds.size !== selectedUsers.length) {
+        cleanDuplicateUsers();
+      }
+    }
+  }, [selectedUsers]);
 
   const handleClose = () => {
     // Réinitialiser le formulaire lors de la fermeture
@@ -482,11 +641,11 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
   const footerContent = (
     <>
       <ModalButton onClick={handleClose}>Annuler</ModalButton>
-      <ModalButton 
-        $primary 
-        onClick={handleCreateGroup}
-        disabled={loading || !groupName.trim() || selectedUsers.length === 0}
-      >
+              <ModalButton 
+          $primary 
+          onClick={handleCreateGroup}
+          disabled={loading || !groupName.trim() || getSelectedUsersCount() === 0}
+        >
         {loading ? 'Création...' : 'Créer le groupe'}
       </ModalButton>
     </>
@@ -527,29 +686,39 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
         <FormGroup>
           <Label>Membres du groupe *</Label>
           <AddUsersButton onClick={() => setShowUserSelection(!showUserSelection)}>
-            {showUserSelection ? '− Masquer la sélection' : '+ Ajouter des utilisateurs'} ({selectedUsers.length})
+            {showUserSelection ? '− Masquer la sélection' : '+ Ajouter des utilisateurs'} ({getSelectedUsersCount()})
           </AddUsersButton>
           
           {selectedUsers.length > 0 && (
-            <SelectedUsersContainer>
-              {selectedUsers.map((user) => (
-                <SelectedUserItem key={user.id}>
-                  <UserInfo>
-                    <UserAvatar 
-                      src={user.photoProfil ? `${API_BASE}/utilisateurs/${user.id}/photo` : '/default-avatar.png'} 
-                      alt={`${user.prenom} ${user.nom}`}
-                      onError={(e) => {
-                        e.target.src = '/default-avatar.png';
-                      }}
-                    />
-                    <UserName>{String(user.prenom || '')} {String(user.nom || '')}</UserName>
-                  </UserInfo>
-                  <RemoveButton onClick={() => removeUser(user.id)}>
-                    Retirer
-                  </RemoveButton>
-                </SelectedUserItem>
-              ))}
-            </SelectedUsersContainer>
+            <>
+              <SelectedUsersContainer>
+                {selectedUsers.map((user) => (
+                  <SelectedUserItem key={user.id}>
+                    <UserInfo>
+                      <UserAvatar 
+                        src={user.photoUrl || imgprofilDefault} 
+                        alt={`${user.prenom || ''} ${user.nom || ''}`}
+                        onError={(e) => {
+                          UserPhotoService.handleImageError(e, imgprofilDefault);
+                        }}
+                      />
+                      <UserName>{String(user.prenom || '')} {String(user.nom || '')}</UserName>
+                    </UserInfo>
+                    <RemoveButton onClick={() => removeUser(user.id)}>
+                      Retirer
+                    </RemoveButton>
+                  </SelectedUserItem>
+                ))}
+              </SelectedUsersContainer>
+              
+              {/* Avertissement si des doublons sont détectés */}
+              {selectedUsers.length !== getSelectedUsersCount() && (
+                <DuplicateWarning>
+                  <WarningIcon>⚠️</WarningIcon>
+                  Doublons détectés et supprimés automatiquement
+                </DuplicateWarning>
+              )}
+            </>
           )}
 
           {/* Section de sélection d'utilisateurs intégrée */}
@@ -590,30 +759,24 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
               </SearchContainer>
 
               {usersLoading ? (
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                  Chargement des utilisateurs...
-                </div>
+                <LoadingSpinner>Chargement des utilisateurs...</LoadingSpinner>
               ) : usersError ? (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#dc3545' }}>
-                  {usersError}
-                </div>
+                <ErrorContainer>{usersError}</ErrorContainer>
               ) : filteredUsers.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#666', fontStyle: 'italic' }}>
-                  Aucun utilisateur trouvé avec les critères sélectionnés
-                </div>
+                <NoUsersMessage>Aucun utilisateur trouvé avec les critères sélectionnés</NoUsersMessage>
               ) : (
                 <UserList>
                   {filteredUsers.map((user) => (
-                    <UserItem
-                      key={user.id}
-                      selected={selectedUsers.some(selected => selected.id === user.id)}
-                      onClick={() => handleUserToggle(user)}
-                    >
+                                         <UserItem
+                       key={user.id}
+                       selected={isUserSelected(user.id)}
+                       onClick={() => handleUserToggle(user)}
+                     >
                       <UserAvatarSmall 
-                        src={user.photoProfil ? `${API_BASE}/utilisateurs/${user.id}/photo` : '/default-avatar.png'} 
-                        alt={`${user.prenom} ${user.nom}`}
+                        src={user.photoUrl || imgprofilDefault} 
+                        alt={`${user.prenom || ''} ${user.nom || ''}`}
                         onError={(e) => {
-                          e.target.src = '/default-avatar.png';
+                          UserPhotoService.handleImageError(e, imgprofilDefault);
                         }}
                       />
                       <UserInfoSmall>
@@ -628,11 +791,11 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
                           )}
                         </UserDetailsSmall>
                       </UserInfoSmall>
-                      <Checkbox
-                        type="checkbox"
-                        checked={selectedUsers.some(selected => selected.id === user.id)}
-                        onChange={() => handleUserToggle(user)}
-                      />
+                                             <Checkbox
+                         type="checkbox"
+                         checked={isUserSelected(user.id)}
+                         onChange={() => handleUserToggle(user)}
+                       />
                     </UserItem>
                   ))}
                 </UserList>
@@ -642,9 +805,7 @@ const CreateGroupModal = ({ isOpen, onClose, onGroupCreated }) => {
         </FormGroup>
 
         {error && (
-          <div style={{ color: '#dc3545', fontSize: '14px', marginTop: '10px', textAlign: 'center' }}>
-            {error}
-          </div>
+          <ErrorContainer>{error}</ErrorContainer>
         )}
       </FormContainer>
     </UnifiedModal>

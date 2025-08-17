@@ -149,7 +149,7 @@ const Button = Styled.button`
     }
     
     &::before {
-        content: '';
+        message: '';
         position: absolute;
         top: 0;
         left: -100%;
@@ -217,7 +217,7 @@ const LogoutContainer = Styled.div`
     z-index: 2;
     
     &::after {
-        content: '';
+        message: '';
         position: absolute;
         top: 50%;
         left: 50%;
