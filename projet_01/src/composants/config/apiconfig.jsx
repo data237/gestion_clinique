@@ -19,6 +19,13 @@ export const MESSAGING_ENDPOINTS = {
     MESSAGING_STATS: (userId) => `/messagerie/statistics/${userId}`,
 };
 
+// Endpoints des statistiques
+export const STATS_ENDPOINTS = {
+    DAILY: '/stats/daily',
+    MONTHLY: '/stats/monthly',
+    YEARLY: '/stats/yearly',
+};
+
 // Endpoints utilisateurs
 export const USER_ENDPOINTS = {
     ALL_USERS: '/utilisateurs',
@@ -75,6 +82,7 @@ export const TIMEOUT_CONFIG = {
 export default {
     API_BASE,
     MESSAGING_ENDPOINTS,
+    STATS_ENDPOINTS,
     USER_ENDPOINTS,
     WEBSOCKET_CONFIG,
     getDefaultHeaders,

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { API_BASE } from '../../composants/config/apiconfig';
+import { API_BASE, STATS_ENDPOINTS } from '../../composants/config/apiconfig';
 import '../../styles/dashboard.css';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { Line } from 'react-chartjs-2';
@@ -22,9 +22,15 @@ function Dashboard() {
     const [connexionadmin, setconnexionadmin] = useState([])
     const [historiques, sethistoriques] = useState([])
     const [loading, setLoading] = useState(true)
+    const [statsLoading, setStatsLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
     const [blobUrls, setBlobUrls] = useState([]) // Pour stocker les URLs des blobs
-    const [monthlyRevenue, setMonthlyRevenue] = useState([])
+    const [monthlyrevenu, setMonthlyrevenu] = useState([])
+    const [yearlyStats, setYearlyStats] = useState({})
+    const [lastMonthStats, setLastMonthStats] = useState({})
+    const [statsError, setStatsError] = useState(null)
+    const [statsSuccess, setStatsSuccess] = useState(false)
+    const [selectedStatsType, setSelectedStatsType] = useState('daily') // 'daily', 'monthly', 'lastMonth', 'yearly'
 
     // Récupération du nom et de la photo de profil de l'utilisateur connecté
     useEffect(() => {
@@ -73,7 +79,7 @@ function Dashboard() {
         const token = localStorage.getItem('token');
         const statjournalier = async () => {
             try {
-                const response = await axios.get(`${API_BASE}/stats/daily`,
+                const response = await axios.get(`${API_BASE}${STATS_ENDPOINTS.DAILY}`,
                     {
                         headers: {
                             accept: 'application/json',
@@ -95,25 +101,113 @@ function Dashboard() {
     // Récupération des revenus mensuels
     useEffect(() => {
         const token = localStorage.getItem('token');
-        const fetchMonthlyRevenue = async () => {
+        const fetchMonthlyrevenu = async () => {
             try {
-                const response = await axios.get(`${API_BASE}/stats/monthly`,
-                    {
-                        headers: {
-                            accept: 'application/json',
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'application/json',
+                setStatsLoading(true);
+                // Récupérer les données pour tous les mois de l'année en cours
+                const currentYear = new Date().getFullYear();
+                const monthlyData = [];
+
+                for (let month = 1; month <= 12; month++) {
+                    try {
+                        const response = await axios.get(`${API_BASE}${STATS_ENDPOINTS.MONTHLY}?month=${month}`, {
+                            headers: {
+                                accept: 'application/json',
+                                Authorization: `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            }
+                        });
+
+                        if (response && response.data) {
+                            // Extraire le chiffre d'affaires du mois
+                            const revenu = response.data.chiffreAffaires || response.data.revenu || 0;
+                            monthlyData.push(revenu);
+                            console.log(`Mois ${month}: ${revenu} FCFA`);
+                        } else {
+                            monthlyData.push(0);
+                            console.log(`Mois ${month}: Aucune donnée`);
                         }
-                    });
-                if (response && response.data) {
-                    setMonthlyRevenue(response.data || [])
+                    } catch (monthError) {
+                        console.error(`Erreur pour le mois ${month}:`, monthError);
+                        monthlyData.push(0);
+                        // Si c'est le premier mois qui échoue, on note l'erreur
+                        if (month === 1) {
+                            setStatsError(`Erreur lors du chargement des données pour le mois ${month}`);
+                        }
+                    }
                 }
+
+                setMonthlyrevenu(monthlyData);
+                setStatsSuccess(true);
+                setStatsError(null);
             } catch (error) {
                 console.error('Erreur lors de la récupération des revenus mensuels:', error);
-                setMonthlyRevenue([])
+                setMonthlyrevenu([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+                setStatsError('Erreur lors du chargement des revenus mensuels');
+                setStatsSuccess(false);
+            } finally {
+                setStatsLoading(false);
             }
         }
-        fetchMonthlyRevenue()
+        fetchMonthlyrevenu()
+    }, []);
+
+    // Récupération des statistiques annuelles
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const fetchYearlyStats = async () => {
+            try {
+                setStatsLoading(true);
+                const currentYear = new Date().getFullYear();
+                const response = await axios.get(`${API_BASE}${STATS_ENDPOINTS.YEARLY}?year=${currentYear}`, {
+                    headers: {
+                        accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response && response.data) {
+                    setYearlyStats(response.data);
+                    setStatsSuccess(true);
+                    setStatsError(null);
+                    console.log('Statistiques annuelles:', response.data);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des statistiques annuelles:', error);
+                setYearlyStats({});
+                setStatsError('Erreur lors du chargement des statistiques annuelles');
+                setStatsSuccess(false);
+            } finally {
+                setStatsLoading(false);
+            }
+        }
+        fetchYearlyStats()
+    }, []);
+
+    // Récupération des statistiques du dernier mois
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const fetchLastMonthStats = async () => {
+            try {
+                const response = await axios.get(`${API_BASE}${STATS_ENDPOINTS.MONTHLY}?month=last`, {
+                    headers: {
+                        accept: 'application/json',
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response && response.data) {
+                    setLastMonthStats(response.data);
+                    console.log('Statistiques du dernier mois:', response.data);
+                }
+            } catch (error) {
+                console.error('Erreur lors de la récupération des statistiques du dernier mois:', error);
+                setLastMonthStats({});
+            }
+        }
+        fetchLastMonthStats()
     }, []);
 
     // Récupération des utilisateurs connectés avec leur image de profil
@@ -254,6 +348,52 @@ function Dashboard() {
         setSearchTerm(e.target.value);
     };
 
+    // Fonction pour réessayer le chargement des statistiques
+    const retryStats = () => {
+        setStatsError(null);
+        // Recharger les statistiques
+        window.location.reload();
+    };
+
+    // Fonction pour obtenir les statistiques selon le type sélectionné
+    const getCurrentStats = () => {
+        switch (selectedStatsType) {
+            case 'daily':
+                return statjour;
+            case 'monthly':
+                return statjour; // On utilise les stats du jour pour le mois actuel
+            case 'lastMonth':
+                return lastMonthStats;
+            case 'yearly':
+                return yearlyStats;
+            default:
+                return statjour;
+        }
+    };
+
+    // Fonction pour obtenir le titre selon le type sélectionné
+    const getStatsTitle = () => {
+        switch (selectedStatsType) {
+            case 'daily':
+                return 'Statistiques du jour';
+            case 'monthly':
+                return 'Statistiques du mois actuel';
+            case 'lastMonth':
+                return 'Statistiques du dernier mois';
+            case 'yearly':
+                return 'Statistiques de l\'année';
+            default:
+                return 'Statistiques du jour';
+        }
+    };
+
+    // Fonction pour gérer le changement de type de statistiques
+    const handleStatsTypeChange = (newType) => {
+        setSelectedStatsType(newType);
+        // Réinitialiser les erreurs lors du changement
+        setStatsError(null);
+    };
+
     if (loading) {
         return (
             <div className="loading-container">
@@ -349,10 +489,10 @@ function Dashboard() {
                             <ul className='sous-grid-liste'>
                                 {searchTerm.trim() ? (
                                     // Résultats de recherche par mot-clé (filtrage côté frontend)
-                                    historiques.filter(historique => 
+                                    historiques.filter(historique =>
                                         historique.action && historique.action.toLowerCase().includes(searchTerm.toLowerCase())
                                     ).length > 0 ? (
-                                        historiques.filter(historique => 
+                                        historiques.filter(historique =>
                                             historique.action && historique.action.toLowerCase().includes(searchTerm.toLowerCase())
                                         ).map((historique) => (
                                             <li key={historique.id}>
@@ -380,24 +520,46 @@ function Dashboard() {
 
                     {/* Grid 2: Today's Statistics */}
                     <div className='stats-grid grid-2'>
-                        <p className='grid-2-title title'>statistiques du jour</p>
+                        <div className='stats-header'>
+                            <div className='stats-title-section'>
+                                <select
+                                    className='stats-selector'
+                                    value={selectedStatsType}
+                                    onChange={(e) => handleStatsTypeChange(e.target.value)}
+                                >
+                                    <option value="daily" className='stats-selector-option'>📅 Statistiques du jour</option>
+                                    <option value="monthly" className='stats-selector-option'>📊 Statistiques du mois actuel</option>
+                                    <option value="lastMonth" className='stats-selector-option'>📈 Statistiques du dernier mois</option>
+                                    <option value="yearly" className='stats-selector-option'>📋 Statistiques de l'année</option>
+                                </select>
+
+                            </div>
+
+                        </div>
                         <div className='grid-2-content'>
                             <div className="grid-2-content-chid">
                                 <p className="grid-2-content-chid-text">Patients enregistrés</p>
-                                <div className="grid-2-content-chid-chiffre">{statjour.nbrPatientEnrg || 0}</div>
+                                <div className="grid-2-content-chid-chiffre">{getCurrentStats().nbrPatientEnrg || 0}</div>
                             </div>
                             <div className="grid-2-content-chid">
-                                <p className="grid-2-content-chid-text"> Nombre de RDV validés</p>
-                                <div className="grid-2-content-chid-chiffre">{statjour.nbrRendezVousCONFIRME || 0}</div>
+                                <p className="grid-2-content-chid-text">Nombre de RDV validés</p>
+                                <div className="grid-2-content-chid-chiffre">{getCurrentStats().nbrRendezVousCONFIRME || 0}</div>
                             </div>
                             <div className="grid-2-content-chid">
-                                <p className="grid-2-content-chid-text"> Nombre de RDV manqués</p>
-                                <div className="grid-2-content-chid-chiffre">{statjour.nbrRendezANNULE || 0}</div>
+                                <p className="grid-2-content-chid-text">Nombre de RDV annulés</p>
+                                <div className="grid-2-content-chid-chiffre">{getCurrentStats().nbrRendezANNULE || 0}</div>
                             </div>
                             <div className="grid-2-content-chid">
                                 <p className="grid-2-content-chid-text">Nombre de consultations effectuées</p>
-                                <div className="grid-2-content-chid-chiffre">{statjour.nbrConsultation || 0}</div>
+                                <div className="grid-2-content-chid-chiffre">{getCurrentStats().nbrConsultation || 0}</div>
                             </div>
+                            <div className="grid-2-content-chid">
+                                <p className="grid-2-content-chid-text">Chiffre d'affaires total</p>
+                                <div className="grid-2-content-chid-chiffre">
+                                    {getCurrentStats().revenu ? `${getCurrentStats().revenu.toLocaleString()} FCFA` : '0 FCFA'}
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -464,39 +626,59 @@ function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Grid 4: Revenue Chart */}
+                    {/* Grid 4: revenu Chart */}
                     <div className='grid-4'>
-                        <p className='grid-title chart title'>Chiffre d'affaires par mois (en FCFA)</p>
+                        <p className='grid-title chart title'>
+                            Chiffre d'affaires par mois (en FCFA)
+                            {statsSuccess && <span className='success-indicator'>✓</span>}
+                        </p>
                         <div className='line-chart'>
-                            <Line
-                                data={{
-                                    labels: ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Decembre'],
-                                    datasets: [
-                                        {
-                                            label: "Revenue",
-                                            data: monthlyRevenue.length > 0 ? monthlyRevenue : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                            backgroundColor: "white",
-                                            borderColor: "rgba(159, 159, 255, 1)",
+                            {statsLoading ? (
+                                <div className='chart-loading'>
+                                    <div>Chargement des données...</div>
+                                </div>
+                            ) : statsError ? (
+                                <div className='chart-error'>
+                                    <div>{statsError}</div>
+                                    <button
+                                        className='retry-button'
+                                        onClick={retryStats}
+                                    >
+                                        Réessayer
+                                    </button>
+                                </div>
+                            ) : (
+                                <Line
+                                    data={{
+                                        labels: ['Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Decembre'],
+                                        datasets: [
+                                            {
+                                                label: "revenu",
+                                                data: monthlyrevenu.length > 0 ? monthlyrevenu : [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                                                backgroundColor: "white",
+                                                borderColor: "rgba(159, 159, 255, 1)",
+                                            },
+                                        ],
+                                    }}
+                                    options={{
+                                        responsive: true,
+                                        maintainAspectRatio: false,
+                                        elements: {
+                                            line: {
+                                                tension: 0,
+                                            },
                                         },
-                                    ],
-                                }}
-                                options={{
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    elements: {
-                                        line: {
-                                            tension: 0,
+                                        plugins: {
+                                            title: {
+                                                text: "Monthly revenu & Cost",
+                                            },
                                         },
-                                    },
-                                    plugins: {
-                                        title: {
-                                            text: "Monthly Revenue & Cost",
-                                        },
-                                    },
-                                }}
-                            />
+                                    }}
+                                />
+                            )}
                         </div>
                     </div>
+
                 </div>
 
                 {/* Sidebar Information */}
