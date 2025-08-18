@@ -55,9 +55,9 @@ function PageMedecin(){
     return(<>
     <PageStyle>
         <Barrelatteral> 
-            <Link to="/medecin/rendezvous" className={contenuActif === 'rendez-vous' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('rendez-vous')}}><Eltmenu nommenu='rendez-vous' img={imgrendezvous} /></Link>
-            <Link to="/medecin/calendrier" className={contenuActif === 'calendrier' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('calendrier')}}><Eltmenu nommenu='Calendrier' img={imgcalendrier} /></Link>
-            <Link to="/medecin/messagerie" className={contenuActif === 'messagerie' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('messagerie')}}><Eltmenu nommenu='Messagerie' img={iconEnvelope} /></Link>
+            <Link to="/medecin/rendezvous" className={contenuActif === 'rendez-vous' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('rendez-vous')}}><Eltmenu nommenu='rendez-vous' img={imgrendezvous} active={contenuActif === 'rendez-vous'} /></Link>
+            <Link to="/medecin/calendrier" className={contenuActif === 'calendrier' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('calendrier')}}><Eltmenu nommenu='Calendrier' img={imgcalendrier} active={contenuActif === 'calendrier'} /></Link>
+            <Link to="/medecin/messagerie" className={contenuActif === 'messagerie' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('messagerie')}}><Eltmenu nommenu='Messagerie' img={iconEnvelope} active={contenuActif === 'messagerie'} /></Link>
             {/*<button className={contenuActif === 'utilisateur' ? 'eltmenu' : ''} onClick={changerContenu('utilisateur')}> <Eltmenu nommenu='utilisateurs' img={imgutilisateur}/> </button>*/}
             {/*<button className={contenuActif === 'patient' ? 'eltmenu' : ''} onClick={() => changerContenu('patient')}> <Eltmenu nommenu='Patients' img={imgpatient}/> </button>*/}
             {/*<button className={contenuActif === 'messagerie' ? 'eltmenu' : ''} onClick={() => changerContenu('messagerie')}> <Eltmenu nommenu='Messagerie' img={mail}/> </button>*/}

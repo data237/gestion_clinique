@@ -23,12 +23,14 @@ class MessagingService {
                 // Import SockJS et Stomp dynamiquement
                 import('sockjs-client').then(({ default: SockJS }) => {
                     import('@stomp/stompjs').then(({ Stomp }) => {
-                        // Construire l'URL WebSocket correctement
-                        // Utiliser directement WS_BASE de la configuration
-                        const wsUrl = MESSAGING_ENDPOINTS.WS_BASE;
-                        console.log('URL WebSocket:', wsUrl);
+                        // Construire l'URL WebSocket correctement pour SockJS
+                        // SockJS a besoin de l'URL HTTP, pas WebSocket
+                        const baseUrl = API_BASE.replace('/Api/V1/clinique', '');
+                        const wsUrl = `${baseUrl}/ws`;
+                        
+                        console.log('URL WebSocket (SockJS):', wsUrl);
                         console.log('API_BASE original:', API_BASE);
-                        console.log('MESSAGING_ENDPOINTS.WS_BASE:', MESSAGING_ENDPOINTS.WS_BASE);
+                        console.log('Base URL extraite:', baseUrl);
                         
                         try {
                             const socket = new SockJS(wsUrl);
