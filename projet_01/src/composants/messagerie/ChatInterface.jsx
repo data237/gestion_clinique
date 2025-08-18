@@ -1,18 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import messagingService from '../../services/messagingService';
 import imgprofilDefault from '../../assets/photoDoc.png';
-import { API_BASE } from '../config/apiConfig';
+import { API_BASE } from '../config/apiconfig';
 import UserPhotoService from '../../services/userPhotoService';
 import UserStatusIndicator from '../shared/UserStatusIndicator';
 
-const ChatInterface = ({ selectedContact, selectedGroup, onMessageSent }) => {
-    const [messages, setMessages] = useState([]);
+const ChatInterface = ({ selectedContact, selectedGroup, onMessageSent, messages: externalMessages, isWebSocketConnected }) => {
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
     const typingTimeoutRef = useRef(null);
+    
+    // Utiliser les messages externes si fournis, sinon utiliser l'état local
+    const messages = externalMessages || [];
 
     // Scroll automatique vers le bas
     const scrollToBottom = () => {
@@ -23,59 +25,10 @@ const ChatInterface = ({ selectedContact, selectedGroup, onMessageSent }) => {
         scrollToBottom();
     }, [messages]);
 
-    // Connexion WebSocket et gestion des messages
+    // Initialisation du chat (plus de logique WebSocket ici)
     useEffect(() => {
-        let messageHandlerId;
-
-        const initializeChat = async () => {
-            try {
-                setLoading(true);
-                
-                // Se connecter au service de messagerie
-                await messagingService.connect();
-                
-                // S'abonner aux messages
-                messageHandlerId = messagingService.addMessageHandler((messageEvent) => {
-                    const { type, data } = messageEvent;
-                    
-                    if (type === 'CREATE') {
-                        // Nouveau message
-                        setMessages(prev => [...prev, data]);
-                    } else if (type === 'UPDATE') {
-                        // Message modifié
-                        setMessages(prev => prev.map(msg => 
-                            msg.id === data.id ? data : msg
-                        ));
-                    } else if (type === 'DELETE') {
-                        // Message supprimé
-                        setMessages(prev => prev.filter(msg => msg.id !== data.id));
-                    }
-                });
-
-                // S'abonner au groupe si c'est une conversation de groupe
-                if (selectedGroup) {
-                    messagingService.subscribeToGroup(selectedGroup.id);
-                }
-
-                setLoading(false);
-            } catch (error) {
-                console.error('Erreur lors de l\'initialisation du chat:', error);
-                setError('Erreur de connexion au chat');
-                setLoading(false);
-            }
-        };
-
-        initializeChat();
-
-        // Nettoyage
-        return () => {
-            if (messageHandlerId) {
-                messagingService.removeMessageHandler(messageHandlerId);
-            }
-            if (selectedGroup) {
-                messagingService.unsubscribeFromGroup(selectedGroup.id);
-            }
-        };
+        setLoading(false);
+        setError(null);
     }, [selectedContact, selectedGroup]);
 
     // Envoyer un message
@@ -83,46 +36,26 @@ const ChatInterface = ({ selectedContact, selectedGroup, onMessageSent }) => {
         e.preventDefault();
         
         if (!newMessage.trim()) return;
+        
+        if (!isWebSocketConnected) {
+            setError('WebSocket non connecté. Impossible d\'envoyer le message.');
+            return;
+        }
 
         try {
             setLoading(true);
             setError(null);
 
-            let messageData;
-            
-            if (selectedContact) {
-                // Message individuel
-                messageData = await messagingService.sendIndividualMessage(
-                    selectedContact.id, 
-                    newMessage.trim()
-                );
-            } else if (selectedGroup) {
-                // Message de groupe
-                messageData = await messagingService.sendGroupMessage(
-                    selectedGroup.id, 
-                    newMessage.trim()
-                );
-            }
-
-            // Ajouter le message localement
-            const localMessage = {
-                id: Date.now(), // ID temporaire
+            // Préparer les données du message
+            const messageData = {
                 contenu: newMessage.trim(),
-                expediteur: {
-                    id: localStorage.getItem('idUser'),
-                    prenom: 'Vous',
-                    nom: ''
-                },
-                timestamp: new Date().toISOString(),
-                lu: false
+                timestamp: new Date().toISOString()
             };
 
-            setMessages(prev => [...prev, localMessage]);
-            setNewMessage('');
-
-            // Notifier le composant parent
+            // Notifier le composant parent qui gère l'envoi WebSocket
             if (onMessageSent) {
-                onMessageSent(messageData);
+                await onMessageSent(messageData);
+                setNewMessage(''); // Vider le champ seulement si l'envoi réussit
             }
 
         } catch (error) {
@@ -167,14 +100,15 @@ const ChatInterface = ({ selectedContact, selectedGroup, onMessageSent }) => {
 
     // Vérifier si le message est de l'utilisateur actuel
     const isOwnMessage = (message) => {
-        return message.expediteur?.id == localStorage.getItem('idUser');
+        return message.expediteur?.id == localStorage.getItem('id');
     };
 
-    if (loading && messages.length === 0) {
+    if (!isWebSocketConnected) {
         return (
             <div className="chat-loading">
                 <div className="loading-spinner"></div>
-                <p>Connexion au chat...</p>
+                <p>Connexion WebSocket en cours...</p>
+                <p style={{ fontSize: '12px', color: '#666' }}>Veuillez patienter</p>
             </div>
         );
     }

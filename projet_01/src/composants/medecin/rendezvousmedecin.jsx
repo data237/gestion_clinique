@@ -5,7 +5,7 @@ import Styled from 'styled-components'
 import axiosInstance from '../config/axiosConfig';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { API_BASE } from '../../composants/config/apiConfig';
+import { API_BASE } from '../../composants/config/apiconfig';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import Pagination from '../shared/Pagination';
 import imgprofil from '../../assets/photoDoc.png'

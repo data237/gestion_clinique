@@ -1,6 +1,6 @@
 import '../styles/pageadmin.css'
 import Styled from 'styled-components'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Calendar from 'react-calendar';
 import Barrelatteral from '../composants/barrelatteral';
 import Eltmenu from '../composants/eltmenu'
@@ -9,7 +9,7 @@ import imgrendezvous from '../assets/IconRendezvous.png'
 //import imgpatient from '../assets/IconPatient.png'
 import imgcalendrier from '../assets/IconCalendrier.png'
 import iconEnvelope from '../assets/icon-envelope.svg'
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const PageStyle = Styled.div`
     display: flex;
@@ -26,11 +26,27 @@ const DivStyle = Styled.div`
 
 function PageMedecin(){
     const [contenuActif, setContenuActif] = useState('rendez-vous');
+    const location = useLocation();
     
-   
-
-
- 
+    // Déterminer le contenu actif basé sur l'URL
+    useEffect(() => {
+        const path = location.pathname;
+        
+        // Extraction du segment de route après /medecin/
+        const segments = path.split('/').filter(segment => segment);
+        const routeSegment = segments[1] || 'rendezvous'; // Si pas de segment, default to rendezvous
+        
+        if (routeSegment === 'rendezvous') {
+            setContenuActif('rendez-vous');
+        } else if (routeSegment === 'calendrier') {
+            setContenuActif('calendrier');
+        } else if (routeSegment === 'messagerie') {
+            setContenuActif('messagerie');
+        } else {
+            setContenuActif('rendez-vous');
+        }
+    }, [location.pathname]);
+    
     const changerContenu = (contenu) => {
         console.log(contenu);
         setContenuActif(contenu);

@@ -30,20 +30,29 @@ function PageSecretaire(){
     const [contenuActif, setContenuActif] = useState('rendez-vous');
     const location = useLocation();
     
-    // Détecter les changements d'URL et le paramètre focus
+    // Déterminer le contenu actif basé sur l'URL
     useEffect(() => {
-        const urlParams = new URLSearchParams(location.search);
-        const focusParam = urlParams.get('focus');
-        if (focusParam === 'patient') {
+        const path = location.pathname;
+        
+        // Extraction du segment de route après /secretaire/
+        const segments = path.split('/').filter(segment => segment);
+        const routeSegment = segments[1] || 'rendezvous'; // Si pas de segment, default to rendezvous
+        
+        if (routeSegment === 'rendezvous') {
+            setContenuActif('rendez-vous');
+        } else if (routeSegment === 'patient') {
             setContenuActif('patient');
-            // Nettoyer l'URL
-            window.history.replaceState({}, document.title, location.pathname);
+        } else if (routeSegment === 'calendrier') {
+            setContenuActif('calendrier');
+        } else if (routeSegment === 'facture') {
+            setContenuActif('facture');
+        } else if (routeSegment === 'messagerie') {
+            setContenuActif('messagerie');
+        } else {
+            setContenuActif('rendez-vous');
         }
-    }, [location]); // Déclencher à chaque changement de location
+    }, [location.pathname]);
    
-
-
- 
     const changerContenu = (contenu) => {
         console.log(contenu);
         setContenuActif(contenu);

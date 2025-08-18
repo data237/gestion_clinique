@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { API_BASE } from '../config/apiConfig';
+import React, { useEffect, useState, useRef } from 'react';
+import { API_BASE, WEBSOCKET_CONFIG } from '../config/apiconfig';
 import axios from 'axios';
 import Barrehorizontal1 from '../barrehorizontal1';
 import imgprofilDefault from '../../assets/photoDoc.png'
@@ -10,6 +10,7 @@ import NewMessageModal from '../messagerie/NewMessageModal';
 import ChatInterface from '../messagerie/ChatInterface';
 import UserPhotoService from '../../services/userPhotoService';
 import UserStatusIndicator from '../shared/UserStatusIndicator';
+import messagingService from '../../services/messagingService';
 
 function MessagerieMedecin() {
     const idUser = localStorage.getItem('id');
@@ -29,6 +30,16 @@ function MessagerieMedecin() {
     // États pour les modals
     const [showNewMessageModal, setShowNewMessageModal] = useState(false);
     const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+    
+    // États pour la connexion WebSocket
+    const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
+    const [webSocketError, setWebSocketError] = useState(null);
+    const [messages, setMessages] = useState([]);
+    
+    // Références pour la gestion WebSocket
+    const messageHandlerId = useRef(null);
+    const userSubscription = useRef(null);
+    const groupSubscriptions = useRef(new Map());
 
     // Récupération du nom et de la photo de profil de l'utilisateur connecté
     useEffect(() => {
@@ -78,6 +89,77 @@ function MessagerieMedecin() {
             UserPhotoService.revokeBlobUrls(blobUrls);
         };
     }, [blobUrls]);
+
+    // Connexion WebSocket et gestion des messages
+    useEffect(() => {
+        const initializeWebSocket = async () => {
+            try {
+                console.log('Initialisation de la connexion WebSocket...');
+                setWebSocketError(null);
+                
+                // Se connecter au service de messagerie
+                await messagingService.connect();
+                setIsWebSocketConnected(true);
+                console.log('✅ Connexion WebSocket établie');
+                
+                // S'abonner à la queue personnelle de l'utilisateur
+                const userId = localStorage.getItem('id');
+                if (userId) {
+                    userSubscription.current = messagingService.stompClient.subscribe(
+                        WEBSOCKET_CONFIG.TOPICS.USER_QUEUE(userId),
+                        (message) => {
+                            try {
+                                const messageEvent = JSON.parse(message.body);
+                                console.log('📨 Message reçu:', messageEvent);
+                                handleIncomingMessage(messageEvent);
+                            } catch (parseError) {
+                                console.error('Erreur parsing message:', parseError);
+                            }
+                        }
+                    );
+                    console.log(`🔔 Abonnement à la queue utilisateur ${userId}`);
+                }
+                
+                // Enregistrer le handler de messages
+                messageHandlerId.current = messagingService.addMessageHandler((messageEvent) => {
+                    console.log('📨 Message via handler:', messageEvent);
+                    handleIncomingMessage(messageEvent);
+                });
+                
+            } catch (error) {
+                console.error('❌ Erreur lors de l\'initialisation WebSocket:', error);
+                setWebSocketError(error.message);
+                setIsWebSocketConnected(false);
+            }
+        };
+
+        if (!loading) {
+            initializeWebSocket();
+        }
+
+        // Nettoyage lors du démontage
+        return () => {
+            console.log('🧹 Nettoyage des connexions WebSocket...');
+            
+            // Supprimer le handler de messages
+            if (messageHandlerId.current) {
+                messagingService.removeMessageHandler(messageHandlerId.current);
+            }
+            
+            // Se désabonner de la queue utilisateur
+            if (userSubscription.current) {
+                userSubscription.current.unsubscribe();
+            }
+            
+            // Se désabonner des groupes
+            groupSubscriptions.current.forEach((subscription) => {
+                subscription.unsubscribe();
+            });
+            
+            // Déconnecter le service
+            messagingService.disconnect();
+        };
+    }, [loading]);
 
     // Récupération de tous les utilisateurs pour les contacts
     useEffect(() => {
@@ -180,11 +262,83 @@ function MessagerieMedecin() {
         setSelectedContact(user);
     };
 
-    const handleNewMessage = (messageData) => {
-        console.log('Nouveau message envoyé:', messageData);
-        // Si c'est le démarrage d'une conversation, sélectionner le contact
-        if (messageData.action === 'start_conversation' && messageData.recipients.length > 0) {
-            setSelectedContact(messageData.recipients[0]);
+    // Gérer les messages entrants
+    const handleIncomingMessage = (messageEvent) => {
+        console.log('📨 Traitement message entrant:', messageEvent);
+        
+        const { type, data } = messageEvent;
+        
+        if (type === 'CREATE') {
+            // Nouveau message
+            setMessages(prev => [...prev, data]);
+            
+            // Si le message est pour l'utilisateur actuel, l'ajouter à la conversation
+            if (data.destinataireId === parseInt(localStorage.getItem('id'))) {
+                console.log('📨 Message reçu pour cet utilisateur');
+                // Ici vous pouvez ajouter la logique pour afficher le message
+            }
+        } else if (type === 'UPDATE') {
+            // Message modifié
+            setMessages(prev => prev.map(msg => 
+                msg.id === data.id ? data : msg
+            ));
+        } else if (type === 'DELETE') {
+            // Message supprimé
+            setMessages(prev => prev.filter(msg => msg.id !== data.id));
+        }
+    };
+
+    const handleNewMessage = async (messageData) => {
+        console.log('📤 Nouveau message à envoyer:', messageData);
+        
+        try {
+            if (!isWebSocketConnected) {
+                throw new Error('WebSocket non connecté');
+            }
+            
+            let sentMessage;
+            
+            if (selectedContact) {
+                // Message individuel
+                sentMessage = await messagingService.sendIndividualMessage(
+                    selectedContact.id,
+                    messageData.contenu
+                );
+                console.log('✅ Message individuel envoyé:', sentMessage);
+            } else if (messageData.groupeId) {
+                // Message de groupe
+                sentMessage = await messagingService.sendGroupMessage(
+                    messageData.groupeId,
+                    messageData.contenu
+                );
+                console.log('✅ Message de groupe envoyé:', sentMessage);
+            }
+            
+            // Ajouter le message localement
+            if (sentMessage) {
+                const localMessage = {
+                    id: Date.now(),
+                    contenu: messageData.contenu,
+                    expediteur: {
+                        id: localStorage.getItem('id'),
+                        prenom: 'Vous',
+                        nom: ''
+                    },
+                    timestamp: new Date().toISOString(),
+                    lu: false
+                };
+                
+                setMessages(prev => [...prev, localMessage]);
+            }
+            
+            // Si c'est le démarrage d'une conversation, sélectionner le contact
+            if (messageData.action === 'start_conversation' && messageData.recipients?.length > 0) {
+                setSelectedContact(messageData.recipients[0]);
+            }
+            
+        } catch (error) {
+            console.error('❌ Erreur lors de l\'envoi du message:', error);
+            setWebSocketError(`Erreur d'envoi: ${error.message}`);
         }
     };
 
@@ -257,15 +411,34 @@ function MessagerieMedecin() {
                     <div className="messagerie-header">
                         <h2 className="messagerie-title">Clinique D'AfriK <span className='span1' style={{fontSize: '14px'}}>messagerie médicale</span></h2>
                         <div className="messagerie-actions">
+                            {/* Indicateur de statut WebSocket */}
+                            <div className="websocket-status" style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '8px 12px',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                backgroundColor: isWebSocketConnected ? '#d4edda' : '#f8d7da',
+                                color: isWebSocketConnected ? '#155724' : '#721c24',
+                                border: '1px solid',
+                                borderColor: isWebSocketConnected ? '#c3e6cb' : '#f5c6cb'
+                            }}>
+                                <span>{isWebSocketConnected ? '🔌' : '❌'}</span>
+                                <span>{isWebSocketConnected ? 'Connecté' : 'Déconnecté'}</span>
+                            </div>
+                            
                             <button 
                                 className="messagerie-btn" 
                                 onClick={() => setShowNewMessageModal(true)}
+                                disabled={!isWebSocketConnected}
                             >
                                 Nouveau message
                             </button>
                             <button 
                                 className="messagerie-btn" 
                                 onClick={() => setShowCreateGroupModal(true)}
+                                disabled={!isWebSocketConnected}
                             >
                                 Créer un groupe
                             </button>
@@ -387,10 +560,41 @@ function MessagerieMedecin() {
                             </div>
                             
                             {selectedContact && (
-                                <ChatInterface 
-                                    selectedContact={selectedContact}
-                                    onMessageSent={handleNewMessage}
-                                />
+                                <>
+                                    {webSocketError && (
+                                        <div className="websocket-error" style={{
+                                            padding: '10px',
+                                            margin: '10px',
+                                            backgroundColor: '#f8d7da',
+                                            border: '1px solid #f5c6cb',
+                                            borderRadius: '4px',
+                                            color: '#721c24'
+                                        }}>
+                                            <strong>Erreur WebSocket:</strong> {webSocketError}
+                                            <button 
+                                                onClick={() => setWebSocketError(null)}
+                                                style={{
+                                                    marginLeft: '10px',
+                                                    padding: '4px 8px',
+                                                    backgroundColor: '#721c24',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    borderRadius: '3px',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    )}
+                                    
+                                    <ChatInterface 
+                                        selectedContact={selectedContact}
+                                        onMessageSent={handleNewMessage}
+                                        messages={messages}
+                                        isWebSocketConnected={isWebSocketConnected}
+                                    />
+                                </>
                             )}
                         </div>
                     </div>

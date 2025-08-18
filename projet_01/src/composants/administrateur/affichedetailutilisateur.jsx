@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE } from '../../composants/config/apiConfig';
+import { API_BASE } from '../../composants/config/apiconfig';
 import axiosInstance from '../../composants/config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';

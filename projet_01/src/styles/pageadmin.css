@@ -14,10 +14,11 @@ button{
 }
 
 .eltmenu:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-    background-color: #5a67d8;
-    border-color: #5a67d8;
+    /* Supprimer les effets de hover pour les éléments actifs */
+    transform: none;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+    background-color: #667eea;
+    border-color: #667eea;
 }
 
 .lienadmin {
@@ -72,6 +73,7 @@ button{
     transition: left 0.6s ease;
 }
 
+/* Supprimer l'animation de brillance pour les éléments actifs */
 .eltmenu:hover::before, .lienadmin:hover::before {
     left: 100%;
 }
@@ -98,8 +100,12 @@ button{
         padding: 12px 16px;
     }
     
-    .eltmenu:hover, .lienadmin:hover {
+    .lienadmin:hover {
         transform: translateX(3px);
+    }
+    
+    .eltmenu:hover {
+        transform: none;
     }
 }
 

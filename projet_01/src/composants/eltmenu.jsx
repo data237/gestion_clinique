@@ -35,7 +35,7 @@ const EltmenuStyle= Styled.div`
         padding: 14px 8px 14px 12px;
     }
     
-    &:hover{
+    &:hover:not(.active){
         cursor: pointer;
         background-color: #667eea;
         color: #ffffff;
@@ -54,10 +54,11 @@ const EltmenuStyle= Styled.div`
         font-weight: 500;
         box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
         transform: translateX(5px);
+        cursor: default;
     }
     
     &::before {
-        message: '';
+        content: '';
         position: absolute;
         top: 0;
         left: -100%;
@@ -68,7 +69,7 @@ const EltmenuStyle= Styled.div`
         pointer-events: none;
     }
     
-    &:hover::before {
+    &:hover:not(.active)::before {
         left: 100%;
     }
 `
@@ -88,7 +89,7 @@ const ImgStyle = Styled.img`
         height: 14px;
     }
     
-    ${EltmenuStyle}:hover & {
+    ${EltmenuStyle}:hover:not(.active) & {
         transform: scale(1.1);
         filter: brightness(0) invert(1);
     }

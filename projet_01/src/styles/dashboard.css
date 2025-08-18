@@ -10,6 +10,7 @@
     margin: 0 32px 32px 32px;
     padding: 0 30px;
     position: relative;
+    overflow-y: hidden;
 }
 
 /* Header Styles */
@@ -95,11 +96,12 @@
 .grid-4 {
     grid-column: 1 / 3;
     grid-row: 2;
-    height: 265px;
-    min-height: 265px;
-    max-height: 265px;
+    height: 278px;
+    min-height: 278px;
+    max-height: 278px;
     display: flex;
     flex-direction: column;
+    margin-top: 0px;
 }
 
 .line-chart {
@@ -381,13 +383,14 @@
 
 /* Footer Bar */
 .barre-dashboard {
-    height: 2rem;
+    height: 1.8rem;
     border-radius: 16px;
-    background: linear-gradient(135deg, #ff9fac 0%, #ff8b9b 100%);
+    background: #9f9fff;
     display: flex;
     align-items: center;
     padding: 0 24px;
     box-shadow: 0 4px 20px rgba(255, 159, 172, 0.2);
+    margin-top: -5px;
 }
 
 .image-barre {

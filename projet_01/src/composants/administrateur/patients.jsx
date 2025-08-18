@@ -7,7 +7,7 @@ import '../../styles/rendezvous-status.css'
 import Styled from 'styled-components'
 import axiosInstance from '../../composants/config/axiosConfig';
 import React, { useState, useEffect } from 'react';
-import { API_BASE } from '../../composants/config/apiConfig'
+import { API_BASE } from '../../composants/config/apiconfig'
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 //import Barrehorizontal2 from "../barrehorizontal2";
 //import Boutton from '../boutton'

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { API_BASE } from '../config/apiConfig';
+import { API_BASE } from '../config/apiconfig';
 import axios from 'axios';
 import Barrehorizontal1 from '../barrehorizontal1';
 import imgprofilDefault from '../../assets/photoDoc.png'

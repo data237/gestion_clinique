@@ -1,13 +1,16 @@
-import '../../styles/Zonedaffichage.css'
-import React, { useEffect, useState } from 'react';
-import { API_BASE } from '../../composants/config/apiConfig'
+
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Chart as ChartJS } from "chart.js/auto";
-import { Line } from "react-chartjs-2";
+import { API_BASE } from '../../composants/config/apiconfig';
+import '../../styles/dashboard.css';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { Line } from 'react-chartjs-2';
 import Barrehorizontal1 from '../barrehorizontal1';
 import imgprofilDefault from '../../assets/photoDoc.png'
 import iconutilisateurblanc from '../../assets/iconutilisateurdashboardblanc.svg'
-import '../../styles/dashboard.css'
+
+// Enregistrer les composants Chart.js nécessaires
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function Dashboard() {
     const idUser = localStorage.getItem('id');

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UnifiedModal, ModalButton } from '../shared/UnifiedModal';
-import { API_BASE } from '../config/apiConfig';
+import { API_BASE } from '../config/apiconfig';
 import axios from 'axios';
 import styled from 'styled-components';
 import imgprofilDefault from '../../assets/photoDoc.png';

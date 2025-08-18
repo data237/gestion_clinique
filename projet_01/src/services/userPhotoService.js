@@ -1,4 +1,4 @@
-import { API_BASE } from '../composants/config/apiConfig';
+import { API_BASE } from '../composants/config/apiconfig';
 import imgprofilDefault from '../assets/photoDoc.png';
 
 class UserPhotoService {

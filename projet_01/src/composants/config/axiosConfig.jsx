@@ -104,10 +104,17 @@ axiosInstance.interceptors.response.use(
     // Gérer les erreurs 403 (Forbidden)
     if (error.response?.status === 403) {
       console.log('Erreur 403 (Forbidden) détectée, vérification des droits...');
+      console.log('URL de la requête:', error.config?.url);
+      console.log('Méthode de la requête:', error.config?.method);
+      console.log('Headers de la requête:', error.config?.headers);
+      console.log('Token présent:', !!localStorage.getItem('token'));
       
       // Si c'est un problème de droits, on peut essayer de rafraîchir le token
       // ou déconnecter l'utilisateur selon le contexte
       const errorMessage = error.response.data?.error;
+      const errorData = error.response.data;
+      
+      console.log('Détails de l\'erreur 403:', { errorMessage, errorData });
       
       if (errorMessage?.includes('insufficient') || 
           errorMessage?.includes('permission') ||
@@ -121,6 +128,10 @@ axiosInstance.interceptors.response.use(
             reason: 'INSUFFICIENT_PERMISSIONS'
           } 
         }));
+      } else {
+        // Pour les autres erreurs 403, on peut essayer de continuer
+        // car cela peut être un problème temporaire ou de configuration
+        console.log('Erreur 403 non critique, continuation...');
       }
     }
     

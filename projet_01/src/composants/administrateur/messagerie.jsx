@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { API_BASE } from '../config/apiConfig';
+import { API_BASE } from '../config/apiconfig';
 import axios from 'axios';
 import Barrehorizontal1 from '../barrehorizontal1';
 import imgprofilDefault from '../../assets/photoDoc.png'
@@ -10,6 +10,7 @@ import NewMessageModal from '../messagerie/NewMessageModal';
 import ChatInterface from '../messagerie/ChatInterface';
 import UserPhotoService from '../../services/userPhotoService';
 import UserStatusIndicator from '../shared/UserStatusIndicator';
+import messagingService from '../../services/messagingService';
 
 function MessagerieAdmin() {
     const idUser = localStorage.getItem('id');
@@ -29,6 +30,10 @@ function MessagerieAdmin() {
     // États pour les modals
     const [showNewMessageModal, setShowNewMessageModal] = useState(false);
     const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+
+    // Nouveaux états pour WebSocket et messages
+    const [messages, setMessages] = useState([]); // État pour les messages
+    const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
 
     // Récupération du nom et de la photo de profil de l'utilisateur connecté
     useEffect(() => {
@@ -78,6 +83,36 @@ function MessagerieAdmin() {
             UserPhotoService.revokeBlobUrls(blobUrls);
         };
     }, [blobUrls]);
+
+    // 1. Gérer la connexion WebSocket et les messages entrants
+    useEffect(() => {
+        const connectToWebSocket = async () => {
+            try {
+                await messagingService.connect();
+                setIsWebSocketConnected(messagingService.isConnected());
+
+                // Enregistrer un handler pour les messages entrants
+                const handlerId = messagingService.addMessageHandler((messageEvent) => {
+                    const { type, data } = messageEvent;
+                    if (type === 'MESSAGE_INDIVIDUEL' || type === 'MESSAGE_GROUPE') {
+                        setMessages(prevMessages => [...prevMessages, data]);
+                    }
+                });
+
+                return () => {
+                    // Nettoyage au démontage du composant
+                    messagingService.removeMessageHandler(handlerId);
+                    messagingService.disconnect();
+                };
+
+            } catch (error) {
+                console.error('Erreur de connexion WebSocket:', error);
+                setIsWebSocketConnected(false);
+            }
+        };
+
+        connectToWebSocket();
+    }, []);
 
     // Récupération de tous les utilisateurs pour les contacts
     useEffect(() => {
@@ -178,6 +213,35 @@ function MessagerieAdmin() {
 
     const handleContactClick = (user) => {
         setSelectedContact(user);
+    };
+
+    // 2. Modifier la fonction d'envoi de message
+    const handleSendMessage = async (messageData) => {
+        if (!selectedContact) return;
+
+        try {
+            // Appeler la méthode du service de messagerie
+            const sentMessage = await messagingService.sendIndividualMessage(
+                selectedContact.id,
+                messageData.contenu
+            );
+            
+            // Mettre à jour l'état des messages localement avec le message envoyé
+            setMessages(prevMessages => [...prevMessages, {
+                ...sentMessage,
+                expediteur: {
+                    id: localStorage.getItem('id'),
+                    // Ajoutez d'autres infos de l'expéditeur si nécessaire
+                }
+            }]);
+
+            console.log('Message envoyé avec succès:', sentMessage);
+            return sentMessage;
+
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi du message:', error);
+            throw error;
+        }
     };
 
     const handleNewMessage = (messageData) => {
@@ -389,7 +453,9 @@ function MessagerieAdmin() {
                             {selectedContact && (
                                 <ChatInterface 
                                     selectedContact={selectedContact}
-                                    onMessageSent={handleNewMessage}
+                                    messages={messages} // Passez les messages depuis l'état
+                                    onMessageSent={handleSendMessage} // Passez la nouvelle fonction
+                                    isWebSocketConnected={isWebSocketConnected}
                                 />
                             )}
                         </div>

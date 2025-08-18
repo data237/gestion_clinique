@@ -2,7 +2,7 @@ import '../styles/pagelogin.css'
 import '../styles/buttons.css'
 import { useState, useEffect } from 'react';
 import axiosInstance from '../composants/config/axiosConfig'
-import { API_BASE } from '../composants/config/apiConfig';
+import { API_BASE } from '../composants/config/apiconfig';
 import { useNavigate } from 'react-router-dom';
 import imageclinique from '../assets/img_clinique.jpg'
 import logoclinique from '../assets/logo.png'
@@ -101,13 +101,57 @@ function PageLogin() {
         localStorage.removeItem('rememberedEmail');
       }
 
-      // Appeler l'endpoint pour annuler les vieux rendez-vous
+      // FONCTIONNALITÉ OPTIONNELLE : Annuler les vieux rendez-vous
+      // Cette fonctionnalité est optionnelle et ne doit pas bloquer la connexion
+      // Attendre un peu pour s'assurer que le token est bien enregistré
       try {
-        await axiosInstance.post(`/rendezvous/cancel-old`);
-        console.log('Vieux rendez-vous annulés avec succès');
-      } catch (cancelError) {
-        console.error('Erreur lors de l\'annulation des vieux rendez-vous:', cancelError);
-        // Ne pas bloquer la connexion si cet appel échoue
+        setTimeout(async () => {
+          try {
+            // Vérifier que le token est bien présent
+            const token = localStorage.getItem('token');
+            if (token) {
+              // Vérifier d'abord si l'utilisateur a les droits pour cette action
+              const userRole = localStorage.getItem('user');
+              if (userRole === 'ROLE_ADMIN' || userRole === 'ROLE_SECRETAIRE') {
+                try {
+                  // Essayer d'annuler les vieux rendez-vous, mais ne pas bloquer si ça échoue
+                  await axiosInstance.post(`/rendezvous/cancel-old`);
+                  console.log('Vieux rendez-vous annulés avec succès');
+                } catch (cancelError) {
+                  // Gérer les différents types d'erreurs de manière non-bloquante
+                  if (cancelError.response?.status === 403) {
+                    console.warn('Droits insuffisants pour annuler les vieux rendez-vous ou endpoint non disponible');
+                  } else if (cancelError.response?.status === 404) {
+                    console.warn('Endpoint pour annuler les vieux rendez-vous non disponible sur le backend');
+                  } else if (cancelError.response?.status === 500) {
+                    console.warn('Erreur serveur lors de l\'annulation des vieux rendez-vous');
+                  } else if (cancelError.code === 'NETWORK_ERROR') {
+                    console.warn('Erreur réseau lors de l\'annulation des vieux rendez-vous');
+                  } else {
+                    console.warn('Erreur lors de l\'annulation des vieux rendez-vous:', cancelError.message || 'Erreur inconnue');
+                  }
+                  // Ne pas bloquer la connexion - c'est une fonctionnalité optionnelle
+                }
+              } else {
+                console.log('Utilisateur non autorisé à annuler les vieux rendez-vous - rôle:', userRole);
+              }
+            } else {
+              console.warn('Token non trouvé, impossible d\'annuler les vieux rendez-vous');
+            }
+          } catch (cancelError) {
+            console.error('Erreur inattendue lors de l\'annulation des vieux rendez-vous:', cancelError);
+            // Ne pas bloquer la connexion si cet appel échoue
+            // Log plus détaillé pour le debugging
+            if (cancelError.response) {
+              console.error('Status:', cancelError.response.status);
+              console.error('Data:', cancelError.response.data);
+              console.error('Headers:', cancelError.response.headers);
+            }
+          }
+        }, 100); // Attendre 100ms pour s'assurer que le token est bien enregistré
+      } catch (outerError) {
+        // Si même le setTimeout échoue, on log mais on ne bloque pas la connexion
+        console.error('Erreur critique lors de la configuration de l\'annulation des vieux rendez-vous:', outerError);
       }
 
       // Notification de succès
