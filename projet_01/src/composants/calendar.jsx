@@ -58,7 +58,7 @@ export default function Calendrier() {
         <ul style={{ listStyle: 'none', padding: 0 }}>
           <li>🧑‍⚕️ Utilisateurs</li>
           <li>🩺 Consultations</li>
-          <li>✉️ Messagerie</li>
+
           <li style={{ fontWeight: 'bold', color: '#3b82f6' }}>📅 Calendrier</li>
         </ul>
       </Sidebar>

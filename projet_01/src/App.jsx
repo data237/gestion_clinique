@@ -18,33 +18,34 @@ import { NotificationProvider } from './composants/notification'
 import { LoadingProvider } from './composants/LoadingProvider'
 import { ConfirmationProvider } from './composants/ConfirmationProvider'
 
+
 function App() {
   return (
-    <NotificationProvider>
-      <LoadingProvider>
-        <ConfirmationProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<PageLogin />} />
-              <Route path="/calendar" element={<Calendrier />} />
-              <Route path="/pagemedecin" element={<PageMedecin />} />
-              <Route element={<ProtectedRoute />}>
-                {/* Routes protégées avec contrôle de rôle */}
-                <Route element={<RoleBasedRoute allowedRoles={['ROLE_ADMIN']} />}>
-                  <Route path='/admin/*' element={<Adminroute />} />
-                </Route>
-                <Route element={<RoleBasedRoute allowedRoles={['ROLE_MEDECIN']} />}>
-                  <Route path='/medecin/*' element={<Medecinroute />} />
-                </Route>
-                <Route element={<RoleBasedRoute allowedRoles={['ROLE_SECRETAIRE']} />}>
-                  <Route path='/secretaire/*' element={<Secretaireroute />} />
-                </Route>
-              </Route>
-            </Routes>
-          </Router>
-        </ConfirmationProvider>
-      </LoadingProvider>
-    </NotificationProvider>
+            <NotificationProvider>
+          <LoadingProvider>
+            <ConfirmationProvider>
+              <Router>
+                <Routes>
+                  <Route path="/" element={<PageLogin />} />
+                  <Route path="/calendar" element={<Calendrier />} />
+                  <Route path="/pagemedecin" element={<PageMedecin />} />
+                  <Route element={<ProtectedRoute />}>
+                    {/* Routes protégées avec contrôle de rôle */}
+                    <Route element={<RoleBasedRoute allowedRoles={['ROLE_ADMIN']} />}>
+                      <Route path='/admin/*' element={<Adminroute />} />
+                    </Route>
+                    <Route element={<RoleBasedRoute allowedRoles={['ROLE_MEDECIN']} />}>
+                      <Route path='/medecin/*' element={<Medecinroute />} />
+                    </Route>
+                    <Route element={<RoleBasedRoute allowedRoles={['ROLE_SECRETAIRE']} />}>
+                      <Route path='/secretaire/*' element={<Secretaireroute />} />
+                    </Route>
+                  </Route>
+                </Routes>
+              </Router>
+            </ConfirmationProvider>
+          </LoadingProvider>
+        </NotificationProvider>
   )
 }
 

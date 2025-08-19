@@ -1,7 +1,6 @@
 // src/components/forms/FormulaireFacture.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_BASE } from '../../composants/config/apiconfig';
 import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
@@ -12,9 +11,7 @@ import { pdf } from '@react-pdf/renderer';
 import ReceiptPDF from '../../composants/generateurpdffacture'; // chemin selon ta structure
 import logoPath from '../../assets/logo.png'; // met ton logo ici (optionnel, local)
 
-// === styled-components (copie de ton code) ===
-// ... (Garde tout ton styled-components tel quel)
-// Pour la clarté je réutilise tes définitions ci-dessous — colle les tiennes exactement
+
 const Affichedetailuser = Styled.div`
   display: flex; 
   justifyContent: center; 
@@ -98,7 +95,7 @@ const Select = Styled.select`
 `;
 const ButtonRow = Styled.div`
   display: flex;
-  justifyContent: space-around;
+  justify-content: space-around;
   gap: 10px;
   padding-bottom: 15px;
 `;
@@ -187,11 +184,15 @@ const FormulaireFacture = ({ id, onClick1 }) => {
   const [showLoader, setShowLoader] = useState(false);
 
   useEffect(() => {
+    console.log('FormulaireFacture monté avec ID:', id);
+    
     const fetchfactures = async () => {
       const token = localStorage.getItem('token');
       try {
+        console.log('Tentative de récupération de la facture avec ID:', id);
         const response = await axiosInstance.get(`/factures/recherche/${id}`);
         setfacture(response.data);
+        console.log('Facture récupérée avec succès:', response.data);
       } catch (error) {
         console.error('Erreur lors de la récupération des factures:', error);
       }
@@ -201,25 +202,51 @@ const FormulaireFacture = ({ id, onClick1 }) => {
 
 
 
-  const handleChange = e => {
+   const handleChange = e => {
     const { name, value } = e.target;
     setfacture(prev => ({ ...prev, [name]: value }));
   };
 
   const handleAnnuler = () => {
-    // Afficher une notification de succès
-    if (window.showNotification) {
-      window.showNotification("annulation du paiement", "success");
-    }
-    // Rediriger vers la liste des factures
-    navigate("/secretaire/facture");
-    // Gérer le focus après la navigation
-    setTimeout(() => {
-      const firstFocusableElement = document.querySelector('button, input, select, a, [tabindex]:not([tabindex="-1"])');
-      if (firstFocusableElement) {
-        firstFocusableElement.focus();
+    console.log('Bouton Annuler cliqué - Début de la fonction handleAnnuler');
+    
+    try {
+      // Réinitialiser les états
+      setLoading(false);
+      setShowValidationPopup(false);
+      setShowLoader(false);
+      
+      console.log('États réinitialisés avec succès');
+      
+      // Afficher une notification de succès
+      if (window.showNotification) {
+        window.showNotification("Annulation effectuée", "success");
+        console.log('Notification affichée');
+      } else {
+        console.log('Fonction showNotification non disponible');
       }
-    }, 100);
+      
+      // Rediriger vers la liste des factures
+      console.log('Tentative de navigation vers /secretaire/facture');
+      navigate("/secretaire/facture");
+      console.log('Navigation effectuée avec succès');
+      
+      // Gérer le focus après la navigation
+      setTimeout(() => {
+        const firstFocusableElement = document.querySelector('button, input, select, a, [tabindex]:not([tabindex="-1"])');
+        if (firstFocusableElement) {
+          firstFocusableElement.focus();
+          console.log('Focus géré avec succès');
+        } else {
+          console.log('Aucun élément focusable trouvé');
+        }
+      }, 100);
+    } catch (error) {
+      console.error('Erreur lors de l\'annulation:', error);
+      // En cas d'erreur, essayer quand même de naviguer
+      console.log('Tentative de navigation de secours');
+      navigate("/secretaire/facture");
+    }
   };
 
   const handleGenererFacture = () => {
@@ -350,10 +377,20 @@ const FormulaireFacture = ({ id, onClick1 }) => {
   };
 
   if (!facture) {
+    console.log('Facture non chargée, affichage du loader');
     return (
       <Affichedetailuser>
         <FormContainer>
-          <p>Chargement...</p>
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            height: '200px',
+            fontSize: '18px',
+            color: '#1e40af'
+          }}>
+            Chargement de la facture...
+          </div>
         </FormContainer>
       </Affichedetailuser>
     );
