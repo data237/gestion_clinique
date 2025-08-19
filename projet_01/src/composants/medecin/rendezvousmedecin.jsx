@@ -343,7 +343,9 @@ const BarreStyle = Styled.div`
     padding-left:  20px;
 
 `
-//
+
+
+                               
 
 // gerer les popups - Utilisation du système unifié
 function RendezvousMedecin(){
@@ -545,6 +547,9 @@ function RendezvousMedecin(){
     });
   };
 
+  const handleUrgence = () => {
+    navigate('/medecin/consultation/urgence');
+  };
 
   if (isloading) return <p>Chargement...</p>;
 
@@ -564,7 +569,12 @@ function RendezvousMedecin(){
                         <input className='inputrecherche' type="text" id="text1" placeholder='Tapez votre recherche ici'  value={valeurrecherche} onChange={(e) => setvaleurrecherche(e.target.value)} required></input>
                         <img className='iconrecherche' src={iconrecherche}></img>
                     </div>
-                    
+                    <Link to="/medecin/consultation/urgence">
+                        <button onClick={handleUrgence} className='add-button urgence-button'
+                        >
+                            <span>🚨</span> Consultation urgence
+                        </button>
+                    </Link>
                 </div>
                  
                 
