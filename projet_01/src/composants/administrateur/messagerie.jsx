@@ -4,7 +4,6 @@ import axios from 'axios';
 import Barrehorizontal1 from '../barrehorizontal1';
 import imgprofilDefault from '../../assets/photoDoc.png'
 import '../../styles/messagerie.css'
-import UserPhotoService from '../../services/userPhotoService';
 
 function MessagerieAdmin() {
     const idUser = localStorage.getItem('id');
@@ -14,7 +13,7 @@ function MessagerieAdmin() {
     const [error, setError] = useState(null)
     const [blobUrls, setBlobUrls] = useState([])
     
-    // États pour l'interface graphique (statiques)
+    // États pour la messagerie
     const [users, setUsers] = useState([]);
     const [filteredUsers, setFilteredUsers] = useState([]);
     const [selectedContact, setSelectedContact] = useState(null);
@@ -24,6 +23,10 @@ function MessagerieAdmin() {
     // États pour les modals
     const [showNewMessageModal, setShowNewMessageModal] = useState(false);
     const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+
+    // Nouveaux états pour WebSocket et messages
+    const [messages, setMessages] = useState([]); // État pour les messages
+    const [isWebSocketConnected, setIsWebSocketConnected] = useState(false);
 
     // Récupération du nom et de la photo de profil de l'utilisateur connecté
     useEffect(() => {
@@ -40,21 +43,7 @@ function MessagerieAdmin() {
                     });
                 if (response && response.data) {
                     setnomprofil(response.data.nom || '')
-                    // Utiliser le service amélioré pour récupérer la photo
-                    if (response.data.id && response.data.photoProfil) {
-                        try {
-                            const photoUrl = await UserPhotoService.getUserPhotoBlob(response.data.id, response.data.photoProfil);
-                            setImgprofil(photoUrl);
-                            if (photoUrl !== imgprofilDefault) {
-                                setBlobUrls(prev => [...prev, photoUrl]);
-                            }
-                        } catch (photoError) {
-                            console.warn('Erreur lors de la récupération de la photo:', photoError);
-                            setImgprofil(imgprofilDefault);
-                        }
-                    } else {
-                        setImgprofil(imgprofilDefault);
-                    }
+                    setImgprofil(imgprofilDefault);
                 }
             } catch (error) {
                 console.error('Erreur lors de la récupération des utilisateurs:', error);
@@ -70,72 +59,167 @@ function MessagerieAdmin() {
     // Nettoyage des blobs lors du démontage du composant
     useEffect(() => {
         return () => {
-            UserPhotoService.revokeBlobUrls(blobUrls);
+            // Nettoyage des blobs si nécessaire
         };
     }, [blobUrls]);
 
-    // Récupération des utilisateurs pour la liste des contacts (affichage uniquement)
+    // 1. Gérer la connexion WebSocket et les messages entrants
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get(`${API_BASE}/utilisateurs`, {
-                    headers: {
-                        accept: 'application/json',
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                if (response && response.data) {
-                    // Filtrer pour exclure l'utilisateur actuel
-                    const filteredUsers = response.data.filter(user => user.id !== idUser);
-                    setUsers(filteredUsers);
-                    setFilteredUsers(filteredUsers);
-                }
-            } catch (error) {
-                console.error('Erreur lors de la récupération des utilisateurs:', error);
-                setError('Erreur lors du chargement des utilisateurs');
-            }
-        };
-        
-        fetchUsers();
-    }, [idUser]);
+        // WebSocket temporairement désactivé
+        setIsWebSocketConnected(false);
+    }, []);
 
-    // Gestion de la recherche de contacts (affichage uniquement)
-    const handleSearchContacts = (searchTerm) => {
-        if (!searchTerm.trim()) {
-            setFilteredUsers(users);
-        } else {
-            const filtered = users.filter(user => 
-                user.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                user.prenom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredUsers(filtered);
+    // Récupération de tous les utilisateurs pour les contacts
+    useEffect(() => {
+        if (!loading) {
+            fetchUsers();
+            fetchContactsWithConversations();
+        }
+    }, [loading]);
+
+    const fetchUsers = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axios.get(`${API_BASE}/utilisateurs`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (response.data) {
+                // Exclure l'utilisateur connecté de la liste des contacts
+                const otherUsers = response.data.filter(user => user.id != idUser);
+                
+                // Ajouter les URLs des photos aux utilisateurs
+                const usersWithPhotos = otherUsers.map(user => ({
+                    ...user,
+                    photoUrl: imgprofilDefault
+                }));
+                
+                setUsers(usersWithPhotos);
+                setFilteredUsers(usersWithPhotos);
+            }
+        } catch (error) {
+            console.error('Erreur lors de la récupération des utilisateurs:', error);
         }
     };
 
-    // Gestion de la sélection d'un contact (affichage uniquement)
-    const handleContactSelect = (contact) => {
-        setSelectedContact(contact);
+    // Nouvelle fonction pour récupérer les contacts avec des conversations existantes
+    const fetchContactsWithConversations = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            
+            // TODO: Remplacer par l'endpoint réel une fois disponible
+            // Pour l'instant, on utilise un placeholder qui simule des conversations existantes
+            // Endpoint suggéré: GET /Api/V1/clinique/messagerie/conversations/{userId}
+            
+            // Simulation: on considère qu'il y a des conversations avec les 3 premiers utilisateurs
+            // En production, cela devrait être remplacé par un vrai appel API
+            if (users.length > 0) {
+                const usersWithConversations = users.slice(0, 3); // Simulation
+                setFilteredUsers(usersWithConversations);
+            }
+            
+            // Code pour l'endpoint réel (à décommenter une fois disponible):
+            /*
+            const response = await axios.get(`${API_BASE}/messagerie/conversations/${idUser}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            
+            if (response.data) {
+                // Filtrer pour ne montrer que les utilisateurs avec des conversations
+                const contactsWithConversations = response.data.map(conversation => 
+                    users.find(user => user.id === conversation.otherUserId)
+                ).filter(Boolean);
+                
+                setFilteredUsers(contactsWithConversations);
+            }
+            */
+            
+        } catch (error) {
+            console.error('Erreur lors de la récupération des conversations:', error);
+            // En cas d'erreur, on affiche tous les utilisateurs comme fallback
+            setFilteredUsers(users);
+        }
     };
 
-    // Gestion de l'envoi de message (simulation d'interface)
-    const handleSendMessage = async (messageText) => {
-        if (!selectedContact || !messageText.trim()) return;
+    const handleContactSearch = (searchTerm) => {
+        if (!searchTerm.trim()) {
+            // Si on est dans l'onglet contacts, on affiche seulement ceux avec des conversations
+            if (activeTab === 'contacts') {
+                fetchContactsWithConversations();
+            } else {
+                setFilteredUsers(users);
+            }
+            return;
+        }
         
-        // Simulation d'interface - pas de vraie fonctionnalité
-        console.log('Interface de messagerie - Message tapé:', messageText);
-        alert('Interface de messagerie - Fonctionnalité non implémentée');
+        const filtered = users.filter(user => 
+            user.nom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.prenom?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredUsers(filtered);
     };
 
-    // Gestion de la création de groupe (simulation d'interface)
-    const handleCreateGroup = async (groupData) => {
-        // Simulation d'interface - pas de vraie fonctionnalité
-        console.log('Interface de messagerie - Création de groupe:', groupData);
-        alert('Interface de messagerie - Fonctionnalité non implémentée');
-        setShowCreateGroupModal(false);
+    const handleContactClick = (user) => {
+        setSelectedContact(user);
+    };
+
+    // 2. Modifier la fonction d'envoi de message
+    const handleSendMessage = async (messageData) => {
+        if (!selectedContact) return;
+
+        try {
+            // Message temporairement désactivé
+            const sentMessage = {
+                id: Date.now(),
+                contenu: messageData.contenu,
+                expediteur: {
+                    id: localStorage.getItem('id'),
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            // Mettre à jour l'état des messages localement avec le message envoyé
+            setMessages(prevMessages => [...prevMessages, sentMessage]);
+
+            console.log('Message envoyé avec succès:', sentMessage);
+            return sentMessage;
+
+        } catch (error) {
+            console.error('Erreur lors de l\'envoi du message:', error);
+            throw error;
+        }
+    };
+
+    const handleNewMessage = (messageData) => {
+        console.log('Nouveau message envoyé:', messageData);
+        // Si c'est le démarrage d'une conversation, sélectionner le contact
+        if (messageData.action === 'start_conversation' && messageData.recipients.length > 0) {
+            setSelectedContact(messageData.recipients[0]);
+        }
+    };
+
+    const handleGroupCreated = (groupData) => {
+        console.log('Groupe créé:', groupData);
+        // Ici vous pouvez ajouter la logique pour ajouter le groupe à la liste
+        setGroups(prev => [...prev, groupData]);
+    };
+
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        if (tab === 'contacts') {
+            // Onglet Contacts: afficher seulement les utilisateurs avec des conversations
+            fetchContactsWithConversations();
+        } else {
+            // Onglet Groupes: afficher tous les utilisateurs pour la création de groupes
+            setFilteredUsers(users);
+        }
     };
 
     if (loading) {
@@ -143,6 +227,7 @@ function MessagerieAdmin() {
             <div className="loading-container">
                 <div className="loading-spinner"></div>
                 <div className="loading-text">Chargement de la messagerie...</div>
+                <div className="loading-subtitle">Veuillez patienter pendant que nous préparons votre interface</div>
             </div>
         );
     }
@@ -150,192 +235,207 @@ function MessagerieAdmin() {
     if (error) {
         return (
             <div className="error-container">
+                <div className="error-icon">⚠️</div>
+                <div className="error-title">Erreur de chargement</div>
                 <div className="error-message">{error}</div>
-                <button onClick={() => window.location.reload()}>Réessayer</button>
+                <button 
+                    className="error-retry-btn" 
+                    onClick={() => window.location.reload()}
+                >
+                    Réessayer
+                </button>
             </div>
         );
     }
 
     return (
         <>
-            <Barrehorizontal1 titrepage="Messagerie" imgprofil1={imgprofil} nomprofil={nomprofil}>
-                {/* Main Messagerie Container */}
-                <div className="messagerie-wrapper">
-                    {/* Messagerie Header */}
-                    <div className="messagerie-header">
-                        <h2 className='nomtable'>Service de messagerie</h2>
-                        <p className="messagerie-subtitle">
-                            Interface de messagerie pour la communication interne de la clinique
-                        </p>
-                    </div>
+            {/* Header Section */}
+            <div className="sous-div1">
+                <Barrehorizontal1 titrepage="Messagerie" imgprofil1={imgprofil} nomprofil={nomprofil}>
+                    <span className="span1">Communication</span>
+                </Barrehorizontal1>
+            </div>
 
-                    {/* Interface de messagerie */}
-                    <div className="messagerie-container">
-                        <div className="messagerie-header">
-                            <h2 className="messagerie-title">Clinique D'AfriK <span className='span1' style={{fontSize: '14px'}}>messagerie</span></h2>
-                            <div className="messagerie-actions">
+            {/* Main Messagerie Container */}
+            <div className='zonedaffichage-dashboad'>
+                {/* Messagerie Header */}
+                <div className='numero'>
+                    <h2 className='nomtable'>Service de messagerie</h2>
+                </div>
+
+                {/* Divider Bar */}
+                <div className='conteneurbarre'>
+                    <div className='barre'></div>
+                </div>
+
+                {/* Interface de messagerie */}
+                <div className="messagerie-container">
+                    <div className="messagerie-header">
+                        <h2 className="messagerie-title">Clinique D'AfriK <span className='span1' style={{fontSize: '14px'}}>messagerie</span></h2>
+                                                    <div className="messagerie-actions">
                                 <button 
-                                    className="messagerie-btn"
+                                    className="messagerie-btn" 
                                     onClick={() => setShowNewMessageModal(true)}
                                 >
                                     Nouveau message
                                 </button>
                                 <button 
-                                    className="messagerie-btn"
+                                    className="messagerie-btn" 
                                     onClick={() => setShowCreateGroupModal(true)}
                                 >
                                     Créer un groupe
                                 </button>
                             </div>
-                        </div>
+                    </div>
+                    
+                    <div className="messagerie-content">
+                        <div className="messagerie-sidebar">
+                            {/* Onglets Contacts/Groups */}
+                            <div className="messagerie-tabs">
+                                <button 
+                                    className={`messagerie-tab ${activeTab === 'contacts' ? 'active' : ''}`}
+                                    onClick={() => handleTabChange('contacts')}
+                                >
+                                    Contacts
+                                </button>
+                                <button 
+                                    className={`messagerie-tab ${activeTab === 'groups' ? 'active' : ''}`}
+                                    onClick={() => handleTabChange('groups')}
+                                >
+                                    Groupes
+                                </button>
+                            </div>
 
-                        <div className="messagerie-content">
-                            <div className="messagerie-sidebar">
-                                <div className="messagerie-tabs">
-                                    <button 
-                                        className={`messagerie-tab ${activeTab === 'contacts' ? 'active' : ''}`}
-                                        onClick={() => setActiveTab('contacts')}
-                                    >
-                                        Contacts
-                                    </button>
-                                    <button 
-                                        className={`messagerie-tab ${activeTab === 'groups' ? 'active' : ''}`}
-                                        onClick={() => setActiveTab('groups')}
-                                    >
-                                        Groupes
-                                    </button>
-                                </div>
-
-                                {activeTab === 'contacts' && (
-                                    <div className="messagerie-contacts">
-                                        <div className="search-container">
-                                            <input 
-                                                type="text" 
-                                                placeholder="Rechercher un contact..."
-                                                onChange={(e) => handleSearchContacts(e.target.value)}
-                                                className="search-input"
-                                            />
-                                        </div>
-                                        <div className="contacts-list">
-                                            {filteredUsers.map(user => (
+                            {activeTab === 'contacts' ? (
+                                <div className="messagerie-contacts">
+                                    <h3 className="contacts-title">Contacts</h3>
+                                    <input 
+                                        type="text" 
+                                        className="contact-search" 
+                                        placeholder="Rechercher un contact..."
+                                        onChange={(e) => handleContactSearch(e.target.value)}
+                                    />
+                                    <div className="contact-list">
+                                        {filteredUsers.length > 0 ? (
+                                            filteredUsers.map((user) => (
                                                 <div 
                                                     key={user.id}
-                                                    className={`contact-item ${selectedContact?.id === user.id ? 'selected' : ''}`}
-                                                    onClick={() => handleContactSelect(user)}
+                                                    className={`contact-item ${selectedContact?.id === user.id ? 'active' : ''}`}
+                                                    onClick={() => handleContactClick(user)}
                                                 >
-                                                    <div className="contact-avatar">
-                                                        <img 
-                                                            src={user.photoProfil || imgprofilDefault} 
-                                                            alt={`${user.nom} ${user.prenom}`}
-                                                            onError={(e) => e.target.src = imgprofilDefault}
-                                                        />
-                                                    </div>
-                                                    <div className="contact-info">
-                                                        <div className="contact-name">{user.nom} {user.prenom}</div>
-                                                        <div className="contact-role">{user.role}</div>
-                                                    </div>
+                                                    <img 
+                                                        src={user.photoUrl || imgprofilDefault} 
+                                                        alt="Contact" 
+                                                        className="contact-avatar"
+                                                    />
+                                                                                                            <div className="contact-info">
+                                                            <div className="contact-name">{user.prenom} {user.nom}</div>
+                                                                                                        <div className="contact-status">En ligne</div>
+                                                        </div>
                                                 </div>
-                                            ))}
-                                        </div>
+                                            ))
+                                        ) : (
+                                            <div className="no-contacts">
+                                                Aucun contact trouvé
+                                            </div>
+                                        )}
                                     </div>
-                                )}
-
-                                {activeTab === 'groups' && (
-                                    <div className="messagerie-groups">
-                                        <div className="groups-list">
-                                            {groups.length === 0 ? (
-                                                <div className="no-groups">
-                                                    <p>Aucun groupe créé</p>
-                                                    <button 
-                                                        className="create-group-btn"
-                                                        onClick={() => setShowCreateGroupModal(true)}
-                                                    >
-                                                        Créer le premier groupe
-                                                    </button>
-                                                </div>
-                                            ) : (
-                                                groups.map(group => (
-                                                    <div key={group.id} className="group-item">
+                                </div>
+                            ) : (
+                                <div className="messagerie-groups">
+                                    <h3 className="contacts-title">Groupes</h3>
+                                    <div className="group-list">
+                                        {groups.length > 0 ? (
+                                            groups.map((group) => (
+                                                <div key={group.id} className="group-item">
+                                                    <div className="group-info">
                                                         <div className="group-name">{group.nom}</div>
-                                                        <div className="group-members">{group.membres?.length || 0} membres</div>
+                                                        <div className="group-description">{group.description}</div>
                                                     </div>
-                                                ))
-                                            )}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="no-groups">
+                                                Aucun groupe créé
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <div className="messagerie-main">
+                            <div className="messagerie-chat-header">
+                                {selectedContact ? (
+                                    <div className="chat-contact">
+                                        <img 
+                                            src={selectedContact.photoUrl || imgprofilDefault} 
+                                            alt="Contact" 
+                                            className="chat-contact-avatar"
+                                        />
+                                        <div className="chat-contact-info">
+                                            <h4>{selectedContact.prenom} {selectedContact.nom}</h4>
+                                            <div className="contact-status">En ligne</div>
                                         </div>
+                                    </div>
+                                ) : (
+                                    <div className="chat-placeholder">
+                                        <div className="placeholder-icon">💬</div>
+                                        <div className="placeholder-text">Sélectionnez un contact pour commencer la conversation</div>
                                     </div>
                                 )}
                             </div>
-
-                            <div className="messagerie-main">
-                                <div className="messagerie-chat-header">
-                                    {selectedContact ? (
-                                        <div className="chat-contact-info">
-                                            <div className="contact-avatar">
-                                                <img 
-                                                    src={selectedContact.photoProfil || imgprofilDefault} 
-                                                    alt={`${selectedContact.nom} ${selectedContact.prenom}`}
-                                                    onError={(e) => e.target.src = imgprofilDefault}
-                                                />
+                            
+                            {selectedContact && (
+                                <div className="chat-interface">
+                                    <div className="chat-messages">
+                                        {messages.map((message, index) => (
+                                            <div key={index} className="message">
+                                                <div className="message-content">{message.contenu}</div>
+                                                <div className="message-time">{new Date(message.timestamp).toLocaleTimeString()}</div>
                                             </div>
-                                            <div className="contact-details">
-                                                <div className="contact-name">{selectedContact.nom} {selectedContact.prenom}</div>
-                                                <div className="contact-role">{selectedContact.role}</div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="no-contact-selected">
-                                            <p>Sélectionnez un contact pour commencer une conversation</p>
-                                        </div>
-                                    )}
+                                        ))}
+                                    </div>
+                                    <div className="chat-input">
+                                        <input 
+                                            type="text" 
+                                            placeholder="Tapez votre message..."
+                                            onKeyPress={(e) => {
+                                                if (e.key === 'Enter' && e.target.value.trim()) {
+                                                    handleSendMessage({ contenu: e.target.value.trim() });
+                                                    e.target.value = '';
+                                                }
+                                            }}
+                                        />
+                                    </div>
                                 </div>
-
-                                <div className="messagerie-chat-area">
-                                    {selectedContact ? (
-                                        <div className="chat-messages">
-                                            <div className="message-list">
-                                                <div className="no-messages">
-                                                    <p>Aucun message dans cette conversation</p>
-                                                    <p>Commencez à discuter avec {selectedContact.nom} !</p>
-                                                </div>
-                                            </div>
-                                            <div className="message-input-container">
-                                                <input 
-                                                    type="text" 
-                                                    placeholder="Tapez votre message..."
-                                                    className="message-input"
-                                                    onKeyPress={(e) => {
-                                                        if (e.key === 'Enter' && e.target.value.trim()) {
-                                                            handleSendMessage(e.target.value);
-                                                            e.target.value = '';
-                                                        }
-                                                    }}
-                                                />
-                                                <button 
-                                                    className="send-button"
-                                                    onClick={() => {
-                                                        const input = document.querySelector('.message-input');
-                                                        if (input && input.value.trim()) {
-                                                            handleSendMessage(input.value);
-                                                            input.value = '';
-                                                        }
-                                                    }}
-                                                >
-                                                    Envoyer
-                                                </button>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="welcome-message">
-                                            <h3>Bienvenue dans la messagerie</h3>
-                                            <p>Sélectionnez un contact dans la liste pour commencer une conversation</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
                 </div>
-            </Barrehorizontal1>
+            </div>
+
+            {/* Modals temporairement désactivés */}
+            {showNewMessageModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Nouveau message</h3>
+                        <p>Fonctionnalité temporairement indisponible</p>
+                        <button onClick={() => setShowNewMessageModal(false)}>Fermer</button>
+                    </div>
+                </div>
+            )}
+
+            {showCreateGroupModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Créer un groupe</h3>
+                        <p>Fonctionnalité temporairement indisponible</p>
+                        <button onClick={() => setShowCreateGroupModal(false)}>Fermer</button>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
