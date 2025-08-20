@@ -14,7 +14,8 @@ const Barrehorizontal1Style = Styled.div`
 const DivStyle = Styled.div`
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
+    height: 70px;
 `
 const TitreStyle = Styled.h1`
     font-family: Roboto;
@@ -24,13 +25,21 @@ const TitreStyle = Styled.h1`
 `
 const NomDocStyle = Styled.p`
     font-family: "Roboto", sans-serif;
-    font-weight: 300;
-    font-size: 1em;
+    font-weight: 600;
+    font-size: 1.5em;
+    padding-right: 10px;
+    margin: 0;
+    white-space: nowrap;
+    color: rgba(102, 102, 102, 1);
+    display: flex;
+    align-items: center;
 `
 const Contenu = Styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    min-height: 80px;
+    padding: 10px 0;
 `
 const Chemin = Styled.div`
     font-family: "Roboto", sans-serif;
@@ -236,7 +245,7 @@ function Barrehorizontal1({titrepage, imgprofil1, nomprofil, children}){
                         onChangePassword={handlePasswordChange}
                         userId={userId}
                     />
-                    <NomDocStyle> {nomprofil} </NomDocStyle>
+                    <NomDocStyle> Dr. {nomprofil} </NomDocStyle>
                 </DivStyle> 
             </Contenu>
            <Chemin>

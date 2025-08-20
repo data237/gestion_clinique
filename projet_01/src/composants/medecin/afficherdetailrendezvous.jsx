@@ -385,7 +385,7 @@ const AfficherDetailRendezvous = () => {
               </FormGroup>
               <FormGroup>
                 <Label>Nom du médecin</Label>
-                <Input type="text" value={rendezvous.medecinNomComplet || ''} readOnly />
+                <Input type="text" value={rendezvous.medecinNomComplet ? `Dr. ${rendezvous.medecinNomComplet}` : ''} readOnly />
               </FormGroup>
             </FormRow>
 

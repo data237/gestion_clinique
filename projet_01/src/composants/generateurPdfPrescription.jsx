@@ -371,7 +371,7 @@ const PrescriptionPDF = ({ prescription }) => {
                         <Text style={styles.sectionTitle}>Médecin Prescripteur</Text>
                         <View style={styles.doctorInfo}>
                             <Text style={styles.doctorName}>
-                                {prescription.medecinNomComplet || 'Médecin'}
+                                {prescription.medecinNomComplet ? (prescription.medecinNomComplet.startsWith('Dr.') ? prescription.medecinNomComplet : `Dr. ${prescription.medecinNomComplet}`) : 'Dr. Médecin'}
                             </Text>
                             <Text style={styles.doctorBadge}>
                                 {prescription.serviceMedical || 'Médecin'}

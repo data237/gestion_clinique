@@ -1,4 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jersey+10&display=swap');
+
+/* Reset CSS pour la compatibilité cross-browser */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  background-color: var(--secondaire-applat);
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
 :root{
   --secondaire-applat: rgba(254, 255, 239, 1);
   --primaire-applat: rgba(239, 239, 255, 1);
@@ -12,8 +29,10 @@
 
 .image-container {
   width: 55%;
+  min-width: 55%;
   height: 100vh;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .img_cli_acc{
@@ -24,13 +43,21 @@
 
 .accueil{
   display: flex;
-  width: 100%;
+  width: 100vw;
+  min-width: 100vw;
+  max-width: 100vw;
   font-family: "Inter", sans-serif;
   min-height: 100vh;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: var(--secondaire-applat);
 }
 
 .formulaire{
   width: 45%;
+  min-width: 45%;
   background-color: var(--secondaire-applat);
   height: 100vh;
   display: flex;
@@ -41,7 +68,8 @@
   padding: 20px;
   position: relative;
   overflow-y: auto;
-
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .text{
@@ -339,24 +367,37 @@
 @media (max-width: 1024px) {
   .accueil {
     flex-direction: column;
+    width: 100vw;
+    min-width: 100vw;
   }
   
   .image-container {
     width: 100%;
+    min-width: 100%;
     height: 40vh;
+    flex-shrink: 0;
   }
   
   .formulaire {
     width: 100%;
+    min-width: 100%;
     height: 60vh;
     gap: 10%;
+    flex-shrink: 0;
   }
 }
 
 @media (max-width: 768px) {
+  .accueil {
+    width: 100vw;
+    min-width: 100vw;
+  }
+  
   .formulaire {
     padding: 15px;
     gap: 8%;
+    width: 100%;
+    min-width: 100%;
   }
   
   .text {
@@ -385,9 +426,16 @@
 }
 
 @media (max-width: 480px) {
+  .accueil {
+    width: 100vw;
+    min-width: 100vw;
+  }
+  
   .formulaire {
     padding: 10px;
     gap: 6%;
+    width: 100%;
+    min-width: 100%;
   }
   
   .text {
@@ -407,12 +455,12 @@
     font-size: 1em;
   }
   
-    .password-strength {
-     flex-direction: column;
-     align-items: flex-start;
-     gap: 5px;
-   }
- }
+  .password-strength {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+}
 
 /* Popup Styles */
 .popup-overlay {
@@ -592,5 +640,34 @@
   }
   to {
     opacity: 1;
+  }
+}
+
+@supports not (width: 100vw) {
+  .accueil {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  .accueil {
+    width: 100%;
+    min-width: 100%;
+  }
+}
+
+@-moz-document url-prefix() {
+  .accueil {
+    width: 100%;
+    min-width: 100%;
+  }
+}
+
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (max-color-index: 256) {
+  .accueil {
+    width: 100%;
+    min-width: 100%;
   }
 }

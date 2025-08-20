@@ -220,7 +220,7 @@ const AfficherDetailRendezVous = () => {
                 <Input 
                   id="medecin" 
                   name="medecin" 
-                  value={rendezvous.medecinNomComplet || 'Non assigné'} 
+                  value={rendezvous.medecinNomComplet ? `Dr. ${rendezvous.medecinNomComplet}` : 'Non assigné'} 
                   readOnly 
                 />
               </FormGroup>

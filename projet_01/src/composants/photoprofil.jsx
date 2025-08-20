@@ -7,15 +7,20 @@ const ProfileContainer = Styled.div`
 `;
 
 const ImgprofilStyle = Styled.img`
-    width: 60px;
-    height: 60px;
-    border-radius: 55.31px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    border: 2px solid #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
   &:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-color: #4141ff;
   }
 `;
 

@@ -3,7 +3,7 @@ import { API_BASE } from '../../composants/config/apiconfig';
 import axiosInstance from '../config/axiosConfig';
 import Styled from 'styled-components';
 import fondImage from '../../assets/backgroundimageuserform.jpg';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Barrehorizontal1 from '../../composants/barrehorizontal1';
 import imgprofil from '../../assets/photoDoc.png'
 import FormulairePrescription from './formulaireprescription';
@@ -11,7 +11,6 @@ import '../../styles/add-buttons.css'
 import { useConfirmation } from '../ConfirmationProvider';
 import { PDFDownloadLink, pdf } from '@react-pdf/renderer';
 import PrescriptionPDF from '../generateurPdfPrescription';
-
 
 const FormContainer = Styled.div`
   position: relative;
@@ -23,14 +22,14 @@ const FormContainer = Styled.div`
   border: 1px solid rgba(217, 217, 217, 1);
   
   &::before {
-    message: '';
+    content: '';
     position: absolute;
     inset: 0;
     background-image: url(${fondImage});
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    opacity: 0.1; /* ⬅️ Réduit l’opacité de l’image seulement */
+    opacity: 0.1;
     z-index: 0;
   }
 
@@ -39,21 +38,23 @@ const FormContainer = Styled.div`
     z-index: 1;
   }
 `;
+
 const SousDiv1Style = Styled.div`
  width: 99%;
- 
-`
-const Span2 = Styled.span`
-    
-`
+`;
+
+const Span2 = Styled.span``;
+
 const Span1 = Styled.span`
     cursor: pointer;
-`
+`;
+
 const Afficheformulaireadd = Styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
 `;
+
 const Title = Styled.h2`
   margin-bottom: 0px;
   font-size: 24px;
@@ -63,15 +64,37 @@ const Title = Styled.h2`
   font-family: Roboto;
 `;
 
+const UrgencyTitle = Styled.h1`
+  margin-bottom: 20px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #dc2626;
+  text-align: center;
+  font-family: Roboto;
+`;
+
+const UrgencyBadge = Styled.div`
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+`;
+
 const TraitHorizontal = Styled.div`
   width: 718px;
   height: 5px;
   angle: 0 deg;
   opacity: 1;
   border-radius: 2.5px;
-  background-color: rgba(159, 159, 255, 1);
+  background-color: rgba(220, 38, 38, 1);
   margin-bottom: 20px;
-`
+`;
+
 const TraitHorizontal2 = Styled.div`
   width: 718px;
   height: 5px;
@@ -80,7 +103,8 @@ const TraitHorizontal2 = Styled.div`
   border-radius: 2.5px;
   background-color: rgba(217, 217, 217, 1);
   margin-bottom: 20px;
-`
+`;
+
 const FormRow = Styled.div`
   display: flex;
   gap: 10px;
@@ -97,7 +121,8 @@ const Form = Styled.form`
   margin: 0;
   padding-left:0;
   width: 766px;
-`
+`;
+
 const Label = Styled.label`
   font-size: 14px;
   margin-bottom: 5px;
@@ -118,16 +143,15 @@ const Input = Styled.input`
   font-family: 'Inter', sans-serif;
   
   &:focus{
-    border: 1px solid #667eea;
+    border: 1px solid #dc2626;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
   }
   
   &::placeholder {
     color: #9ca3af;
   }
   
-  /* Masquer les flèches pour les champs numériques */
   &[type="number"]::-webkit-outer-spin-button,
   &[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -151,9 +175,9 @@ const Select = Styled.select`
   font-family: 'Inter', sans-serif;
   
   &:focus {
-    border: 1px solid #667eea;
+    border: 1px solid #dc2626;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
   }
 `;
 
@@ -171,9 +195,9 @@ const TextArea = Styled.textarea`
   min-height: 44px;
   
   &:focus{
-    border: 1px solid #667eea;
+    border: 1px solid #dc2626;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
   }
   
   &::placeholder {
@@ -187,27 +211,6 @@ const ButtonRow = Styled.div`
   gap: 10px;
   padding: 32px;
 `;
-
-//gestion popup
-const Popupsuppr = Styled.div`
-
-    display: ${props => props.$Popupsupprdisplay};
-    position: fixed;
-    top: 20%;
-    left: 40%;
-    z-index: 10000;
-   
-`
-const Overlay = Styled.div`
-  display: ${props => props.$Overlaydisplay};
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0,0,0,0.8);
-  z-index: 998;
-`
 
 // Composant Modal pour afficher les informations de la consultation créée
 const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescriptionData, onGeneratePDF, isLoading, autoGeneratePDF, setAutoGeneratePDF }) => {
@@ -252,12 +255,12 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
         }}>
           <h3 style={{
             margin: 0,
-            color: '#333333',
+            color: '#dc2626',
             fontSize: '20px',
             fontWeight: '600',
             fontFamily: 'Inter, sans-serif'
           }}>
-            ✅ Consultation créée avec succès !
+            🚨 Consultation d'urgence créée avec succès !
           </h3>
           <button
             onClick={onClose}
@@ -281,14 +284,53 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
         </div>
 
         <div style={{ padding: '24px' }}>
+          {/* Message de paiement */}
           <div style={{
-            backgroundColor: '#f0f9ff',
+            backgroundColor: '#fef3c7',
             padding: '16px',
             borderRadius: '8px',
             marginBottom: '20px',
-            border: '1px solid #0ea5e9'
+            border: '1px solid #f59e0b',
+            textAlign: 'center'
           }}>
-            <h4 style={{ margin: '0 0 12px 0', color: '#0c4a6e', fontSize: '1.3rem' }}>Informations de la consultation</h4>
+            <h4 style={{ 
+              margin: '0 0 12px 0', 
+              color: '#92400e', 
+              fontSize: '1.3rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px'
+            }}>
+              💰 Paiement de la consultation
+            </h4>
+            <p style={{
+              margin: 0,
+              color: '#92400e',
+              fontSize: '16px',
+              fontWeight: '500',
+              fontFamily: 'Inter, sans-serif'
+            }}>
+              <strong>Important :</strong> Veuillez vous diriger vers la secrétaire pour régler le paiement de cette consultation d'urgence.
+            </p>
+            <p style={{
+              margin: '8px 0 0 0',
+              color: '#92400e',
+              fontSize: '14px',
+              fontFamily: 'Inter, sans-serif'
+            }}>
+              Une facture a été automatiquement générée pour cette consultation.
+            </p>
+          </div>
+
+          <div style={{
+            backgroundColor: '#fef2f2',
+            padding: '16px',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            border: '1px solid #dc2626'
+          }}>
+            <h4 style={{ margin: '0 0 12px 0', color: '#991b1b', fontSize: '1.3rem' }}>Informations de la consultation d'urgence</h4>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '14px' }}>
               <div><strong>Date:</strong> {new Date(consultationData.creationDate).toLocaleDateString('fr-FR', {
                 year: 'numeric',
@@ -335,9 +377,9 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
             onClick={onGeneratePDF}
             disabled={isLoading || !prescriptionData}
             style={{
-              backgroundColor: prescriptionData ? 'rgba(65, 65, 255, 1)' : '#ccc',
+              backgroundColor: prescriptionData ? '#dc2626' : '#ccc',
               color: 'white',
-              border: '1px solid rgba(65, 65, 255, 1)',
+              border: '1px solid #dc2626',
               padding: '16px 24px',
               borderRadius: '8px',
               fontSize: '16px',
@@ -349,20 +391,20 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
             }}
             onMouseEnter={(e) => {
               if (prescriptionData && !isLoading) {
-                e.target.style.backgroundColor = 'rgba(45, 45, 235, 1)';
+                e.target.style.backgroundColor = '#b91c1c';
                 e.target.style.transform = 'translateY(-1px)';
                 e.target.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
               }
             }}
             onMouseLeave={(e) => {
               if (prescriptionData && !isLoading) {
-                e.target.style.backgroundColor = 'rgba(65, 65, 255, 1)';
+                e.target.style.backgroundColor = '#dc2626';
                 e.target.style.transform = 'translateY(0)';
                 e.target.style.boxShadow = 'none';
               }
             }}
           >
-                        {isLoading ? '⏳ Génération en cours...' : '📄 Générer le PDF de la prescription'}
+            {isLoading ? '⏳ Génération en cours...' : '📄 Générer le PDF de la prescription'}
           </button>
 
           <div style={{
@@ -430,15 +472,12 @@ const ConsultationSuccessModal = ({ isOpen, onClose, consultationData, prescript
   );
 };
 
-const FormulaireConsultation = () => {
+const FormulaireConsultationUrgence = () => {
   const { showConfirmation } = useConfirmation();
+  const navigate = useNavigate();
 
   const idUser = localStorage.getItem('id');
-  const [nomprofil, setnomprofil] = useState('')
-  // const [idprescription, setidprescription] = useState(null)
-  //const [Popup, setPopup] = useState(false)
-  const idrendezvous = useParams()
-  const idrdv = parseInt(idrendezvous.idrendezvous)
+  const [nomprofil, setnomprofil] = useState('');
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -451,34 +490,12 @@ const FormulaireConsultation = () => {
         }
       } catch (error) {
         console.error('Erreur lors de la récupération des utilisateurs:', error);
-
       } finally {
         console.log('fin')
       }
     }
     nomutilisateur()
   }, [idUser]);
-
-  // Récupérer les informations du rendez-vous pour obtenir le service médical
-  useEffect(() => {
-    const fetchRendezVousInfo = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axiosInstance.get(`/rendez-vous/${idrdv}`);
-        
-        if (response.data && response.data.serviceMedical) {
-          setServiceMedical(response.data.serviceMedical.nom || response.data.serviceMedical);
-        }
-      } catch (error) {
-        console.error('Erreur lors de la récupération des informations du rendez-vous:', error);
-      }
-    };
-
-    if (idrdv) {
-      fetchRendezVousInfo();
-    }
-  }, [idrdv]);
-
 
   const [formData, setFormData] = useState({
     motifs: "",
@@ -488,7 +505,7 @@ const FormulaireConsultation = () => {
     taille: 0.1,
     compteRendu: "",
     diagnostic: "",
-    rendezVousId: idrdv,
+    // Pas de rendezVousId pour les consultations d'urgence
     prescriptions: [
       {
         typePrescription: "",
@@ -500,17 +517,12 @@ const FormulaireConsultation = () => {
     ]
   });
 
-  // État pour stocker le service médical
-  const [serviceMedical, setServiceMedical] = useState("");
-
   // États pour le popup de confirmation
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [consultationData, setConsultationData] = useState(null);
   const [prescriptionData, setPrescriptionData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [autoGeneratePDF, setAutoGeneratePDF] = useState(true); // Option pour génération automatique
-
-
+  const [autoGeneratePDF, setAutoGeneratePDF] = useState(true);
 
   const handleChange = e => {
     e.preventDefault();
@@ -591,13 +603,9 @@ const FormulaireConsultation = () => {
     }));
   };
 
-
-  const token = localStorage.getItem('token');
-
   // Fonction pour récupérer les données de la consultation créée
   const fetchConsultationData = async (consultationId) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axiosInstance.get(`/consultations/${consultationId}`);
 
       if (response.status === 200) {
@@ -613,7 +621,6 @@ const FormulaireConsultation = () => {
   // Fonction pour récupérer les données de prescription
   const fetchPrescriptionData = async (consultationId) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axiosInstance.get(`/prescriptions/consultation/${consultationId}`);
 
       if (response.status === 200 && response.data.length > 0) {
@@ -624,25 +631,19 @@ const FormulaireConsultation = () => {
     }
   };
 
-    // Fonction pour générer le PDF de la prescription
+  // Fonction pour générer le PDF de la prescription
   const generatePrescriptionPDF = async () => {
     if (!prescriptionData) return;
     
     setIsLoading(true);
     try {
-      // Créer les données complètes pour le PDF en combinant consultation et prescription
       const pdfData = {
         ...prescriptionData,
-        // Ajouter les informations de consultation si disponibles
         consultationDescription: consultationData?.compteRendu || consultationData?.diagnostic || '',
-        // Ajouter les informations du médecin depuis le profil
         medecinNomComplet: `Dr. ${nomprofil}` || 'Dr. Médecin',
-        // Ajouter les informations du patient depuis la consultation
-        patientNomComplet: consultationData?.patientNomComplet || 'Patient',
-        // Ajouter la date de la consultation
+        patientNomComplet: consultationData?.patientNomComplet || 'saisir :',
         dateConsultation: consultationData?.dateCreation || new Date().toLocaleDateString('fr-FR'),
-        // Ajouter le service médical depuis le localStorage
-        serviceMedical: localStorage.getItem('serviceMedical') || '—'
+        serviceMedical: localStorage.getItem('serviceMedical') || 'Urgence'
       };
       
       // Générer le PDF côté client
@@ -652,17 +653,14 @@ const FormulaireConsultation = () => {
       const url = window.URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `prescription_${prescriptionData.id || 'consultation'}.pdf`;
+      link.download = `prescription_urgence_${prescriptionData.id || 'consultation'}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
       
-      // Vider le service médical du localStorage après la génération
-      localStorage.removeItem('serviceMedical');
-      
       if (window.showNotification) {
-        window.showNotification('PDF de prescription généré avec succès !', 'success');
+        window.showNotification('PDF de prescription d\'urgence généré avec succès !', 'success');
       }
     } catch (error) {
       console.error('Erreur lors de la génération du PDF:', error);
@@ -685,9 +683,6 @@ const FormulaireConsultation = () => {
       } catch (error) {
         console.log('Génération automatique du PDF terminée');
       }
-    } else {
-      // Si pas de génération automatique, vider quand même le localStorage
-      localStorage.removeItem('serviceMedical');
     }
     
     // Rediriger vers la liste des rendez-vous
@@ -791,15 +786,13 @@ const FormulaireConsultation = () => {
 
     // Confirmation avant création
     showConfirmation({
-      title: 'Créer la consultation',
-      message: 'Êtes-vous sûr de vouloir créer cette consultation ? Cette action ne peut pas être annulée.',
+      title: 'Créer la consultation d\'urgence',
+      message: 'Êtes-vous sûr de vouloir créer cette consultation d\'urgence ? Cette action ne peut pas être annulée.',
       confirmText: 'Créer',
       cancelText: 'Annuler',
-      variant: 'info',
+      variant: 'warning',
       onConfirm: async () => {
         try {
-          const token = localStorage.getItem('token');
-
           // Créer un objet avec les données validées
           const validatedData = {
             ...formData,
@@ -808,16 +801,12 @@ const FormulaireConsultation = () => {
             taille: taille
           };
 
-          const response = await axiosInstance.post(`/consultations/start/${idrdv}`, validatedData);
+          // Utiliser l'endpoint d'urgence
+          const response = await axiosInstance.post(`/consultations/emergency`, validatedData);
 
           if (response.status === 200 || response.status === 201) {
             if (window.showNotification) {
-              window.showNotification('Consultation créée avec succès !', 'success');
-            }
-
-            // Stocker le service médical dans le localStorage pour la prescription
-            if (serviceMedical) {
-              localStorage.setItem('serviceMedical', serviceMedical);
+              window.showNotification('Consultation d\'urgence créée avec succès !', 'success');
             }
 
             // Récupérer l'ID de la consultation créée depuis la réponse
@@ -834,10 +823,10 @@ const FormulaireConsultation = () => {
             }
           }
         } catch (error) {
-          console.error('Erreur lors de la création de la consultation:', error);
+          console.error('Erreur lors de la création de la consultation d\'urgence:', error);
           if (window.showNotification) {
             window.showNotification(
-              error.response?.data?.message || 'Erreur lors de la création de la consultation',
+              error.response?.data?.message || 'Erreur lors de la création de la consultation d\'urgence',
               'error'
             );
           }
@@ -845,14 +834,6 @@ const FormulaireConsultation = () => {
       }
     });
   };
-
-
-  /* const handleChange = e => {
-      const { name, value } = e.target;
-      setFormData(prev => ({ ...prev, [name]: value }));
-    };*/
-
-  let navigate = useNavigate();
 
   const handleClick = () => {
     // Vérifier s'il y a des données saisies
@@ -874,7 +855,7 @@ const FormulaireConsultation = () => {
         variant: 'warning',
         onConfirm: () => {
           if (window.showNotification) {
-            window.showNotification('Création de consultation annulée', 'info');
+            window.showNotification('Création de consultation d\'urgence annulée', 'info');
           }
           // Redirige vers la liste des rendez-vous
           navigate("/medecin/rendezvous");
@@ -888,49 +869,46 @@ const FormulaireConsultation = () => {
       navigate("/medecin/rendezvous");
     }
   };
+
   return (
-
     <>
-
-      {/*<Overlay onClick={() => setPopup(false)} $Overlaydisplay = { Popup ? 'block' : 'none'}/>
-            <Popupsuppr $Popupsupprdisplay = {Popup ? 'block' : 'none'}>
-                {<FormulairePrescription id={idprescription}/>}                
-            </Popupsuppr>*/}
       <SousDiv1Style>
-        <Barrehorizontal1 titrepage="Gestion des patients" imgprofil1={imgprofil} nomprofil={nomprofil}>
+        <Barrehorizontal1 titrepage="Consultation d'urgence" imgprofil1={imgprofil} nomprofil={nomprofil}>
           <Span1 onClick={handleClick}>Liste des rendez vous</Span1>
-          <Span2 > {">"} Créer une consultation </Span2>
+          <Span2 > {">"} Consultation d'urgence </Span2>
         </Barrehorizontal1>
       </SousDiv1Style>
+      
       <Afficheformulaireadd>
         <Form onSubmit={handleSubmit}>
           <FormContainer>
-            <Title>Créer une consultation</Title>
+            <UrgencyTitle>🚨 Consultation d'Urgence</UrgencyTitle>
+            <UrgencyBadge>⚠️ Cette consultation n'est pas liée à un rendez-vous</UrgencyBadge>
             <TraitHorizontal></TraitHorizontal>
 
             <div style={{
-              backgroundColor: '#f3f4f6',
+              backgroundColor: '#fef2f2',
               padding: '16px',
               borderRadius: '8px',
               marginBottom: '20px',
-              border: '1px solid #e5e7eb'
+              border: '1px solid #fecaca'
             }}>
               <p style={{
                 margin: 0,
-                color: '#374151',
+                color: '#991b1b',
                 fontSize: '14px',
                 fontFamily: 'Inter, sans-serif'
               }}>
+                <strong>⚠️ Consultation d'urgence :</strong> Cette consultation est créée pour des cas d'urgence 
+                non programmés. Assurez-vous de remplir tous les champs obligatoires.
+                <br />
                 <strong>Note :</strong> Les champs marqués d'un * sont obligatoires.
-                Assurez-vous de remplir au minimum les motifs de consultation et le diagnostic.
                 <br />
                 <strong>Unités :</strong> Taille en cm, Poids en kg, Température en °C.
               </p>
             </div>
 
-
             <FormRow>
-
               <FormGroup>
                 <Label htmlFor="taille">Taille * (en cm)</Label>
                 <Input
@@ -970,12 +948,7 @@ const FormulaireConsultation = () => {
                   </small>
                 )}
               </FormGroup>
-
-
-
-
             </FormRow>
-
 
             <FormRow>
               <FormGroup>
@@ -997,6 +970,7 @@ const FormulaireConsultation = () => {
                   </small>
                 )}
               </FormGroup>
+              
               <FormGroup>
                 <Label htmlFor="tensionArterielle">Tension Arterielle</Label>
                 <TextArea
@@ -1008,8 +982,8 @@ const FormulaireConsultation = () => {
                 />
               </FormGroup>
             </FormRow>
+            
             <FormRow>
-
               <FormGroup>
                 <Label htmlFor="motifs">Motifs *</Label>
                 <TextArea
@@ -1048,6 +1022,7 @@ const FormulaireConsultation = () => {
                 )}
               </FormGroup>
             </FormRow>
+            
             <FormGroup>
               <Label htmlFor="compteRendu">Compte rendu</Label>
               <TextArea
@@ -1125,12 +1100,13 @@ const FormulaireConsultation = () => {
               />
             </FormGroup>
           </FormContainer>
+          
           <ButtonRow>
             <button type="button" className='cancel-button' onClick={handleClick}>
               Annuler
             </button>
             <button type="submit" className='submit-button' primary>
-              Créer la consultation
+              🚨 Créer la consultation d'urgence
             </button>
           </ButtonRow>
         </Form>
@@ -1155,19 +1131,19 @@ const FormulaireConsultation = () => {
             }
           `}</style>
 
-                {/* Modal de succès pour afficher les informations de la consultation */}
-          <ConsultationSuccessModal
-            isOpen={showSuccessPopup}
-            onClose={handleCloseSuccessPopup}
-            consultationData={consultationData}
-            prescriptionData={prescriptionData}
-            onGeneratePDF={generatePrescriptionPDF}
-            isLoading={isLoading}
-            autoGeneratePDF={autoGeneratePDF}
-            setAutoGeneratePDF={setAutoGeneratePDF}
-          />
+      {/* Modal de succès pour afficher les informations de la consultation */}
+      <ConsultationSuccessModal
+        isOpen={showSuccessPopup}
+        onClose={handleCloseSuccessPopup}
+        consultationData={consultationData}
+        prescriptionData={prescriptionData}
+        onGeneratePDF={generatePrescriptionPDF}
+        isLoading={isLoading}
+        autoGeneratePDF={autoGeneratePDF}
+        setAutoGeneratePDF={setAutoGeneratePDF}
+      />
     </>
   );
 };
 
-export default FormulaireConsultation;
+export default FormulaireConsultationUrgence;

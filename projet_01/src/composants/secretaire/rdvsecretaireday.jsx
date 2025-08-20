@@ -544,7 +544,7 @@ function RendezvousScretaireToday() {
                                     <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.heure}</td>
                                     <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.serviceMedical}</td>
                                     <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.patientNomComplet ? rendezvous.patientNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ') : ''}</td>
-                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.medecinNomComplet ? rendezvous.medecinNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ') : ''}</td>
+                                    <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.medecinNomComplet ? `Dr. ${rendezvous.medecinNomComplet.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()).join(' ')}` : ''}</td>
                                     <td onClick={() => { handleRowClick(rendezvous) }} className='td'>{rendezvous.nomSalle}</td>
                                     <td onClick={() => { handleRowClick(rendezvous) }} className='td'>
                                         {rendezvous.statut}

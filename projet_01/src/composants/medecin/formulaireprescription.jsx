@@ -190,7 +190,7 @@ const FormulairePrescription = ({ id }) => {
                 <FormRow>
                       <FormGroup>
                         <Label htmlFor="nommedecin">Nom medecin</Label>
-                        <Input id="nommedecin" name="medecinNomComplet" value={prescription.medecinNomComplet} readOnly />
+                        <Input id="nommedecin" name="medecinNomComplet" value={prescription.medecinNomComplet ? (prescription.medecinNomComplet.startsWith('Dr.') ? prescription.medecinNomComplet : `Dr. ${prescription.medecinNomComplet}`) : 'Dr. Médecin'} readOnly />
                       </FormGroup>
                       <FormGroup>
                         <Label htmlFor="nompatient">Nom patient</Label>
