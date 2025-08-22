@@ -46,6 +46,8 @@ function PageSecretaire(){
             setContenuActif('calendrier');
         } else if (routeSegment === 'facture') {
             setContenuActif('facture');
+        } else if (routeSegment === 'messagerie') {
+            setContenuActif('messagerie');
         } else {
             setContenuActif('rendez-vous');
         }
@@ -63,8 +65,7 @@ function PageSecretaire(){
             <Link to="/secretaire/patient" className={contenuActif === 'patient' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('patient')}}><Eltmenu nommenu='Patients' img={imgpatient} active={contenuActif === 'patient'} /></Link>
             <Link to="/secretaire/calendrier" className={contenuActif === 'calendrier' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('calendrier')}}><Eltmenu nommenu='Calendrier' img={imgcalendrier} active={contenuActif === 'calendrier'} /></Link>
             <Link to="/secretaire/facture" className={contenuActif === 'facture' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('facture')}}><Eltmenu nommenu='Facture' img={imgcalendrier} active={contenuActif === 'facture'} /></Link>
-
-
+            <Link to="/secretaire/messagerie" className={contenuActif === 'messagerie' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('messagerie')}}><Eltmenu nommenu='Messagerie' img={iconEnvelope} active={contenuActif === 'messagerie'} /></Link>
         </Barrelatteral>
          <div className='divstyle'>
             <Outlet/>   

@@ -5,7 +5,6 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  background-color: var(--secondaire-applat);
 }
 
 html, body {
@@ -52,7 +51,6 @@ html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  background-color: var(--secondaire-applat);
 }
 
 .formulaire{

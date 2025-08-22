@@ -227,21 +227,18 @@ const AfficherDetailRendezvous = () => {
     nomutilisateur()
   }, [idUser]);
   
-  // Fonction pour vérifier si le rendez-vous est dans le futur
-  const isRendezvousFutur = () => {
-    if (!rendezvous || !rendezvous.jour) return false;
+  // Fonction pour vérifier si le rendez-vous est dans le passé
+  const isRendezvousPasse = () => {
+    if (!rendezvous || !rendezvous.jour || !rendezvous.heure) return false;
     
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Réinitialiser l'heure à 00:00:00
+    const now = new Date();
+    const rdvDateTime = new Date(`${rendezvous.jour}T${rendezvous.heure}`);
     
-    const rdvDate = new Date(rendezvous.jour);
-    rdvDate.setHours(0, 0, 0, 0); // Réinitialiser l'heure à 00:00:00
-    
-    return rdvDate > today;
+    return rdvDateTime < now;
   };
   
-  // Fonction pour vérifier si le rendez-vous est aujourd'hui mais dans le futur
-  const isRendezvousAujourdhuiFutur = () => {
+  // Fonction pour vérifier si le rendez-vous est aujourd'hui mais dans le passé
+  const isRendezvousAujourdhuiPasse = () => {
     if (!rendezvous || !rendezvous.jour || !rendezvous.heure) return false;
     
     const today = new Date();
@@ -252,7 +249,7 @@ const AfficherDetailRendezvous = () => {
     const now = new Date();
     const rdvTime = new Date(`${rendezvous.jour}T${rendezvous.heure}`);
     
-    return rdvTime > now;
+    return rdvTime < now;
   };
   
   // État pour suivre si le bouton a été cliqué et doit être désactivé
@@ -260,7 +257,7 @@ const AfficherDetailRendezvous = () => {
   
   // Fonction pour vérifier si le bouton consultation doit être désactivé
   const isConsultationDisabled = () => {
-    return buttonClicked && (isRendezvousFutur() || isRendezvousAujourdhuiFutur());
+    return isRendezvousPasse() || isRendezvousAujourdhuiPasse();
   };
 
 
@@ -298,21 +295,19 @@ const AfficherDetailRendezvous = () => {
   const handleConsultations = () => {
     if (!rendezvous) return;
 
-    // Vérifier si le rendez-vous est dans le futur
-    if (isRendezvousFutur()) {
+    // Vérifier si le rendez-vous est dans le passé
+    if (isRendezvousPasse()) {
       if (window.showNotification) {
-        window.showNotification("Consultation disponible à la date du rendez-vous. Veuillez s'il vous plaît contacter une secrétaire pour modifier la date du rendez-vous.", "warning");
+        window.showNotification("La date du rendez-vous est passée. Veuillez contacter une secrétaire pour actualiser la date.", "warning");
       }
-      setButtonClicked(true); // Désactiver le bouton après le clic
       return;
     }
 
-    // Vérifier si le rendez-vous est aujourd'hui mais dans le futur
-    if (isRendezvousAujourdhuiFutur()) {
+    // Vérifier si le rendez-vous est aujourd'hui mais dans le passé
+    if (isRendezvousAujourdhuiPasse()) {
       if (window.showNotification) {
-        window.showNotification("Le rendez-vous n'a pas encore commencé. Veuillez attendre l'heure du rendez-vous.", "warning");
+        window.showNotification("L'heure du rendez-vous est passée. Veuillez contacter une secrétaire pour actualiser la date.", "warning");
       }
-      setButtonClicked(true); // Désactiver le bouton après le clic
       return;
     }
 
@@ -405,22 +400,9 @@ const AfficherDetailRendezvous = () => {
                 Retour
               </ReturnButton>
               {isConsultationDisabled() ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <DisabledButton disabled>
-                    Créer une consultation
-                  </DisabledButton>
-                  <small style={{ 
-                    color: '#666', 
-                    fontSize: '12px', 
-                    textAlign: 'center',
-                    fontStyle: 'italic'
-                  }}>
-                    {isRendezvousFutur() 
-                      ? "Contactez une secrétaire pour modifier la date" 
-                      : "Attendez l'heure du rendez-vous"
-                    }
-                  </small>
-                </div>
+                <DisabledButton disabled>
+                  Créer une consultation
+                </DisabledButton>
               ) : (
                 <PrimaryButton onClick={handleConsultations}>
                   Créer une consultation
@@ -430,6 +412,30 @@ const AfficherDetailRendezvous = () => {
                 Voir le dossier médical
               </SecondaryButton>
             </ButtonContainer>
+            
+            {/* Message d'erreur en bas du formulaire */}
+            {isConsultationDisabled() && (
+              <div style={{ 
+                marginTop: '20px',
+                padding: '15px',
+                backgroundColor: '#ffebee',
+                border: '1px solid #f44336',
+                borderRadius: '8px',
+                textAlign: 'center'
+              }}>
+                <p style={{ 
+                  color: '#d32f2f', 
+                  fontSize: '14px', 
+                  fontWeight: '500',
+                  margin: '0'
+                }}>
+                  {isRendezvousPasse() 
+                    ? "⚠️ La date du rendez-vous est passée. Veuillez contacter une secrétaire pour actualiser la date." 
+                    : "⚠️ L'heure du rendez-vous est passée. Veuillez contacter une secrétaire pour actualiser la date."
+                  }
+                </p>
+              </div>
+            )}
           </Form>
         </FormContainer>
       </Affichedetailuser>

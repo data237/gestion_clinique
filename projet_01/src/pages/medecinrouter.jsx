@@ -8,6 +8,7 @@ import FormulaireConsultation from "../composants/medecin/formulaireconsultation
 import FormulaireConsultationUrgence from "../composants/medecin/formulaireconsultationurgence";
 import DossierMedical from "../composants/medecin/dossiermedical";
 import AfficherDetailRendezvous from "../composants/medecin/afficherdetailrendezvous";
+import MessagerieMedecin from "../composants/medecin/messagerie";
 
 const Medecinroute = () => {
     return (
@@ -28,6 +29,9 @@ const Medecinroute = () => {
 
                 {/* Route consultation d'urgence */}
                 <Route path="consultation/urgence" element={<FormulaireConsultationUrgence />} />
+
+                {/* Route messagerie */}
+                <Route path="messagerie" element={<MessagerieMedecin />} />
 
                 {/* Redirection par défaut */}
                 <Route path="*" element={<Navigate to="rendezvous" replace />} />

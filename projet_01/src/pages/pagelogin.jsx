@@ -101,39 +101,28 @@ function PageLogin() {
         localStorage.removeItem('rememberedEmail');
       }
 
-      // FONCTIONNALITÉ OPTIONNELLE : Annuler les vieux rendez-vous
-      // Cette fonctionnalité est optionnelle et ne doit pas bloquer la connexion
-      // Attendre un peu pour s'assurer que le token est bien enregistré
+
       try {
         setTimeout(async () => {
           try {
             // Vérifier que le token est bien présent
             const token = localStorage.getItem('token');
             if (token) {
-              // Vérifier d'abord si l'utilisateur a les droits pour cette action
-              const userRole = localStorage.getItem('user');
-              if (userRole === 'ROLE_ADMIN' || userRole === 'ROLE_SECRETAIRE') {
-                try {
-                  // Essayer d'annuler les vieux rendez-vous, mais ne pas bloquer si ça échoue
-                  await axiosInstance.post(`/rendezvous/cancel-old`);
-                  console.log('Vieux rendez-vous annulés avec succès');
-                } catch (cancelError) {
-                  // Gérer les différents types d'erreurs de manière non-bloquante
-                  if (cancelError.response?.status === 403) {
-                    console.warn('Droits insuffisants pour annuler les vieux rendez-vous ou endpoint non disponible');
-                  } else if (cancelError.response?.status === 404) {
-                    console.warn('Endpoint pour annuler les vieux rendez-vous non disponible sur le backend');
-                  } else if (cancelError.response?.status === 500) {
-                    console.warn('Erreur serveur lors de l\'annulation des vieux rendez-vous');
-                  } else if (cancelError.code === 'NETWORK_ERROR') {
-                    console.warn('Erreur réseau lors de l\'annulation des vieux rendez-vous');
-                  } else {
-                    console.warn('Erreur lors de l\'annulation des vieux rendez-vous:', cancelError.message || 'Erreur inconnue');
-                  }
-                  // Ne pas bloquer la connexion - c'est une fonctionnalité optionnelle
+              try {
+                await axiosInstance.post(`/rendezvous/cancel-old`);
+                console.log('Vieux rendez-vous annulés avec succès');
+              } catch (cancelError) {
+                if (cancelError.response?.status === 403) {
+                  console.warn('Droits insuffisants pour annuler les vieux rendez-vous ou endpoint non disponible');
+                } else if (cancelError.response?.status === 404) {
+                  console.warn('Endpoint pour annuler les vieux rendez-vous non disponible sur le backend');
+                } else if (cancelError.response?.status === 500) {
+                  console.warn('Erreur serveur lors de l\'annulation des vieux rendez-vous');
+                } else if (cancelError.code === 'NETWORK_ERROR') {
+                  console.warn('Erreur réseau lors de l\'annulation des vieux rendez-vous');
+                } else {
+                  console.warn('Erreur lors de l\'annulation des vieux rendez-vous:', cancelError.message || 'Erreur inconnue');
                 }
-              } else {
-                console.log('Utilisateur non autorisé à annuler les vieux rendez-vous - rôle:', userRole);
               }
             } else {
               console.warn('Token non trouvé, impossible d\'annuler les vieux rendez-vous');

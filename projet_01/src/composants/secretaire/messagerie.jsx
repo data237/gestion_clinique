@@ -6,7 +6,7 @@ import imgprofilDefault from '../../assets/photoDoc.png'
 import '../../styles/messagerie.css'
 import { connectWebSocket, sendMessage, deleteMessage } from '../../services/messagerieService';
 
-function MessagerieAdmin() {
+function MessagerieSecretaire() {
     const idUser = localStorage.getItem('id');
     const token = localStorage.getItem('token');
 
@@ -200,7 +200,7 @@ function MessagerieAdmin() {
                                                 <img 
                                                     src={user.photoUrl || imgprofilDefault} 
                                                     alt="Contact" 
-                                                    className="contact-img"
+                                                    className="contact-avatar"
                                                 />
                                                 <div className="contact-info">
                                                     <div className="contact-name">{user.prenom} {user.nom}</div>
@@ -224,7 +224,7 @@ function MessagerieAdmin() {
                                         <img 
                                             src={selectedContact.photoUrl || imgprofilDefault} 
                                             alt="Contact" 
-                                            className="contact-img"
+                                            className="chat-contact-avatar"
                                         />
                                         <div className="chat-contact-info">
                                             <h4>{selectedContact.prenom} {selectedContact.nom}</h4>
@@ -270,4 +270,4 @@ function MessagerieAdmin() {
     );
 }
 
-export default MessagerieAdmin; 
+export default MessagerieSecretaire;

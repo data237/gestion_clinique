@@ -186,14 +186,14 @@ const Calendar = () => {
                             if (rdv.heure) {
                                 // Essayer différentes structures possibles pour le patient
                                 let patientNom = 'Patient';
-                                let patientPrenom = '';
+                                let heure = '-' + rdv.heure;
                                 
                                 if (rdv.patient && typeof rdv.patient === 'object') {
                                     patientNom = rdv.patient.nom || rdv.patient.nomPatient || 'Patient';
-                                    patientPrenom = rdv.patient.prenom || rdv.patient.prenomPatient || '';
                                 } else if (rdv.nomPatient) {
                                     patientNom = rdv.nomPatient;
-                                    patientPrenom = rdv.prenomPatient || '';
+                                } else if (rdv.patientNomComplet) {
+                                    patientNom = rdv.patientNomComplet;
                                 }
                                 
                                 const startTime = `${date}T${rdv.heure}`;
@@ -204,7 +204,7 @@ const Calendar = () => {
                                 
                                 detailedEvents.push({
                                     id: rdv.id,
-                                    title: `${icon} ${patientNom} ${patientPrenom}`.trim(),
+                                    title: `${icon} ${patientNom} ${heure}`.trim(),
                                     start: startTime,
                                     end: endTime,
                                     backgroundColor: style.backgroundColor,
@@ -213,7 +213,7 @@ const Calendar = () => {
                                     borderWidth: style.borderWidth,
                                     extendedProps: {
                                         rdvId: rdv.id,
-                                        patient: { nom: patientNom, prenom: patientPrenom },
+                                        patient: { nom: patientNom, heure: heure },
                                         heure: rdv.heure,
                                         style: style,
                                         icon: icon,
@@ -259,50 +259,7 @@ const Calendar = () => {
         fetchRendezvous();
     }, []);
 
-    // CSS pour le curseur pointer sur les cellules des jours
-    useEffect(() => {
-        const style = document.createElement('style');
-        style.textContent = `
-            .clickable-day {
-                cursor: pointer !important;
-            }
-            .clickable-day:hover {
-                background-color: rgba(33, 150, 243, 0.1) !important;
-                transition: background-color 0.2s ease;
-            }
-            .fc-daygrid-day {
-                cursor: pointer !important;
-            }
-            .fc-daygrid-day:hover {
-                background-color: rgba(33, 150, 243, 0.05) !important;
-                transition: background-color 0.2s ease;
-            }
-            
-            /* Hover pour les jours avec rendez-vous - couleur correspondante */
-            .fc-daygrid-day.has-events:hover {
-                background-color: rgba(33, 150, 243, 0.1) !important;
-                transition: background-color 0.2s ease;
-            }
-            
-            /* Hover pour les jours sans rendez-vous */
-            .fc-daygrid-day:not(.has-events):hover {
-                background-color: rgba(158, 158, 158, 0.1) !important;
-                transition: background-color 0.2s ease;
-            }
-            
-            /* Hover spécifique pour les événements selon leur couleur */
-            .fc-event:hover {
-                transform: scale(1.05) !important;
-                transition: all 0.2s ease !important;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
-            }
-        `;
-        document.head.appendChild(style);
-        
-        return () => {
-            document.head.removeChild(style);
-        };
-    }, []);
+
 
     const handleClick = (today) => {
         console.log('Date cliquée:', today.dateStr);
@@ -315,6 +272,45 @@ const Calendar = () => {
 
     return (
         <>
+            {/* CSS inline pour le curseur pointer et hover personnalisé */}
+            <style>
+                {`
+                    .fc-daygrid-day {
+                        cursor: pointer !important;
+                    }
+                    
+                    /* Hover pour les jours avec rendez-vous - couleur correspondante */
+                    .fc-daygrid-day.has-events:hover {
+                        background-color: rgba(33, 150, 243, 0.1) !important;
+                        transition: background-color 0.2s ease;
+                    }
+                    
+                    /* Hover pour les jours sans rendez-vous */
+                    .fc-daygrid-day:not(.has-events):hover {
+                        background-color: rgba(158, 158, 158, 0.1) !important;
+                        transition: background-color 0.2s ease;
+                    }
+                    
+                    /* Couleur du texte des jours de la semaine */
+                    .fc-col-header-cell {
+                        color: #000 !important;
+                        font-weight: bold !important;
+                    }
+                    
+                    .fc-col-header-cell .fc-col-header-cell-cushion {
+                        color: #000 !important;
+                        font-weight: bold !important;
+                    }
+                    
+                    /* Hover spécifique pour les événements selon leur couleur */
+                    .fc-event:hover {
+                        transform: scale(1.05) !important;
+                        transition: all 0.2s ease !important;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+                    }
+                `}
+            </style>
+
             <SousDiv1Style>
                 <Barrehorizontal1 titrepage="Calendrier" imgprofil1={imgprofil} nomprofil={nomprofil}>
                     <Span1 onClick={() => setrendezvousdayvisible(false)}>Liste des evenements</Span1>
@@ -412,8 +408,15 @@ const Calendar = () => {
                             return (
                                 <div 
                                     onClick={() => {
-                                        const dateStr = eventInfo.event.startStr.split('T')[0];
-                                        navigate(`/medecin/calendrier/${dateStr}`);
+                                        // Si c'est un événement détaillé avec un ID de rendez-vous, naviguer vers les détails
+                                        if (isDetailed && eventInfo.event.extendedProps.rdvId) {
+                                            console.log("Navigation vers les détails du rendez-vous:", eventInfo.event.extendedProps.rdvId);
+                                            navigate(`/medecin/rendezvous/viewrendezvous/${eventInfo.event.extendedProps.rdvId}`);
+                                        } else {
+                                            // Sinon, naviguer vers la vue du jour
+                                            const dateStr = eventInfo.event.startStr.split('T')[0];
+                                            navigate(`/medecin/calendrier/${dateStr}`);
+                                        }
                                     }}
                                     style={{ 
                                         textAlign: 'center', 

@@ -188,16 +188,9 @@ const CalendarSecretaire = () => {
                             });
                             
                             if (rdv.heure) {
-                                let patientNom = 'Patient';
-                                let patientPrenom = '';
-                                
-                                if (rdv.patient && typeof rdv.patient === 'object') {
-                                    patientNom = rdv.patient.nom || rdv.patient.nomPatient || 'Patient';
-                                    patientPrenom = rdv.patient.prenom || rdv.patient.prenomPatient || '';
-                                } else if (rdv.nomPatient) {
-                                    patientNom = rdv.nomPatient;
-                                    patientPrenom = rdv.prenomPatient || '';
-                                }
+                                let patientNom = rdv.patientNomComplet;
+                                let heure = '-' + rdv.heure;
+                
                                 
                                 const startTime = `${date}T${rdv.heure}`;
                                 const endTime = `${date}T${rdv.heure}`;
@@ -206,16 +199,17 @@ const CalendarSecretaire = () => {
                                 
                                 const detailedEvent = {
                                     id: rdv.id,
-                                    title: `${icon} ${patientNom} ${patientPrenom}`.trim(),
+                                    title: `${icon} ${patientNom} ${heure}`.trim(),
                                     start: startTime,
                                     end: endTime,
                                     backgroundColor: style.backgroundColor,
                                     borderColor: style.borderColor,
                                     textColor: style.textColor,
                                     borderWidth: style.borderWidth,
+                                    textSize: '4px',
                                     extendedProps: {
                                         rdvId: rdv.id,
-                                        patient: { nom: patientNom, prenom: patientPrenom },
+                                        patient: { nom: patientNom, heure: heure },
                                         heure: rdv.heure,
                                         style: style,
                                         icon: icon,
@@ -303,6 +297,17 @@ const CalendarSecretaire = () => {
           .fc-daygrid-day:not(.has-events):hover {
               background-color: rgba(158, 158, 158, 0.1) !important;
               transition: background-color 0.2s ease;
+          }
+          
+          /* Couleur du texte des jours de la semaine */
+          .fc-col-header-cell {
+              color: #000 !important;
+              font-weight: bold !important;
+          }
+          
+          .fc-col-header-cell .fc-col-header-cell-cushion {
+              color: #000 !important;
+              font-weight: bold !important;
           }
           
           /* Hover spécifique pour les événements selon leur couleur */
@@ -414,38 +419,45 @@ const CalendarSecretaire = () => {
             const style = eventInfo.event.extendedProps.style;
             const isDetailed = eventInfo.event.extendedProps.isDetailed;
             
-            return (
-              <div 
-              onClick={() => {
-                  const dateStr = eventInfo.event.startStr.split('T')[0];
-                  navigate(`/secretaire/calendrier/${dateStr}`);
-              }}
-              style={{ 
-                  textAlign: 'center', 
-                  padding: isDetailed ? '6px 8px' : '4px 6px',
-                  fontSize: isDetailed ? '12px' : '11px',
-                  fontWeight: style.fontWeight || 'bold',
-                  backgroundColor: style.backgroundColor,
-                  color: style.textColor,
-                  borderRadius: '6px',
-                  margin: '2px',
-                  border: `${style.borderWidth} solid ${style.borderColor}`,
-                  boxShadow: style.boxShadow || 'none',
-                  opacity: style.opacity || 1,
-                  minHeight: isDetailed ? '24px' : '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.2s ease',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-              }}
-              title={isDetailed ? `${eventInfo.event.title} - ${eventInfo.event.extendedProps.heure}` : eventInfo.event.title}
-          >
-              {eventInfo.event.title}
-          </div>
+                          return (
+                <div 
+                onClick={() => {
+                    // Si c'est un événement détaillé avec un ID de rendez-vous, naviguer vers les détails
+                    if (isDetailed && eventInfo.event.extendedProps.rdvId) {
+                        console.log("Navigation vers les détails du rendez-vous:", eventInfo.event.extendedProps.rdvId);
+                        navigate(`/secretaire/rendezvous/viewrendezvous/${eventInfo.event.extendedProps.rdvId}`);
+                    } else {
+                        // Sinon, naviguer vers la vue du jour
+                        const dateStr = eventInfo.event.startStr.split('T')[0];
+                        navigate(`/secretaire/calendrier/${dateStr}`);
+                    }
+                }}
+                style={{ 
+                    textAlign: 'center', 
+                    padding: isDetailed ? '6px 8px' : '4px 6px',
+                    fontSize: isDetailed ? '12px' : '11px',
+                    fontWeight: style.fontWeight || 'bold',
+                    backgroundColor: style.backgroundColor,
+                    color: style.textColor,
+                    borderRadius: '6px',
+                    margin: '2px',
+                    border: `${style.borderWidth} solid ${style.borderColor}`,
+                    boxShadow: style.boxShadow || 'none',
+                    opacity: style.opacity || 1,
+                    minHeight: isDetailed ? '24px' : '20px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.2s ease',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                }}
+                title={isDetailed ? `${eventInfo.event.title} - ${eventInfo.event.extendedProps.heure}` : eventInfo.event.title}
+            >
+                {eventInfo.event.title}
+            </div>
             );
         }}
           />

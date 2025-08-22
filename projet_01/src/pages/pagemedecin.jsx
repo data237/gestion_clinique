@@ -40,6 +40,8 @@ function PageMedecin(){
             setContenuActif('rendez-vous');
         } else if (routeSegment === 'calendrier') {
             setContenuActif('calendrier');
+        } else if (routeSegment === 'messagerie') {
+            setContenuActif('messagerie');
         } else {
             setContenuActif('rendez-vous');
         }
@@ -55,8 +57,7 @@ function PageMedecin(){
         <Barrelatteral> 
             <Link to="/medecin/rendezvous" className={contenuActif === 'rendez-vous' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('rendez-vous')}}><Eltmenu nommenu='rendez-vous' img={imgrendezvous} active={contenuActif === 'rendez-vous'} /></Link>
             <Link to="/medecin/calendrier" className={contenuActif === 'calendrier' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('calendrier')}}><Eltmenu nommenu='Calendrier' img={imgcalendrier} active={contenuActif === 'calendrier'} /></Link>
-
-
+            <Link to="/medecin/messagerie" className={contenuActif === 'messagerie' ? 'eltmenu' : 'lienadmin'} onClick={() => {changerContenu('messagerie')}}><Eltmenu nommenu='Messagerie' img={iconEnvelope} active={contenuActif === 'messagerie'} /></Link>
         </Barrelatteral>
          <div className='divstyle'>
             <Outlet/>   
